@@ -1,0 +1,154 @@
+---
+format:
+  pdf:
+    include-in-header: preamble.tex
+params:
+  abundance_file_path: NULL
+  participant_id: NULL
+title: |
+  ![](mini_logo.png){width=5cm} \
+  \
+  **Microbiome report:** \
+  Participant `r params$participant_id`
+---
+```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(tidyverse)
+library(ggsci)
+
+# Load data
+print(params$abundance_file_path)
+abdata <- read.delim(params$abundance_file_path)
+
+# Select the right variables
+namelist <- c("Bacteroidetes", "Firmicutes", "Proteobacteria",
+              "Parabacteroides", "Odoribacter", "Blautia",
+              "Faecalibacterium", "Verrucomicrobia", "Anaerostipes",
+              "Lactobacillus", "Roseburia", "Akkermansia municiphila",
+              "Dorea formicigenerans")
+abdata_filt <- abdata %>% mutate(name = trimws(name)) %>%
+              filter(name %in% namelist) %>%
+              mutate(rank = fct_relevel(rank, "D", "D1", "P", "C", "O", "F", "G", "S")) %>%
+              arrange(rank)
+rownames(abdata_filt) <- abdata_filt$name
+abdata_filt <- abdata_filt %>% select(contains("report_bracken")) %>%
+                              rename_at(c(colnames(.)[which(str_detect(colnames(.), 'report_bracken'))]), 
+                              ~str_remove(str_remove(.x, 'Sample'), '.kraken2.report_bracken'))
+
+# Calculate the population medians per variable
+abflip <- as.data.frame(t(as.matrix(abdata_filt)))
+abundance_medians <- abflip %>% summarise(across(everything(), 
+                                  list(median = ~median(.x, na.rm = TRUE), 
+                                        max = ~max(.x, na.rm = TRUE)))
+                                ) %>% pivot_longer(., cols = 1:ncol(.), names_sep = "_",
+                                                  names_to = c("tax", "var"), 
+                                                  values_to = "outcome") %>%
+                                      pivot_wider(., id_cols = var, names_from = tax, values_from = outcome)
+abundance_medians[which(abundance_medians$var == "max"), "Bacteroidetes"]
+
+# Define taxa explanations
+taxa_explanations <- list(
+  "Bacteroidetes" = "Bacteroidetes is one of the two main groups of bacteria in the human gut. Lower levels have been linked to obesity, higher body fat, and poor blood sugar control, including higher fasting glucose and insulin levels. In contrast, higher levels are associated with better metabolism, lower blood sugar, healthier cholesterol levels, and improved response to weight-loss diets. Some studies suggest mixed or opposite effects.",
+  
+  "Firmicutes" = "Firmicutes is another major bacterial group in the gut. Higher levels have been associated with obesity, diets high in fat and sugar, and poor blood sugar control, including type 2 diabetes. Lower levels are linked to better metabolism, lower cholesterol, improved gut health, and reduced inflammation.",
+  
+  "Proteobacteria" = "Proteobacteria is a diverse group of bacteria found in the gut. Lower levels are linked to fiber-rich diets and better blood sugar control, while higher levels are associated with type 2 diabetes, obesity, and metabolic issues, such as high cholesterol and insulin resistance.",
+  
+  "Desulfovibrionaceae" = "Desulfovibrionaceae is a family of bacteria within Proteobacteria. Lower levels have been associated with fiber-rich diets and reduced inflammation, while higher levels are linked to poor blood sugar control, metabolic syndrome, obesity, and increased gut permeability.",
+  
+  "Bacteroides" = "Bacteroides is a common gut bacterium. Low levels are linked to obesity, poor blood sugar control, and diabetes, while higher levels are associated with weight loss, diet changes, and exercise. Some studies suggest conflicting results.",
+  
+  "Parabacteroides" = "Parabacteroides is linked to blood sugar regulation. Higher levels are associated with poor blood sugar control and high-fat diets, while lower levels have been found in people responding well to diabetes medication (metformin).",
+  
+  "Odoribacter" = "Odoribacter is a gut bacterium linked to diet and metabolism. Higher levels have been associated with obesity, high-fat diets, and poor blood sugar control, while lower levels have been found in people benefiting from fiber-rich diets or diabetes medication.",
+  
+  "Blautia" = "Blautia is a gut bacterium with mixed findings. Higher levels have been linked to poor blood sugar control, but some studies associate them with fiber-rich diets that support metabolism.",
+  
+  "Faecalibacterium" = "Faecalibacterium is generally considered beneficial. Higher levels are linked to lower inflammation and better blood sugar control, while lower levels are associated with obesity and metabolic issues.",
+  
+  "Verrucomicrobia" = "Verrucomicrobia includes bacteria that may support gut health. Higher levels have been linked to improved blood sugar control and the use of prebiotics or diabetes medication, while lower levels are associated with obesity and poor metabolism.",
+  
+  "Akkermansia muciniphila" = "Akkermansia muciniphila is a bacterium within Verrucomicrobia. Higher levels are linked to a healthy gut lining, better blood sugar control, and lower body fat, while lower levels are associated with obesity and metabolic disorders.",
+  
+  "Anaerostipes" = "Anaerostipes is linked to gut health and metabolism. Higher levels have been associated with better blood sugar control and lower blood fat levels in people consuming prebiotics.",
+  
+  "Lactobacillus" = "Lactobacillus is commonly found in probiotic foods. Higher levels are linked to improved gut barrier function and weight loss but, in some cases, have also been associated with obesity.",
+  
+  "Roseburia" = "Roseburia is linked to carbohydrate metabolism. Higher levels are associated with fiber-rich diets and improved glucose tolerance, while lower levels are linked to poor blood sugar control.",
+  
+  "Oxalobacter formigenes" = "Oxalobacter formigenes may play a role in metabolism. Higher levels have been linked to lower body weight, while lower levels are associated with obesity and metabolic syndrome.",
+  
+  "Dorea formicigenerans" = "Dorea formicigenerans has been linked to metabolism and weight regulation. Higher levels are associated with lower body weight, while lower levels are found in people with obesity and insulin resistance."
+)
+
+introduction <- "The gut microbiota consists of trillions of microorganisms, including bacteria, viruses, fungi, and archaea, that inhabit the gastrointestinal tract. These microorganisms play a crucial role in various physiological functions, including digestion, immune response, and even metabolism. The composition of the gut microbiota can be influenced by various factors, such as diet, lifestyle, and genetic predisposition.
+
+In this report, we focus specifically on your gut microbiome, using data generated through shotgun sequencing. This advanced technique provides a detailed and high-resolution view of the microbial communities in your gut, identifying both known and previously uncharacterized microorganisms. By examining the composition and relative abundance of these microorganisms in a large group of individuals, our goal is to improve our understanding of the effects of the gut microbiota on health.
+
+Below, we will present the abundance of specific microbial taxa and compare them to reference medians from the broader population.\n\n"
+
+disclaimer <- "This report is based on a single stool sample and provides a snapshot of your gut microbiome at one point in time. The composition of the microbiome can vary due to factors such as diet, medication use, and lifestyle. Therefore, these results should be interpreted with caution and not be considered as a definitive assessment of your gut health. If you have any health concerns, please consult a medical professional."
+```
+```{r report, echo=FALSE, results='asis', warning=FALSE}
+
+participant_data <- abdata_filt %>% select(all_of(params$participant_id))
+part_flip <- as.data.frame(t(as.matrix(participant_data)))
+
+cat("\\subsection*{Introduction}\n\n")
+cat(introduction)
+
+for (taxon in names(part_flip)) {
+  # Generate plot data
+  med <- abundance_medians[which(abundance_medians$var == "median"), taxon]
+  upper <- abundance_medians[which(abundance_medians$var == "max"), taxon]
+  pt <- part_flip[[taxon]]
+
+  cat("\\subsection*{", taxon, "}\n\n", sep = "")
+  taxa_result <- str_c("The median level of ", taxon, " in this population was **", med, "%**,",
+                        " the level in your sample was **", pt, "%**. ")
+  taxa_text <- str_c(taxa_result, taxa_explanations[[taxon]])
+  cat(taxa_text, "\n\n")
+
+  midpoint <- 0.5 * upper
+  textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
+  textplacing2 <- case_when(pt < midpoint ~ 0, .default = 1)
+  # Create the plot
+  pl <- ggplot(part_flip, aes(x = "", y = .data[[taxon]])) +
+      geom_bar(aes(y = upper[[1]]), stat = "identity", fill = "grey90", width = 0.5) +
+      geom_bar(stat = "identity", fill = pal_nejm()(3)[3], width = 0.5) +
+      geom_segment(aes(x = 1.30, xend = 0.75, y = med[[1]], yend = med[[1]]), 
+                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
+      geom_segment(aes(x = 1.4, xend = 0.60, y = .data[[taxon]], yend = .data[[taxon]]), 
+                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
+      annotate("text", x = 1.35, y = med[[1]], label = "Population median", 
+                color = pal_nejm()(2)[2], size = 4, hjust = textplacing1, fontface = "bold") +
+      annotate("text", x = 1.45, y = pt, label = "You", 
+                color = pal_nejm()(3)[3], size = 4, hjust = textplacing2, fontface = "bold") +
+      geom_text(aes(x = 0.7, y = med[[1]], label = paste0(med[[1]])), 
+                    color = pal_nejm()(2)[2], size = 4, hjust = textplacing1, fontface = "bold") +
+      geom_text(aes(x = 0.55, y = pt, label = paste0(pt)), 
+                    color = pal_nejm()(3)[3], size = 4, hjust = textplacing2, fontface = "bold") +
+      scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
+      theme_minimal(base_size = 12) +
+      theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+            axis.title = element_text(size = 12),
+            plot.margin = margin(5, 15, 5, 5),
+            panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+      labs(y = "Levels in %", x = "") +
+      coord_flip()
+  plot_filename <- paste0("figures/report_", taxon, ".png")
+  ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
+
+  cat("\\begin{figure}[h!]\n")
+  cat("\\centering\n")
+  cat("\\includegraphics[width=10cm]{", plot_filename, "}\n", sep = "")
+  cat("\\caption{\\textit{Levels of ", taxon, "}}\n", sep = "")
+  cat("\\end{figure}\n\n")
+}
+
+cat("\\subsection*{Disclaimer}\n\n")
+cat(disclaimer)
+
+```
