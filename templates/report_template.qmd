@@ -5,18 +5,22 @@ format:
 params:
   abundance_file_path: NULL
   participant_id: NULL
+  sample_prefix: "Sample"
 title: |
-  ![](mini_logo.png){width=5cm} \
+  ![](elinav_logo.png){width=5cm} \
   \
   **Microbiome report:** \
   Participant `r params$participant_id`
 ---
 ```{r setup, include=FALSE}
-library(ggplot2)
-library(dplyr)
-library(stringr)
-library(tidyverse)
-library(ggsci)
+# Silently load required packages
+suppressPackageStartupMessages({
+  library(dplyr)      # For data manipulation
+  library(ggplot2)    # For plotting
+  library(stringr)    # For string manipulation
+  library(forcats)    # For factor manipulation
+  library(tidyr)      # For pivot_longer and pivot_wider
+})
 
 # Load data
 print(params$abundance_file_path)
@@ -35,7 +39,7 @@ abdata_filt <- abdata %>% mutate(name = trimws(name)) %>%
 rownames(abdata_filt) <- abdata_filt$name
 abdata_filt <- abdata_filt %>% select(contains("report_bracken")) %>%
                               rename_at(c(colnames(.)[which(str_detect(colnames(.), 'report_bracken'))]), 
-                              ~str_remove(str_remove(.x, 'Sample'), '.kraken2.report_bracken'))
+                              ~str_remove(str_remove(.x, params$sample_prefix), '.kraken2.report_bracken'))
 
 # Calculate the population medians per variable
 abflip <- as.data.frame(t(as.matrix(abdata_filt)))
@@ -115,21 +119,22 @@ for (taxon in names(part_flip)) {
   textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
   textplacing2 <- case_when(pt < midpoint ~ 0, .default = 1)
   # Create the plot
+  dir.create("figures", showWarnings = FALSE)
   pl <- ggplot(part_flip, aes(x = "", y = .data[[taxon]])) +
       geom_bar(aes(y = upper[[1]]), stat = "identity", fill = "grey90", width = 0.5) +
-      geom_bar(stat = "identity", fill = pal_nejm()(3)[3], width = 0.5) +
+      geom_bar(stat = "identity", fill = "#E18727FF", width = 0.5) +
       geom_segment(aes(x = 1.30, xend = 0.75, y = med[[1]], yend = med[[1]]), 
                     arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
       geom_segment(aes(x = 1.4, xend = 0.60, y = .data[[taxon]], yend = .data[[taxon]]), 
                     arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
       annotate("text", x = 1.35, y = med[[1]], label = "Population median", 
-                color = pal_nejm()(2)[2], size = 4, hjust = textplacing1, fontface = "bold") +
+                color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
       annotate("text", x = 1.45, y = pt, label = "You", 
-                color = pal_nejm()(3)[3], size = 4, hjust = textplacing2, fontface = "bold") +
+                color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
       geom_text(aes(x = 0.7, y = med[[1]], label = paste0(med[[1]])), 
-                    color = pal_nejm()(2)[2], size = 4, hjust = textplacing1, fontface = "bold") +
+                    color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
       geom_text(aes(x = 0.55, y = pt, label = paste0(pt)), 
-                    color = pal_nejm()(3)[3], size = 4, hjust = textplacing2, fontface = "bold") +
+                    color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
       scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
       theme_minimal(base_size = 12) +
       theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Get the true path of this script, resolving symlinks
+SCRIPT_PATH=$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+WORKING_DIR=$(pwd)
+
+# Export the install location for use by R scripts
+export REPORT_GENERATOR_HOME="$PROJECT_ROOT"
+export WORKING_DIR="$WORKING_DIR"
+
+# Run the main script with all arguments
+Rscript "$PROJECT_ROOT/run.R" "$@"

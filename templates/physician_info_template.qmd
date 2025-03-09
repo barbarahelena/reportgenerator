@@ -6,7 +6,7 @@ params:
   abundance_file_path: NULL
   participant_id: NULL
 title: |
-  ![](mini_logo.png){width=5cm} \
+  ![](elinav_logo.png){width=5cm} \
   \
   **Understanding microbiome reports:** \
   a guide for physicians

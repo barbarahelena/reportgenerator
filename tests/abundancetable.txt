@@ -1,0 +1,14 @@
+name	rank	SampleP001.kraken2.report_bracken	SampleP002.kraken2.report_bracken
+Bacteroidetes	P	45.23	32.18
+Firmicutes	P	38.76	49.35
+Proteobacteria	P	5.42	7.21
+Parabacteroides	G	3.81	2.14
+Odoribacter	G	0.92	0.38
+Blautia	G	5.18	7.65
+Faecalibacterium	G	8.35	11.27
+Verrucomicrobia	P	1.25	3.76
+Anaerostipes	G	1.86	2.45
+Lactobacillus	G	0.42	1.58
+Roseburia	G	4.53	3.98
+Akkermansia municiphila	S	1.14	3.65
+Dorea formicigenerans	S	0.63	0.72
