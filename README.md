@@ -59,7 +59,6 @@ The following R packages will be automatically installed if missing:
 - mockery: For mocking in tests
 - R6: For test reporter classes
 
-### Installation
 All required R packages are automatically installed when first running the tool. If you prefer to install them manually:
 
 ```r
