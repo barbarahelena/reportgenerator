@@ -26,7 +26,7 @@ generate_report <- function(ab_path,
                             template_path, 
                             infosheet_path,
                             output_dir, 
-                            sample_prefix = "Sample") {
+                            sample_prefix) {
 # Read the abundance table to obtain the list of participant ids
 abdata <- utils::read.delim(ab_path)
 

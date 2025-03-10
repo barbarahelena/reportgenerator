@@ -131,10 +131,12 @@ if (opt$test == TRUE) {
       if(!is.null(opt$output)) { output_dir <- file.path(work_dir, opt$output) } else{
         output_dir <- file.path(work_dir, "reports")
       }
-      sample_prefix <- opt$sample
+      template_dir <- ifelse(!is.null(opt$template), opt$template, file.path(report_home, "templates/report_template.qmd"))
+      info_dir <- ifelse(!is.null(opt$template), opt$infosheet, file.path(report_home, "templates/physician_info_template.qmd"))
+      sample_prefix <- ifelse(is.null(opt$sample), "Sample", opt$sample)
       path_to_script <- file.path(report_home, "lib/generate_report.R")
       source(path_to_script)
-      generate_report(abundance_table_path, opt$template, opt$infosheet, 
+      generate_report(opt$abundance, template_dir, info_dir, 
           output_dir, sample_prefix)
   } else{
     print_help(opt_parser)
