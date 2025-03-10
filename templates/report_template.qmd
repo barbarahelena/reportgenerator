@@ -5,13 +5,14 @@ format:
 params:
   abundance_file_path: NULL
   participant_id: NULL
-  sample_prefix: "Sample"
+  sample_prefix: NULL
 title: |
   ![](elinav_logo.png){width=5cm} \
   \
   **Microbiome report:** \
   Participant `r params$participant_id`
 ---
+
 ```{r setup, include=FALSE}
 # Silently load required packages
 suppressPackageStartupMessages({
@@ -22,24 +23,48 @@ suppressPackageStartupMessages({
   library(tidyr)      # For pivot_longer and pivot_wider
 })
 
+# Define taxa explanations
+main_groups <- list(
+  "Bacteroidetes" = "Bacteroidetes is one of the dominant bacterial phyla in the gut. Lower levels have been linked to obesity, higher body fat, and poor blood sugar control, while higher levels are associated with a healthier metabolism and improved response to weight-loss diets. Some studies suggest mixed or opposite effects depending on individual factors.",
+  "Firmicutes" = "Firmicutes is another major bacterial phylum. Higher levels have been associated with obesity and diets high in fat and sugar. Lower levels are linked to better metabolism, lower cholesterol, and improved gut health.",
+  "Proteobacteria" = "Proteobacteria is a diverse bacterial phylum that includes many species linked to inflammation and metabolic disorders. Higher levels have been associated with type 2 diabetes, obesity, and insulin resistance, while lower levels are linked to fiber-rich diets and better blood sugar control.",
+  "Verrucomicrobia" = "Verrucomicrobia includes beneficial bacteria that may support gut health. Higher levels are linked to better blood sugar control and the use of prebiotics, while lower levels are associated with obesity and metabolic issues."
+)
+taxa_explanations <- list(
+  "Bacteroides" = "Bacteroides species are common gut bacteria. Lower levels are linked to obesity and poor blood sugar control, while higher levels are associated with weight loss and dietary changes.",
+  "Parabacteroides" = "Higher levels of Parabacteroides are linked to poor blood sugar control and high-fat diets, while lower levels have been found in people responding well to diabetes medication.",
+  "Prevotella" = "Prevotella is commonly associated with fiber-rich diets and plant-based eating patterns. Higher levels are often found in individuals consuming whole grains, legumes, and vegetables. Some studies suggest that a high Prevotella-to-Bacteroides ratio may be beneficial for glucose metabolism, but findings are mixed.",
+  "Escherichia" = "Escherichia includes both beneficial and potentially harmful species. While some, like Escherichia coli, are important for gut health and vitamin production, others can be linked to gut inflammation, infections, and metabolic disturbances. The balance of Escherichia species in the gut is influenced by diet and immune function.",
+  "Faecalibacterium" = "Faecalibacterium species, particularly Faecalibacterium prausnitzii, are considered beneficial bacteria in the gut. They are known for their ability to produce short-chain fatty acids (SCFAs), such as butyrate, which play a role in maintaining gut health and reducing inflammation. Higher levels of Faecalibacterium are associated with lower levels of systemic inflammation, improved gut barrier function, and better blood sugar control.",
+  "Akkermansia muciniphila" = "Akkermansia muciniphila is a bacterium within the Verrucomicrobia phylum, known for its role in maintaining gut health. It thrives on mucin, a key component of the mucus layer that protects the gut lining, helping to support gut barrier integrity. Higher levels of A. muciniphila have been linked to improved metabolism, better insulin sensitivity, and lower body fat. It also plays a role in reducing inflammation and may help prevent gut permeability issues like leaky gut.",
+  "Lactobacillus" = "Lactobacillus is a genus of bacteria commonly found in probiotic foods like yogurt and kefir. It supports gut health by producing lactic acid, which helps maintain a healthy gut pH and inhibits harmful pathogens. Higher levels of Lactobacillus are linked to improved gut barrier function, weight loss, and better digestion. ",
+  "Bifidobacterium" = "Bifidobacterium is a well-known probiotic genus that plays a key role in gut health. Higher levels are associated with improved digestion, enhanced immune function, and better blood sugar regulation. It is often found in individuals consuming fermented foods and prebiotic fibers.",
+  "Roseburia" = "Roseburia is a genus of beneficial gut bacteria that plays a key role in carbohydrate metabolism, particularly in the fermentation of dietary fibers. These bacteria break down complex carbohydrates into short-chain fatty acids, such as butyrate, which are important for gut health and inflammation reduction. Higher levels of Roseburia are commonly associated with fiber-rich diets, as they thrive on otherwise non-digestible dietary fibers. Increased Roseburia abundance has been linked to better blood sugar control, improved insulin sensitivity, and overall metabolic health.",
+  "Desulfovibrionaceae" = "Higher levels of Desulfovibrionaceae, a family of sulfate-reducing bacteria, have been linked to several negative health outcomes. These bacteria produce hydrogen sulfide, a compound that can contribute to gut inflammation and disrupt the gut barrier function. Elevated levels of Desulfovibrionaceae are associated with poor blood sugar control, insulin resistance, and obesity.",
+  "Dorea formicigenerans" = "Dorea formicigenerans is a gut bacterium that has been associated with metabolic health. Higher levels of Dorea formicigenerans are linked to lower body weight and better metabolic profiles. This bacterium is involved in the fermentation of dietary fiber, producing short-chain fatty acids like butyrate, which have anti-inflammatory properties and support gut health."
+)
+
+introduction <- "The gut microbiome is made up of trillions of microorganisms, including bacteria, viruses, fungi, and archaea, that live in the digestive tract. These microbes help with digestion, support the immune system, and influence metabolism. The balance of these microorganisms can be affected by diet, lifestyle, and genetics.\n\n
+This report presents an analysis of your gut microbiome using shotgun sequencing, a high-resolution method that identifies both well-known and previously uncharacterized microbes. By comparing your microbial composition to that of other study participants, we aim to better understand how gut bacteria relate to health. However, since the other participants are not necessarily healthy, differences in your results should not be overinterpreted.\n\n"
+
+disclaimer <- "This report is based on a single stool sample, which provides only a snapshot of your gut microbiome at one point in time. The composition of your microbiome can change due to factors such as diet, medication, and lifestyle. Therefore, these results should be interpreted with caution and should not be considered a definitive assessment of your gut health. If you have any health concerns, please consult a medical professional."
+
 # Load data
-print(params$abundance_file_path)
 abdata <- read.delim(params$abundance_file_path)
 
-# Select the right variables
-namelist <- c("Bacteroidetes", "Firmicutes", "Proteobacteria",
-              "Parabacteroides", "Odoribacter", "Blautia",
-              "Faecalibacterium", "Verrucomicrobia", "Anaerostipes",
-              "Lactobacillus", "Roseburia", "Akkermansia municiphila",
-              "Dorea formicigenerans")
-abdata_filt <- abdata %>% mutate(name = trimws(name)) %>%
-              filter(name %in% namelist) %>%
-              mutate(rank = fct_relevel(rank, "D", "D1", "P", "C", "O", "F", "G", "S")) %>%
-              arrange(rank)
+# Select variables
+namelist <- c(names(main_groups), names(taxa_explanations))
+abdata_filt <- abdata %>% 
+  mutate(name = trimws(name)) %>%
+  filter(name %in% namelist) %>%
+  mutate(rank = fct_relevel(rank, "D", "D1", "P", "C", "O", "F", "G", "S")) %>%
+  arrange(rank)
 rownames(abdata_filt) <- abdata_filt$name
 abdata_filt <- abdata_filt %>% select(contains("report_bracken")) %>%
                               rename_at(c(colnames(.)[which(str_detect(colnames(.), 'report_bracken'))]), 
                               ~str_remove(str_remove(.x, params$sample_prefix), '.kraken2.report_bracken'))
+abdata_key <- abdata_filt %>% filter(rownames(.) %in% names(main_groups))
+abdata_spec <- abdata_filt %>% filter(rownames(.) %in% names(taxa_explanations))
 
 # Calculate the population medians per variable
 abflip <- as.data.frame(t(as.matrix(abdata_filt)))
@@ -50,69 +75,30 @@ abundance_medians <- abflip %>% summarise(across(everything(),
                                                   names_to = c("tax", "var"), 
                                                   values_to = "outcome") %>%
                                       pivot_wider(., id_cols = var, names_from = tax, values_from = outcome)
-abundance_medians[which(abundance_medians$var == "max"), "Bacteroidetes"]
-
-# Define taxa explanations
-taxa_explanations <- list(
-  "Bacteroidetes" = "Bacteroidetes is one of the two main groups of bacteria in the human gut. Lower levels have been linked to obesity, higher body fat, and poor blood sugar control, including higher fasting glucose and insulin levels. In contrast, higher levels are associated with better metabolism, lower blood sugar, healthier cholesterol levels, and improved response to weight-loss diets. Some studies suggest mixed or opposite effects.",
-  
-  "Firmicutes" = "Firmicutes is another major bacterial group in the gut. Higher levels have been associated with obesity, diets high in fat and sugar, and poor blood sugar control, including type 2 diabetes. Lower levels are linked to better metabolism, lower cholesterol, improved gut health, and reduced inflammation.",
-  
-  "Proteobacteria" = "Proteobacteria is a diverse group of bacteria found in the gut. Lower levels are linked to fiber-rich diets and better blood sugar control, while higher levels are associated with type 2 diabetes, obesity, and metabolic issues, such as high cholesterol and insulin resistance.",
-  
-  "Desulfovibrionaceae" = "Desulfovibrionaceae is a family of bacteria within Proteobacteria. Lower levels have been associated with fiber-rich diets and reduced inflammation, while higher levels are linked to poor blood sugar control, metabolic syndrome, obesity, and increased gut permeability.",
-  
-  "Bacteroides" = "Bacteroides is a common gut bacterium. Low levels are linked to obesity, poor blood sugar control, and diabetes, while higher levels are associated with weight loss, diet changes, and exercise. Some studies suggest conflicting results.",
-  
-  "Parabacteroides" = "Parabacteroides is linked to blood sugar regulation. Higher levels are associated with poor blood sugar control and high-fat diets, while lower levels have been found in people responding well to diabetes medication (metformin).",
-  
-  "Odoribacter" = "Odoribacter is a gut bacterium linked to diet and metabolism. Higher levels have been associated with obesity, high-fat diets, and poor blood sugar control, while lower levels have been found in people benefiting from fiber-rich diets or diabetes medication.",
-  
-  "Blautia" = "Blautia is a gut bacterium with mixed findings. Higher levels have been linked to poor blood sugar control, but some studies associate them with fiber-rich diets that support metabolism.",
-  
-  "Faecalibacterium" = "Faecalibacterium is generally considered beneficial. Higher levels are linked to lower inflammation and better blood sugar control, while lower levels are associated with obesity and metabolic issues.",
-  
-  "Verrucomicrobia" = "Verrucomicrobia includes bacteria that may support gut health. Higher levels have been linked to improved blood sugar control and the use of prebiotics or diabetes medication, while lower levels are associated with obesity and poor metabolism.",
-  
-  "Akkermansia muciniphila" = "Akkermansia muciniphila is a bacterium within Verrucomicrobia. Higher levels are linked to a healthy gut lining, better blood sugar control, and lower body fat, while lower levels are associated with obesity and metabolic disorders.",
-  
-  "Anaerostipes" = "Anaerostipes is linked to gut health and metabolism. Higher levels have been associated with better blood sugar control and lower blood fat levels in people consuming prebiotics.",
-  
-  "Lactobacillus" = "Lactobacillus is commonly found in probiotic foods. Higher levels are linked to improved gut barrier function and weight loss but, in some cases, have also been associated with obesity.",
-  
-  "Roseburia" = "Roseburia is linked to carbohydrate metabolism. Higher levels are associated with fiber-rich diets and improved glucose tolerance, while lower levels are linked to poor blood sugar control.",
-  
-  "Oxalobacter formigenes" = "Oxalobacter formigenes may play a role in metabolism. Higher levels have been linked to lower body weight, while lower levels are associated with obesity and metabolic syndrome.",
-  
-  "Dorea formicigenerans" = "Dorea formicigenerans has been linked to metabolism and weight regulation. Higher levels are associated with lower body weight, while lower levels are found in people with obesity and insulin resistance."
-)
-
-introduction <- "The gut microbiota consists of trillions of microorganisms, including bacteria, viruses, fungi, and archaea, that inhabit the gastrointestinal tract. These microorganisms play a crucial role in various physiological functions, including digestion, immune response, and even metabolism. The composition of the gut microbiota can be influenced by various factors, such as diet, lifestyle, and genetic predisposition.
-
-In this report, we focus specifically on your gut microbiome, using data generated through shotgun sequencing. This advanced technique provides a detailed and high-resolution view of the microbial communities in your gut, identifying both known and previously uncharacterized microorganisms. By examining the composition and relative abundance of these microorganisms in a large group of individuals, our goal is to improve our understanding of the effects of the gut microbiota on health.
-
-Below, we will present the abundance of specific microbial taxa and compare them to reference medians from the broader population.\n\n"
-
-disclaimer <- "This report is based on a single stool sample and provides a snapshot of your gut microbiome at one point in time. The composition of the microbiome can vary due to factors such as diet, medication use, and lifestyle. Therefore, these results should be interpreted with caution and not be considered as a definitive assessment of your gut health. If you have any health concerns, please consult a medical professional."
 ```
+
 ```{r report, echo=FALSE, results='asis', warning=FALSE}
 
-participant_data <- abdata_filt %>% select(all_of(params$participant_id))
-part_flip <- as.data.frame(t(as.matrix(participant_data)))
+participant_data1 <- abdata_spec %>% select(all_of(params$participant_id))
+specificbacteria <- as.data.frame(t(as.matrix(participant_data1)))
+
+participant_data2 <- abdata_key %>% select(all_of(params$participant_id))
+keygroups <- as.data.frame(t(as.matrix(participant_data2)))
 
 cat("\\subsection*{Introduction}\n\n")
 cat(introduction)
 
-for (taxon in names(part_flip)) {
+cat("\\subsection*{Key groups of bacteria}\n\n")
+for (taxon in names(keygroups)) {
   # Generate plot data
   med <- abundance_medians[which(abundance_medians$var == "median"), taxon]
   upper <- abundance_medians[which(abundance_medians$var == "max"), taxon]
-  pt <- part_flip[[taxon]]
+  pt <- keygroups[[taxon]]
 
   cat("\\subsection*{", taxon, "}\n\n", sep = "")
-  taxa_result <- str_c("The median level of ", taxon, " in this population was **", med, "%**,",
-                        " the level in your sample was **", pt, "%**. ")
-  taxa_text <- str_c(taxa_result, taxa_explanations[[taxon]])
+  taxa_result <- str_c("The median level of ", taxon, " in this population was **", med, "\\%**,",
+                        " the level in your sample was **", pt, "\\%**. ")
+  taxa_text <- str_c(main_groups[[taxon]], taxa_result)
   cat(taxa_text, "\n\n")
 
   midpoint <- 0.5 * upper
@@ -120,7 +106,7 @@ for (taxon in names(part_flip)) {
   textplacing2 <- case_when(pt < midpoint ~ 0, .default = 1)
   # Create the plot
   dir.create("figures", showWarnings = FALSE)
-  pl <- ggplot(part_flip, aes(x = "", y = .data[[taxon]])) +
+  pl <- ggplot(keygroups, aes(x = "", y = .data[[taxon]])) +
       geom_bar(aes(y = upper[[1]]), stat = "identity", fill = "grey90", width = 0.5) +
       geom_bar(stat = "identity", fill = "#E18727FF", width = 0.5) +
       geom_segment(aes(x = 1.30, xend = 0.75, y = med[[1]], yend = med[[1]]), 
@@ -146,9 +132,60 @@ for (taxon in names(part_flip)) {
   plot_filename <- paste0("figures/report_", taxon, ".png")
   ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
 
-  cat("\\begin{figure}[h!]\n")
+  cat("\\begin{figure}[H]\n")  # Use [H] to anchor the figure
   cat("\\centering\n")
-  cat("\\includegraphics[width=10cm]{", plot_filename, "}\n", sep = "")
+  cat("\\includegraphics[width=8cm]{", plot_filename, "}\n", sep = "")
+  cat("\\caption{\\textit{Levels of ", taxon, "}}\n", sep = "")
+  cat("\\end{figure}\n\n")
+}
+
+cat("\\subsection*{Specific bacteria}\n\n")
+for (taxon in names(specificbacteria)) {
+  # Generate plot data
+  med <- abundance_medians[which(abundance_medians$var == "median"), taxon]
+  upper <- abundance_medians[which(abundance_medians$var == "max"), taxon]
+  pt <- specificbacteria[[taxon]]
+
+  cat("\\subsection*{", taxon, "}\n\n", sep = "")
+  taxa_result <- str_c("The median level of ", taxon, " in this population was **", med, "%**,",
+                        " the level in your sample was **", pt, "%**. ")
+  taxa_text <- str_c(taxa_explanations[[taxon]], taxa_result)
+  cat(taxa_text, "\n\n")
+
+  midpoint <- 0.5 * upper
+  textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
+  textplacing2 <- case_when(pt < midpoint ~ 0, .default = 1)
+  # Create the plot
+  dir.create("figures", showWarnings = FALSE)
+  pl <- ggplot(specificbacteria, aes(x = "", y = .data[[taxon]])) +
+      geom_bar(aes(y = upper[[1]]), stat = "identity", fill = "grey90", width = 0.5) +
+      geom_bar(stat = "identity", fill = "#E18727FF", width = 0.5) +
+      geom_segment(aes(x = 1.30, xend = 0.75, y = med[[1]], yend = med[[1]]), 
+                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
+      geom_segment(aes(x = 1.4, xend = 0.60, y = .data[[taxon]], yend = .data[[taxon]]), 
+                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
+      annotate("text", x = 1.35, y = med[[1]], label = "Population median", 
+                color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
+      annotate("text", x = 1.45, y = pt, label = "You", 
+                color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
+      geom_text(aes(x = 0.7, y = med[[1]], label = paste0(med[[1]])), 
+                    color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
+      geom_text(aes(x = 0.55, y = pt, label = paste0(pt)), 
+                    color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
+      scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
+      theme_minimal(base_size = 12) +
+      theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+            axis.title = element_text(size = 12),
+            plot.margin = margin(5, 15, 5, 5),
+            panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+      labs(y = "Levels in %", x = "") +
+      coord_flip()
+  plot_filename <- paste0("figures/report_", taxon, ".png")
+  ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
+
+  cat("\\begin{figure}[H]\n") # H to anchor figure
+  cat("\\centering\n")
+  cat("\\includegraphics[width=8cm]{", plot_filename, "}\n", sep = "")
   cat("\\caption{\\textit{Levels of ", taxon, "}}\n", sep = "")
   cat("\\end{figure}\n\n")
 }

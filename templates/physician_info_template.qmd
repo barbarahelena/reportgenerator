@@ -23,22 +23,18 @@ The microbiome report will present taxa as percentages of the total bacterial co
 ## No reference ranges
 Unlike standard clinical tests, there are no universally accepted reference ranges for gut microbes. The gut microbiome is highly individual, shaped by diet, environment, health status, medication use and genetics. While some bacterial groups are commonly found in healthy individuals, their presence or absence alone is not diagnostic of disease. Due to the proportional nature of the data (relative abundances), we cannot be sure about the absolute levels of specific bacteria in the gut. While the fecal microbiome is a reasonable reflection of the microbiome of the (distal) colon, it does not provide any spatial information. With changing nutrient and pH levels along the gastointestinal tract, the microbiome also differs substantially.
 
-## Uncertainties in Health Implications
+## Uncertainties in health implications
 Microbiome science is advancing rapidly, but many findings are based on associations rather than causation. While some microbial patterns have been linked to conditions such as inflammatory bowel disease, obesity, and cardiometabolic disorders, these associations do not equate to direct clinical recommendations. A ‘dysbiotic’ microbiome is a concept still under debate, and interventions targeting specific bacteria are not yet standard medical practice.
 
-## General Advice for Gut Health
+## General advice for gut health
 While microbiome manipulation through specific probiotics or microbiota-based therapies remains experimental, general lifestyle strategies can support gut health and have some evidence for anti-inflammatory effects:
 
-- **Dietary Fiber**: A diet rich in fiber from vegetables, fruits, legumes, and whole grains supports microbial diversity and short-chain fatty acid production, which may benefit gut and immune function.
-- **Fermented Foods**: Foods like yogurt, kefir, kimchi, and sauerkraut contain live bacteria that may contribute to microbial diversity.
-- **Polyphenol-Rich Foods**: Berries, green tea, dark chocolate, and olive oil contain polyphenols that have been associated with beneficial microbial shifts.
-- **Limiting Ultra-Processed Foods**: Diets high in refined sugars, emulsifiers, and artificial sweeteners have been linked to alterations in the gut microbiome and low-grade inflammation.
-- **Regular Physical Activity**: Exercise is associated with increased microbiome diversity and metabolic benefits.
-- **Stress Management and Sleep Hygiene**: Chronic stress and poor sleep can impact gut microbiota composition via the gut-brain axis.
-- **Prudent Antibiotic Use**: While sometimes necessary, antibiotics can disrupt microbial balance; use should be guided by clinical necessity.
+- **Dietary fiber**: A diet rich in fiber from vegetables, fruits, legumes, and whole grains supports microbial diversity and short-chain fatty acid production, which may benefit gut and immune function.
+- **Limiting ultra-processed foods**: Diets high in refined sugars, emulsifiers, and artificial sweeteners have been linked to alterations in the gut microbiome and low-grade inflammation.
+- **Regular physical activity**: Exercise is associated with increased microbiome diversity and metabolic benefits.
+- **Prudent antibiotic use**: While sometimes necessary, antibiotics disrupt the microbial balance; use should be guided by clinical necessity.
 
-## Communicating with Patients
-When discussing microbiome results with patients, it is helpful to emphasize the current limitations of the field while acknowledging its exciting potential. Encourage patients to focus on sustainable dietary and lifestyle habits rather than fixating on specific bacterial names or relative abundance shifts. Reinforce that gut microbiome testing is an emerging tool rather than a diagnostic standard.
+## Communicating with patients
+When discussing microbiome results with patients, it is helpful to emphasize the current limitations of the field while acknowledging its exciting potential. Encourage patients to focus on sustainable dietary and lifestyle habits rather than fixating on specific bacterial names or relative abundance shifts. Emphasize that gut microbiome testing is an emerging tool rather than a diagnostic standard.
 
 For any specific concerns or questions, consider consulting a specialist in microbiome research or gastroenterology to ensure evidence-based guidance.
-
