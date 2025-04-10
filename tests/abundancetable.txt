@@ -1,4 +1,4 @@
-name	rank	SampleP001.kraken2.report_bracken	SampleP002.kraken2.report_bracken	SampleP003.kraken2.report_bracken
+name	rank	SampleTEST000.kraken2.report_bracken	SampleTEST001.kraken2.report_bracken	SampleTEST002.kraken2.report_bracken
 Bacteroidetes	P	55.13	31.04	50.12
 Firmicutes	P	28.76	49.45	30.45
 Proteobacteria	P	5.42	7.91	4.89

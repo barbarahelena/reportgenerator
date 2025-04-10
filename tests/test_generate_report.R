@@ -50,13 +50,13 @@ if (!file.exists(test_abundance_path)) {
              "Bacteroides", "Prevotella", "Escherichia", "Bifidobacterium"),
     rank = c("P", "P", "P", "G", "G", "G", "G", "P", "G", "G", "G", "S", "S", 
              "G", "G", "G", "G"),
-    SampleP001.kraken2.report_bracken = c(45.23, 38.76, 5.42, 3.81, 0.92, 5.18, 
+    SampleTEST000.kraken2.report_bracken = c(45.23, 38.76, 5.42, 3.81, 0.92, 5.18, 
                                           8.35, 1.25, 1.86, 0.42, 4.53, 1.14, 
                                           0.63, 10.25, 7.32, 3.45, 5.67),
-    SampleP002.kraken2.report_bracken = c(32.18, 49.35, 7.21, 2.14, 0.38, 7.65, 
+    SampleTEST001.kraken2.report_bracken = c(32.18, 49.35, 7.21, 2.14, 0.38, 7.65, 
                                           11.27, 3.76, 2.45, 1.58, 3.98, 3.65, 
                                           0.72, 8.14, 6.45, 2.87, 4.89),
-    SampleP003.kraken2.report_bracken = c(50.12, 30.45, 4.89, 6.32, 1.25, 3.78, 
+    SampleTEST002.kraken2.report_bracken = c(50.12, 30.45, 4.89, 6.32, 1.25, 3.78, 
                                           9.14, 2.87, 3.12, 0.98, 5.67, 1.89, 
                                           0.45, 12.45, 8.76, 4.12, 6.23)
   )
