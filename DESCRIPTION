@@ -6,5 +6,5 @@ Author: Barbara Verhaar
 Maintainer: Barbara Verhaar <barbara.verhaar@dkfz-heidelberg.de>
 Description: A CLI tool to generate reports from abundance tables.
 Depends: R (>= 3.5.0)
-Imports: optparse, ggplot2, forcats, tidyr, testthat, mockery, dplyr, stringr
+Imports: optparse, ggplot2, forcats, tidyr, testthat, mockery, dplyr, stringr, vegan
 License: MIT
