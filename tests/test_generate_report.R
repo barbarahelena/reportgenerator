@@ -9,6 +9,8 @@ suppressPackageStartupMessages({
 report_home <- Sys.getenv("REPORT_GENERATOR_HOME", "")
 templ <- file.path(report_home, "templates/report_template.qmd")
 info <- file.path(report_home, "templates/physician_info_template.qmd")
+work_dir <- Sys.getenv("WORKING_DIR", getwd())
+output_dir <- file.path(work_dir, "test_reports")
 
 if (report_home == "") {
   # If not set, try to determine from current directory
@@ -44,12 +46,19 @@ if (!file.exists(test_abundance_path)) {
     name = c("Bacteroidetes", "Firmicutes", "Proteobacteria", "Parabacteroides", 
              "Odoribacter", "Blautia", "Faecalibacterium", "Verrucomicrobia",
              "Anaerostipes", "Lactobacillus", "Roseburia", 
-             "Akkermansia municiphila", "Dorea formicigenerans"),
-    rank = c("P", "P", "P", "G", "G", "G", "G", "P", "G", "G", "G", "S", "S"),
+             "Akkermansia muciniphila", "Dorea formicigenerans", 
+             "Bacteroides", "Prevotella", "Escherichia", "Bifidobacterium"),
+    rank = c("P", "P", "P", "G", "G", "G", "G", "P", "G", "G", "G", "S", "S", 
+             "G", "G", "G", "G"),
     SampleP001.kraken2.report_bracken = c(45.23, 38.76, 5.42, 3.81, 0.92, 5.18, 
-                                        8.35, 1.25, 1.86, 0.42, 4.53, 1.14, 0.63),
+                                          8.35, 1.25, 1.86, 0.42, 4.53, 1.14, 
+                                          0.63, 10.25, 7.32, 3.45, 5.67),
     SampleP002.kraken2.report_bracken = c(32.18, 49.35, 7.21, 2.14, 0.38, 7.65, 
-                                        11.27, 3.76, 2.45, 1.58, 3.98, 3.65, 0.72)
+                                          11.27, 3.76, 2.45, 1.58, 3.98, 3.65, 
+                                          0.72, 8.14, 6.45, 2.87, 4.89),
+    SampleP003.kraken2.report_bracken = c(50.12, 30.45, 4.89, 6.32, 1.25, 3.78, 
+                                          9.14, 2.87, 3.12, 0.98, 5.67, 1.89, 
+                                          0.45, 12.45, 8.76, 4.12, 6.23)
   )
   
   # Write the test data to a file
@@ -97,7 +106,6 @@ test_that("output directory is created", {
   )
   
   expect_true(dir.exists(output_dir))
-  unlink(output_dir, recursive = TRUE)
 })
 
 # Test error handling
@@ -115,4 +123,30 @@ test_that("generate_report handles invalid file paths", {
       regexp = "cannot open|No such file"
     )
   )
+})
+
+test_that("generate_report generates reports using actual templates", {
+  test_abundance_path <- file.path(report_home, "tests", "abundancetable.txt")
+
+  # Ensure the templates exist
+  expect_true(file.exists(templ), info = "Report template not found.")
+  expect_true(file.exists(info), info = "Physician info template not found.")
+
+  # Call the generate_report function
+  generate_report(
+    ab_path = test_abundance_path,
+    template_path = templ,
+    infosheet_path = info,
+    output_dir = output_dir,
+    sample_prefix = "Sample"
+  )
+  
+  # Check that at least one report is generated
+  report_files <- list.files(output_dir, pattern = "report_.*\\.pdf", full.names = TRUE)
+  expect_true(length(report_files) > 0, info = "No participant reports were generated.")
+  
+  # Check that the physician info sheet is generated
+  info_sheet <- file.path(output_dir, "physician_info.pdf")
+  expect_true(file.exists(info_sheet), info = "Physician info sheet was not generated.")
+
 })
