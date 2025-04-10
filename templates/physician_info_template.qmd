@@ -2,9 +2,13 @@
 format:
   pdf:
     include-in-header: preamble.tex
+    documentclass: article
+    fontfamily: roboto
+    number-sections: false
 params:
   abundance_file_path: NULL
   participant_id: NULL
+  sample_prefix: NULL
 title: |
   ![](elinav_logo.png){width=5cm} \
   \
@@ -15,26 +19,55 @@ title: |
 Recent advancements in sequencing technologies have made it possible to analyze the gut microbiome through stool samples. These reports provide insights into microbial composition, but their clinical interpretation remains complex and evolving. This document offers key points to help you guide patients when discussing their microbiome results.
 
 ## Analysis of the gut microbiome
-Microbiome profiling typically relies on sequencing DNA from stool samples. In this case this was donen by whole genome shotgun sequencing of the fecal DNA, which provides species- and strain-level resolution along with potential functional insights. The output of these analyses is a relative abundance profile of microbial taxa rather than absolute counts. Note that all human DNA (a very small proportion of the fecal DNA) is filtered out of the sequencing reads prior to the analyses.
+Microbiome profiling typically relies on sequencing DNA from stool samples. In this case this was donen by whole genome shotgun sequencing of the fecal DNA, which provides species- and strain-level resolution along with potential functional insights. The output of these analyses is a relative abundance profile of microbial taxa rather than absolute counts. Note that all human DNA (a very small proportion of the fecal DNA) is filtered out of the sequencing reads prior to the analyses.^1,2^
 
 ## Understanding relative abundances
-The microbiome report will present taxa as percentages of the total bacterial community in the sample. A higher percentage does not necessarily indicate overgrowth, nor does a lower percentage signify deficiency. These values are context-dependent and influenced by factors such as diet, medications, and stool consistency. 
+The microbiome report will present taxa as percentages of the total bacterial community in the sample. A higher percentage does not necessarily indicate overgrowth, nor does a lower percentage signify deficiency. These values are context-dependent and influenced by factors such as diet, medications, and stool consistency.^3^
 
 ## No reference ranges
-Unlike standard clinical tests, there are no universally accepted reference ranges for gut microbes. The gut microbiome is highly individual, shaped by diet, environment, health status, medication use and genetics. While some bacterial groups are commonly found in healthy individuals, their presence or absence alone is not diagnostic of disease. Due to the proportional nature of the data (relative abundances), we cannot be sure about the absolute levels of specific bacteria in the gut. While the fecal microbiome is a reasonable reflection of the microbiome of the (distal) colon, it does not provide any spatial information. With changing nutrient and pH levels along the gastointestinal tract, the microbiome also differs substantially.
+Unlike standard clinical tests, there are no universally accepted reference ranges for gut microbes. The gut microbiome is highly individual, shaped by diet, environment, health status, medication use and genetics. While some bacterial groups are commonly found in healthy individuals, their presence or absence alone is not diagnostic of disease.^4^ Due to the proportional nature of the data (relative abundances), we cannot be sure about the absolute levels of specific bacteria in the gut. While the fecal microbiome is a reasonable reflection of the microbiome of the (distal) colon, it does not provide any spatial information. With changing nutrient and pH levels along the gastointestinal tract, the microbiome also differs substantially.^5^
 
 ## Uncertainties in health implications
-Microbiome science is advancing rapidly, but many findings are based on associations rather than causation. While some microbial patterns have been linked to conditions such as inflammatory bowel disease, obesity, and cardiometabolic disorders, these associations do not equate to direct clinical recommendations. A ‘dysbiotic’ microbiome is a concept still under debate, and interventions targeting specific bacteria are not yet standard medical practice.
+Microbiome science is advancing rapidly, but many findings are based on associations rather than causation. While some microbial patterns have been linked to conditions such as inflammatory bowel disease, obesity, and cardiometabolic disorders, these associations do not equate to direct clinical recommendations. A ‘dysbiotic’ microbiome is a concept still under debate, and interventions targeting specific bacteria are not yet standard medical practice.^6,7^
 
 ## General advice for gut health
 While microbiome manipulation through specific probiotics or microbiota-based therapies remains experimental, general lifestyle strategies can support gut health and have some evidence for anti-inflammatory effects:
 
-- **Dietary fiber**: A diet rich in fiber from vegetables, fruits, legumes, and whole grains supports microbial diversity and short-chain fatty acid production, which may benefit gut and immune function.
-- **Limiting ultra-processed foods**: Diets high in refined sugars, emulsifiers, and artificial sweeteners have been linked to alterations in the gut microbiome and low-grade inflammation.
-- **Regular physical activity**: Exercise is associated with increased microbiome diversity and metabolic benefits.
+- **Dietary fiber**: A diet rich in fiber from vegetables, fruits, legumes, and whole grains supports microbial diversity and short-chain fatty acid production, which may benefit gut and immune function.^8^
+- **Limiting ultra-processed foods**: Diets high in refined sugars, emulsifiers, and artificial sweeteners have been linked to alterations in the gut microbiome and low-grade inflammation.^9^
+- **Regular physical activity**: Exercise is associated with increased microbiome diversity and metabolic benefits.^10^
 - **Prudent antibiotic use**: While sometimes necessary, antibiotics disrupt the microbial balance; use should be guided by clinical necessity.
 
 ## Communicating with patients
 When discussing microbiome results with patients, it is helpful to emphasize the current limitations of the field while acknowledging its exciting potential. Encourage patients to focus on sustainable dietary and lifestyle habits rather than fixating on specific bacterial names or relative abundance shifts. Emphasize that gut microbiome testing is an emerging tool rather than a diagnostic standard.
 
 For any specific concerns or questions, consider consulting a specialist in microbiome research or gastroenterology to ensure evidence-based guidance.
+
+## The Elinav lab
+The Elinav Lab, led by Professor Eran Elinav at the Department of Immunology at the Weizmann Institute of Science, focuses on understanding the complex interactions between the microbiome, host immunity, and human health. The lab is renowned for its pioneering research on the microbiome’s role in diseases such as cancer, metabolic disorders, and immune system diseases. Through innovative approaches, including microbiome manipulation, organoid models, and high-throughput sequencing, the lab aims to explore new therapeutic strategies for modulating the microbiome to improve health outcomes. By integrating advanced bioinformatics and experimental techniques, the Elinav Lab works towards translating fundamental microbiome research into clinical applications, ultimately shaping the future of microbiome-based precision medicine. More information on our lab can be found [here](https://www.weizmann.ac.il/immunology/elinav/).
+
+### Recent publications from the Elinav Lab
+1. **Metagenome-informed metaproteomics of the human gut microbiome, host and dietary exposome uncover signatures of health and inflammatory bowel disease (2025)**  
+   This study integrates metagenomic and metaproteomic analyses to uncover microbiome signatures linked to health and inflammatory bowel disease.  
+   [Read more](https://www.cell.com/cell/abstract/S0092-8674(24)01429-6)
+2. **Lung dendritic-cell metabolism underlies susceptibility to viral infection in diabetes (2024)**  
+   Investigates how metabolic changes in lung dendritic cells affect immune responses to viral infections in diabetic patients.  
+   [Read more](https://www.nature.com/articles/s41586-023-06803-0)
+3. **Epithelial Nlrp10 inflammasome mediates protection against intestinal autoinflammation (2023)**  
+   Explores how the Nlrp10 inflammasome protects against inflammatory diseases of the gut.  
+   [Read more](https://www.nature.com/articles/s41590-023-01450-z#citeas)
+4. **A non-antibiotic-disrupted gut microbiome is associated with clinical responses to CD19-CAR-T cell cancer immunotherapy (2023)**  
+   Discusses how a healthy microbiome influences the efficacy of CD19-CAR-T cell therapy in cancer patients.  
+   [Read more](https://doi.org/10.1038/s41591-023-02234-6)
+
+## References
+1. HMP Consortium. (2012). Structure, function and diversity of the healthy human microbiome. Nature, 486(7402), 207–214.
+2. Huttenhower, C., Finn, R. D., & McHardy, A. C. (2023). Challenges and opportunities in sharing microbiome data and analyses. Nature Microbiology, 8(11), 1960-1970.
+3. Gilbert, J. A., Blaser, M. J., Caporaso, J. G., Jansson, J. K., Lynch, S. V., & Knight, R. (2018). Current understanding of the human microbiome. Nature medicine, 24(4), 392-400.
+4. Turjeman, S., Rozera, T., Elinav, E., Ianiro, G., & Koren, O. (2025). From big data and experimental models to clinical trials: Iterative strategies in microbiome research. Cell, 188(5), 1178-1197.
+5. Shalon, D., Culver, R. N., Grembi, J. A., Folz, J., Treit, P. V., Shi, H., ... & Huang, K. C. (2023). Profiling the human intestinal environment under physiological conditions. Nature, 617(7961), 581-591.
+6. Olesen, S. W., & Alm, E. J. (2016). Dysbiosis is not an answer. Nature microbiology, 1(12), 1-2.
+7. Suez, J., & Elinav, E. (2017). The path towards microbiome-based metabolite treatment. Nature microbiology, 2(6), 1-5.
+8. Spencer, C. N., McQuade, J. L., Gopalakrishnan, V., McCulloch, J. A., Vetizou, M., Cogdill, A. P., ... & Wargo, J. A. (2021). Dietary fiber and probiotics influence the gut microbiome and melanoma immunotherapy response. Science, 374(6575), 1632-1640.
+9. Whelan, K., Bancil, A. S., Lindsay, J. O., & Chassaing, B. (2024). Ultra-processed foods and food additives in gut health and disease. Nature Reviews Gastroenterology & Hepatology, 21(6), 406-427.
+10. Mailing, L. J., Allen, J. M., Buford, T. W., Fields, C. J., & Woods, J. A. (2019). Exercise and the gut microbiome: a review of the evidence, potential mechanisms, and implications for human health. Exercise and sport sciences reviews, 47(2), 75-85.

@@ -2,6 +2,11 @@
 format:
   pdf:
     include-in-header: preamble.tex
+    pdf-engine: lualatex
+    documentclass: article
+    urlcolor: maincolor
+    linkcolor: maincolor
+    number-sections: false
 params:
   abundance_file_path: NULL
   participant_id: NULL
@@ -9,27 +14,33 @@ params:
 title: |
   ![](elinav_logo.png){width=5cm} \
   \
-  **Microbiome report:** \
-  Participant `r params$participant_id`
+  **Microbiome Analysis Report** \
+  Participant ID: `r params$participant_id`
 ---
 
-```{r setup, include=FALSE}
-# Silently load required packages
-suppressPackageStartupMessages({
-  library(dplyr)      # For data manipulation
-  library(ggplot2)    # For plotting
-  library(stringr)    # For string manipulation
-  library(forcats)    # For factor manipulation
-  library(tidyr)      # For pivot_longer and pivot_wider
-})
+```{r texts, include=FALSE}
+# All texts
+introduction <- "The gut microbiome is made up of trillions of microorganisms, including bacteria, viruses, fungi, and archaea, that live in the digestive tract. These microbes help with digestion, support the immune system, and influence metabolism. The balance of these microorganisms can be affected by diet, lifestyle, and genetics.\n\n 
 
-# Define taxa explanations
+This report presents an analysis of your gut microbiome using shotgun sequencing, a high-resolution method that identifies both well-known and previously uncharacterized microbes. By comparing your microbial composition to that of other study participants, we aim to better understand how gut bacteria relate to health.\n\n
+
+On the next page, you'll first see an overview of the bacterial diversity in your sample, followed by key bacterial groups commonly found in the human gut. Lastly, we’ll highlight specific bacteria in your microbiome, with additional reading at the end if you’d like to learn more."
+
+diversity <- "Microbial diversity refers to the variety of different bacteria and other microorganisms in the gut. A higher diversity is often linked to better health, while lower diversity has been associated with certain diseases. Many factors, such as diet, medication, and lifestyle, can influence microbial diversity.\n\n"
+
+div_explanations <- list("Shannon index" = "The Shannon index is a measure of microbial diversity that considers both the number of different species and how evenly they are distributed. A higher Shannon index indicates a more diverse and balanced microbiome, which is often linked to better health. ",
+                        "Species richness" = "Species richness refers to the number of different microbial species present in the gut. A higher species richness generally indicates a more diverse microbiome, which is often linked to better resilience and health.")
+
+phylum_explanation <- "This chart shows the distribution of large bacterial groups (phyla) in your gut microbiome. The top 6 most common groups are shown individually, with the remaining bacteria grouped as 'Other phyla'.\n\n"
+
 main_groups <- list(
   "Bacteroidetes" = "Bacteroidetes is one of the dominant bacterial phyla in the gut. Lower levels have been linked to obesity, higher body fat, and poor blood sugar control, while higher levels are associated with a healthier metabolism and improved response to weight-loss diets. Some studies suggest mixed or opposite effects depending on individual factors.",
   "Firmicutes" = "Firmicutes is another major bacterial phylum. Higher levels have been associated with obesity and diets high in fat and sugar. Lower levels are linked to better metabolism, lower cholesterol, and improved gut health.",
-  "Proteobacteria" = "Proteobacteria is a diverse bacterial phylum that includes many species linked to inflammation and metabolic disorders. Higher levels have been associated with type 2 diabetes, obesity, and insulin resistance, while lower levels are linked to fiber-rich diets and better blood sugar control.",
-  "Verrucomicrobia" = "Verrucomicrobia includes beneficial bacteria that may support gut health. Higher levels are linked to better blood sugar control and the use of prebiotics, while lower levels are associated with obesity and metabolic issues."
+  "Proteobacteria" = "Proteobacteria is a diverse bacterial phylum that includes many species linked to inflammation and metabolic disorders. Higher levels have been associated with type 2 diabetes, obesity, and insulin resistance, while lower levels are linked to fiber-rich diets and better blood sugar control."
 )
+
+species_explanation <- "This chart shows the distribution of bacterial species in your gut microbiome. The top 20 most abundant species are shown individually, with the remaining species grouped as 'Other species'.\n\n"
+
 taxa_explanations <- list(
   "Bacteroides" = "Bacteroides species are common gut bacteria. Lower levels are linked to obesity and poor blood sugar control, while higher levels are associated with weight loss and dietary changes.",
   "Parabacteroides" = "Higher levels of Parabacteroides are linked to poor blood sugar control and high-fat diets, while lower levels have been found in people responding well to diabetes medication.",
@@ -44,23 +55,208 @@ taxa_explanations <- list(
   "Dorea formicigenerans" = "Dorea formicigenerans is a gut bacterium that has been associated with metabolic health. Higher levels of Dorea formicigenerans are linked to lower body weight and better metabolic profiles. This bacterium is involved in the fermentation of dietary fiber, producing short-chain fatty acids like butyrate, which have anti-inflammatory properties and support gut health."
 )
 
-introduction <- "The gut microbiome is made up of trillions of microorganisms, including bacteria, viruses, fungi, and archaea, that live in the digestive tract. These microbes help with digestion, support the immune system, and influence metabolism. The balance of these microorganisms can be affected by diet, lifestyle, and genetics.\n\n
-This report presents an analysis of your gut microbiome using shotgun sequencing, a high-resolution method that identifies both well-known and previously uncharacterized microbes. By comparing your microbial composition to that of other study participants, we aim to better understand how gut bacteria relate to health. However, since the other participants are not necessarily healthy, differences in your results should not be overinterpreted.\n\n"
+readmore <- "Would you like to learn more about the gut microbiome? Here are some helpful resources:\n\n
+- \\href{https://my.clevelandclinic.org/health/body/25201-gut-microbiome}{Background} – Overview of the gut microbiome by the Cleveland Clinic.\n
+- \\href{https://asm.org/resource-pages/microbiome-resources}{Information} on the gut microbiome by the American Society for Microbiology.\n
+- \\href{https://patient.gastro.org/probiotics/}{Guide on probiotic use} by the American Gastroenterological Association.\n
+- \\href{https://nutritionsource.hsph.harvard.edu/microbiome/}{Diet and the microbiome} – Resource from the Harvard T.H. Chan School of Public Health.\n\n\n"
 
 disclaimer <- "This report is based on a single stool sample, which provides only a snapshot of your gut microbiome at one point in time. The composition of your microbiome can change due to factors such as diet, medication, and lifestyle. Therefore, these results should be interpreted with caution and should not be considered a definitive assessment of your gut health. If you have any health concerns, please consult a medical professional."
+```
+
+```{r functions, include = FALSE}
+create_infobox <- function(content, title = "Key Findings") {
+  # Escape quotes in title if present
+  title <- gsub('"', '\\"', title)
+  cat("\\begin{tcolorbox}[",
+      "colback=lightgray, ",
+      "colframe=maincolor, ",
+      "boxrule=1pt, ",
+      "arc=2mm, ",
+      "boxsep=5pt, ",
+      "left=10pt, ",
+      "right=10pt, ",
+      "title={", title, "}, ",  # Note the curly braces around title
+      "fonttitle=\\sffamily\\bfseries\\color{white}",
+      "]\n", sep="")
+  cat(content)
+  cat("\n\\end{tcolorbox}\n\n")
+}
+
+create_warningbox <- function(content, title = "Important Note") {
+  # Escape quotes in title if present
+  title <- gsub('"', '\\"', title)
+  
+  cat("\\begin{tcolorbox}[",
+      "colback=white, ",
+      "colframe=accentcolor, ",
+      "boxrule=1pt, ",
+      "arc=2mm, ",
+      "boxsep=5pt, ",
+      "left=10pt, ",
+      "right=10pt, ",
+      "title={", title, "}, ",  # Note the curly braces around title
+      "fonttitle=\\sffamily\\bfseries\\color{white}",
+      "]\n", sep="")
+  cat(content)
+  cat("\n\\end{tcolorbox}\n\n")
+}
+
+# Add this helper function to your setup
+create_side_by_side <- function(left_content, plot_filename, caption = NULL) {
+  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat(left_content)  # This will be the output from capture.output()
+  cat("\\end{minipage}\\hfill\n")
+  
+  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{figure}[H]\n")
+  cat("\\centering\n")
+  cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
+  if (!is.null(caption)) {
+    cat("\\caption{\\textit{", caption, "}}\n", sep="")
+  }
+  cat("\\end{figure}\n")
+  cat("\\end{minipage}\n\n")
+  
+  cat("\\vspace{1em}\n\n")
+}
+
+capture_infobox <- function(content, title) {
+  temp <- capture.output({
+    create_infobox(content, title)
+  })
+  paste(temp, collapse="\n")
+}
+
+# Define a custom theme function for consistent plotting
+theme_microbiome_report <- function(base_size = 16) {
+  th <- theme_minimal(base_size = base_size) +
+    theme(
+      # Font
+      text = element_text(family = "Montserrat"),
+
+      # General plot styling
+      plot.margin = margin(10, 15, 10, 10),
+      plot.background = element_rect(fill = "white", color = NA),
+      
+      # Panel
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_line(color = "gray85", linewidth = 0.6),
+      panel.grid.minor = element_blank(),
+      panel.background = element_rect(fill = "white", color = NA),
+      panel.border = element_rect(color = "gray85", fill = NA, linewidth = 0.5),
+      
+      # Axes
+      axis.title = element_text(size = base_size + 2, face = "bold", color = "gray20"),
+      axis.title.x = element_text(margin = margin(t = 10)),
+      axis.title.y = element_text(margin = margin(r = 10)),
+      axis.text = element_text(size = base_size + 2, color = "gray20"),
+      axis.text.x = element_text(margin = margin(t = 5)),
+      axis.text.y = element_blank(),
+      axis.ticks.x = element_line(color = "gray85")
+    )  
+  return(th)
+}
+
+# Define a consistent color palette
+microbiome_colors <- list(
+  participant = "#E18727",  # Orange for participant data
+  population = "#0072B5FF",   # Blue for population data
+  background = "grey95",      # Light grey for background elements
+  positive = "#32854E",       # Green for positive comparisons
+  negative = "#BC3C29"        # Red for negative comparisons
+)
+```
+
+```{r setup, include=FALSE}
+# Silently load required packages
+suppressPackageStartupMessages({
+  library(dplyr)      # For data manipulation
+  library(ggplot2)    # For plotting
+  library(stringr)    # For string manipulation
+  library(forcats)    # For factor manipulation
+  library(tidyr)      # For pivot_longer and pivot_wider
+  library(vegan)      # For diversity indices
+})
 
 # Load data
 abdata <- read.delim(params$abundance_file_path)
 
+# Get phylum-level data from abdata
+N <- 4
+pie_phylum <- abdata %>%
+  dplyr::filter(rank == "P") %>%
+  mutate(name = trimws(name)) %>%
+  select(name, contains(params$participant_id))
+colnames(pie_phylum) <- c("name", "Percentage")
+other_phyl_pct <- pie_phylum %>% arrange(desc(Percentage)) %>% slice((N+1):n()) %>% 
+                      summarise(Percentage = sum(Percentage)) %>% pull(Percentage)
+pie_phylum <- pie_phylum %>%
+  arrange(desc(Percentage)) %>%
+  mutate(
+    group = ifelse(row_number() <= N, name, "Other species"),
+    label = ifelse(row_number() <= N, 
+                  paste0(name, " (", round(Percentage, 1), "%)"),
+                  paste0("Other groups (", round(other_phyl_pct, 1), "%)"))
+  ) %>%
+  group_by(group, label) %>%
+  summarise(Percentage = sum(Percentage), .groups = "drop") %>%
+  arrange(desc(Percentage)) %>%
+  mutate(label = fct_inorder(label), 
+          label = fct_relevel(label, paste0("Other groups (", round(other_phyl_pct, 1), "\\%)"), after = 4L))
+
+# Get species-level data from abdata
+N <- 20
+pie_species <- abdata %>%
+  dplyr::filter(rank == "S") %>%
+  mutate(name = trimws(name)) %>%
+  select(name, contains(params$participant_id))
+colnames(pie_species) <- c("name", "Percentage")
+other_spec_pct <- pie_species %>% arrange(desc(Percentage)) %>% slice((N+1):n()) %>% 
+                      summarise(Percentage = sum(Percentage)) %>% pull(Percentage)
+pie_species <- pie_species %>%
+  arrange(desc(Percentage)) %>%
+  mutate(
+    group = ifelse(row_number() <= N, name, "Other species"),
+    label = ifelse(row_number() <= N, 
+                  paste0(name, " (", round(Percentage, 1), "%)"),
+                  paste0("Other species (", round(other_spec_pct, 1), "%)"))
+  ) %>%
+  group_by(group, label) %>%
+  summarise(Percentage = sum(Percentage), .groups = "drop") %>%
+  arrange(desc(Percentage)) %>%
+  mutate(label = fct_inorder(label), 
+          label = fct_relevel(label, paste0("Other species (", round(other_spec_pct, 1), "%)"), after = 20L))
+
+# Calculate diversity indices
+abdiv <- abdata %>% dplyr::filter(rank == "S") %>% 
+                    select(contains("report_bracken")) %>%
+                    rename_at(c(colnames(.)[which(str_detect(colnames(.), 'report_bracken'))]), 
+                              ~str_remove(str_remove(.x, "Sample"), '.kraken2.report_bracken'))
+abdivflip <- as.data.frame(t(as.matrix(abdiv)))
+shannon <- vegan::diversity(abdivflip, index = 'shannon')
+df_shan <- data.frame(ID = names(shannon), `Shannon index` = shannon)
+specrich <- vegan::specnumber(abdivflip)
+df_spec <- data.frame(ID = names(specrich), `Species richness` = specrich)
+dfdiv <- left_join(df_shan, df_spec, by = "ID") %>%
+                          rename(`Shannon index` = Shannon.index, `Species richness` = Species.richness)
+div_medians <- dfdiv %>% summarise(across(c(`Shannon index`, `Species richness`), 
+                            list(median = ~median(.x, na.rm = TRUE), max = ~max(.x, na.rm = TRUE)))) %>% 
+                          pivot_longer(., cols = 1:ncol(.), 
+                                            names_sep = "_",
+                                            names_to = c("metric", "var"), 
+                                            values_to = "outcome") %>%
+                          pivot_wider(., id_cols = var, names_from = metric, values_from = outcome)
+
 # Select variables
 namelist <- c(names(main_groups), names(taxa_explanations))
-abdata_filt <- abdata %>% 
+abdata2 <- abdata %>% 
   mutate(name = trimws(name)) %>%
-  filter(name %in% namelist) %>%
+  dplyr::filter(name %in% namelist) %>%
   mutate(rank = fct_relevel(rank, "D", "D1", "P", "C", "O", "F", "G", "S")) %>%
   arrange(rank)
-rownames(abdata_filt) <- abdata_filt$name
-abdata_filt <- abdata_filt %>% select(contains("report_bracken")) %>%
+rownames(abdata2) <- abdata2$name
+abdata_filt <- abdata2 %>% select(contains("report_bracken")) %>%
                               rename_at(c(colnames(.)[which(str_detect(colnames(.), 'report_bracken'))]), 
                               ~str_remove(str_remove(.x, params$sample_prefix), '.kraken2.report_bracken'))
 abdata_key <- abdata_filt %>% filter(rownames(.) %in% names(main_groups))
@@ -68,129 +264,314 @@ abdata_spec <- abdata_filt %>% filter(rownames(.) %in% names(taxa_explanations))
 
 # Calculate the population medians per variable
 abflip <- as.data.frame(t(as.matrix(abdata_filt)))
-abundance_medians <- abflip %>% summarise(across(everything(), 
+abundance_medians <- abflip %>% summarise(across(c(names(main_groups), names(taxa_explanations)), 
                                   list(median = ~median(.x, na.rm = TRUE), 
                                         max = ~max(.x, na.rm = TRUE)))
                                 ) %>% pivot_longer(., cols = 1:ncol(.), names_sep = "_",
                                                   names_to = c("tax", "var"), 
                                                   values_to = "outcome") %>%
                                       pivot_wider(., id_cols = var, names_from = tax, values_from = outcome)
+
+
+
 ```
 
-```{r report, echo=FALSE, results='asis', warning=FALSE}
-
-participant_data1 <- abdata_spec %>% select(all_of(params$participant_id))
-specificbacteria <- as.data.frame(t(as.matrix(participant_data1)))
-
-participant_data2 <- abdata_key %>% select(all_of(params$participant_id))
-keygroups <- as.data.frame(t(as.matrix(participant_data2)))
-
+```{r intro, echo=FALSE, results='asis', warning=FALSE}
 cat("\\subsection*{Introduction}\n\n")
 cat(introduction)
 
+cat("\\newpage\n\n")
+```
+
+```{r diversity, echo=FALSE, results='asis', warning=FALSE}
+participant_data3 <- dfdiv %>% filter(ID == params$participant_id)
+
+cat("\\subsection*{Diversity of bacteria}\n\n")
+cat(diversity)
+cat("\n\n")
+for (metric in c("Shannon index", "Species richness")) {
+    med <- div_medians[[which(div_medians$var == "median"), metric]]
+    upper <- div_medians[[which(div_medians$var == "max"), metric]]
+    
+    # Format the values properly
+    if(metric == "Shannon index") {
+      participant_value <- format(round(participant_data3[[metric]], 2), nsmall = 2)
+      median_value <- format(round(med, 2), nsmall = 2)
+    } else {
+      participant_value <- as.character(participant_data3[[metric]])
+      median_value <- as.character(med)
+    }
+ 
+    # Add color formatting based on comparison
+    comparison <- participant_data3[[metric]] > med
+
+    # Create the result text with LaTeX bold formatting and conditional colors
+    div_result <- paste0(
+      "The median level of ", metric, " in this population was \\textbf{", median_value, "}, ",
+      "the level in your sample was ",
+      ifelse(comparison, 
+            "\\textbf{\\textcolor{goodcolor}{", 
+            "\\textbf{\\textcolor{warncolor}{"),
+      participant_value, 
+      "}}. "
+    )
+
+    div_text <- paste0(div_explanations[[metric]], div_result, "\n\n")
+    infobox <- capture_infobox(div_text, metric)
+
+    midpoint <- 0.5 * upper
+    textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
+    textplacing2 <- case_when(participant_data3[[metric]] < midpoint ~ 0, .default = 1)
+    # Create the plot
+    dir.create("figures", showWarnings = FALSE)
+    pl <- ggplot(participant_data3) +
+        geom_rect(aes(xmin = 0.7, xmax = 1.3, ymin = 0, ymax = upper[[1]]),
+                  fill = microbiome_colors$background, color = NA, alpha = 0.5) +
+        # Population median lollipop
+        geom_segment(aes(x = 1, xend = 1, y = 0, yend = med[[1]]),
+                     color = microbiome_colors$population, linewidth = 2, alpha = 0.7) +
+        geom_point(aes(x = 1, y = med[[1]]), 
+                   color = microbiome_colors$population, size = 10, alpha = 0.9) +
+        # Participant value lollipop
+        geom_segment(aes(x = 1, xend = 1, y = 0, yend = .data[[metric]]),
+                     color = microbiome_colors$participant, linewidth = 2, alpha = 1.0) +
+        geom_point(aes(x = 1, y = .data[[metric]]), 
+                   color = microbiome_colors$participant, size = 10, alpha = 1.0) +
+        # Annotations with arrows
+        geom_segment(aes(x = 1.15, xend = 1.05, y = med[[1]], yend = med[[1]]), 
+                     arrow = arrow(length = unit(0.3, "cm")), 
+                     color = "black", linewidth = 0.8, alpha = 0.8) +
+        geom_segment(aes(x = 0.85, xend = 0.95, y = .data[[metric]], yend = .data[[metric]]), 
+                     arrow = arrow(length = unit(0.3, "cm")), 
+                     color = "black", linewidth = 0.8, alpha = 0.8) +
+        # Text labels (horizontal, no angle)
+        annotate("text", x = 1.2, y = med[[1]], label = "Population median", 
+                 color = microbiome_colors$population, size = 7, 
+                 hjust = textplacing1, fontface = "bold", family = "Montserrat") +
+        annotate("text", x = 0.8, y = participant_data3[[metric]], label = "You", 
+                 color = microbiome_colors$participant, size = 7, 
+                 hjust = textplacing2, fontface = "bold", family = "Montserrat") +
+        # Scales and theme
+        scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
+        theme_microbiome_report() +
+        labs(y = "Level", x = "") +
+        coord_flip()
+    plot_filename <- paste0("figures/report_", metric, ".png")
+    ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
+
+      create_side_by_side(infobox, plot_filename)
+}
+cat("\\newpage\n\n")
+```
+
+```{r phyla, echo=FALSE, results='asis', warning=FALSE}
 cat("\\subsection*{Key groups of bacteria}\n\n")
+
+phylum_colors <- c("#FF6F00FF", "#C71000FF", "#008EA0FF", "#8A4198FF", "grey")
+pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
+          geom_bar(stat = "identity", width = 1) +
+          coord_polar(theta = "y") +
+          scale_fill_manual(values = phylum_colors) +
+          labs(title = "", fill = "") +
+          theme_void() +
+          theme(legend.position = "right", legend.text = element_text(size = 14),
+                text = element_text(family = "Montserrat"))
+ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 8, height = 4)
+
+create_side_by_side(phylum_explanation, "figures/report_piephylum.png")
+
+participant_data2 <- abdata_key %>% select(all_of(params$participant_id))
+keygroups <- as.data.frame(t(as.matrix(participant_data2)))
 for (taxon in names(keygroups)) {
   # Generate plot data
-  med <- abundance_medians[which(abundance_medians$var == "median"), taxon]
-  upper <- abundance_medians[which(abundance_medians$var == "max"), taxon]
+  med <- abundance_medians[which(abundance_medians$var == "median"), taxon][[1]]
+  upper <- abundance_medians[which(abundance_medians$var == "max"), taxon][[1]]
   pt <- keygroups[[taxon]]
 
-  cat("\\subsection*{", taxon, "}\n\n", sep = "")
-  taxa_result <- str_c("The median level of ", taxon, " in this population was **", med, "\\%**,",
-                        " the level in your sample was **", pt, "\\%**. ")
-  taxa_text <- str_c(main_groups[[taxon]], taxa_result)
-  cat(taxa_text, "\n\n")
+  # Format numbers
+  pt_formatted <- format(round(pt, 2), nsmall = 2)
+  med_formatted <- format(round(med, 2), nsmall = 2)
+  comparison <- pt > med
+  formatted_value <- ifelse(comparison,
+                          paste0("\\textcolor{goodcolor}{\\textbf{", pt_formatted, "\\%}}"),
+                          paste0("\\textcolor{warncolor}{\\textbf{", pt_formatted, "\\%}}"))
+
+  # Create the result text
+  taxa_result <- paste0(
+    "The median level of ", taxon, " in this population was \\textbf{", med_formatted, "\\%}, ",
+    "the level in your sample was ", formatted_value, ". "
+  )
+  taxa_text <- paste0(main_groups[[taxon]], " ", taxa_result)
+  infobox <- capture_infobox(taxa_text, taxon)
 
   midpoint <- 0.5 * upper
   textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
   textplacing2 <- case_when(pt < midpoint ~ 0, .default = 1)
   # Create the plot
   dir.create("figures", showWarnings = FALSE)
-  pl <- ggplot(keygroups, aes(x = "", y = .data[[taxon]])) +
-      geom_bar(aes(y = upper[[1]]), stat = "identity", fill = "grey90", width = 0.5) +
-      geom_bar(stat = "identity", fill = "#E18727FF", width = 0.5) +
-      geom_segment(aes(x = 1.30, xend = 0.75, y = med[[1]], yend = med[[1]]), 
-                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
-      geom_segment(aes(x = 1.4, xend = 0.60, y = .data[[taxon]], yend = .data[[taxon]]), 
-                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
-      annotate("text", x = 1.35, y = med[[1]], label = "Population median", 
-                color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
-      annotate("text", x = 1.45, y = pt, label = "You", 
-                color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
-      geom_text(aes(x = 0.7, y = med[[1]], label = paste0(med[[1]])), 
-                    color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
-      geom_text(aes(x = 0.55, y = pt, label = paste0(pt)), 
-                    color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
-      scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
-      theme_minimal(base_size = 12) +
-      theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-            axis.title = element_text(size = 12),
-            plot.margin = margin(5, 15, 5, 5),
-            panel.border = element_rect(color = "black", fill = NA, size = 1)) +
-      labs(y = "Levels in %", x = "") +
-      coord_flip()
-  plot_filename <- paste0("figures/report_", taxon, ".png")
-  ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
+  pl <- ggplot() +
+    # Adding a background rect
+    geom_rect(aes(xmin = 0.7, xmax = 1.3, ymin = 0, ymax = upper),
+              fill = microbiome_colors$background, color = NA, alpha = 0.5) +
+    
+    # Population median lollipop
+    geom_segment(aes(x = 1, xend = 1, y = 0, yend = med),
+                 color = microbiome_colors$population, linewidth = 2, alpha = 0.7) +
+    geom_point(aes(x = 1, y = med), 
+               color = microbiome_colors$population, size = 10, alpha = 0.9) +
+               
+    # Participant value lollipop
+    geom_segment(aes(x = 1, xend = 1, y = 0, yend = pt),
+                 color = microbiome_colors$participant, linewidth = 2, alpha = 1.0) +
+    geom_point(aes(x = 1, y = pt), 
+               color = microbiome_colors$participant, size = 10, alpha = 1.0) +
+               
+    # Annotations with arrows
+    geom_segment(aes(x = 1.2, xend = 1.05, y = med, yend = med), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+    geom_segment(aes(x = 0.8, xend = 0.95, y = pt, yend = pt), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+                 
+    # Text labels
+    annotate("text", x = 1.25, y = med, 
+             label = "Population median", color = microbiome_colors$population, 
+             size = 7, hjust = textplacing1, fontface = "bold", family = "Montserrat") +
+    annotate("text", x = 0.75, y = pt, 
+             label = "You", color = microbiome_colors$participant, 
+             size = 7, hjust = textplacing2, fontface = "bold", family = "Montserrat") +
+             
+    # Scales and theme
+    scale_y_continuous(limits = c(0, upper), expand = c(0, 0), n.breaks = 5) +
+    theme_microbiome_report() +
+    labs(y = "Levels in %", x = "") +
+    coord_flip()
+    plot_filename <- paste0("figures/report_", taxon, ".png")
+    ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
 
-  cat("\\begin{figure}[H]\n")  # Use [H] to anchor the figure
-  cat("\\centering\n")
-  cat("\\includegraphics[width=8cm]{", plot_filename, "}\n", sep = "")
-  cat("\\caption{\\textit{Levels of ", taxon, "}}\n", sep = "")
-  cat("\\end{figure}\n\n")
+  create_side_by_side(infobox, plot_filename)
 }
+cat("\\newpage\n\n")
+```
 
+```{r species, echo=FALSE, results='asis', warning=FALSE}
 cat("\\subsection*{Specific bacteria}\n\n")
+cat(species_explanation)
+
+species_colors <- c("#FF6F00", "#EA4C00", "#D52900", "#B21D10", "#684B4B", "#1F7A86", "#1D7D9E",
+"#4F619B", "#824598", "#7A5B98", "#697A98", "#629294", "#9F7F76", "#DC6D59",
+"#EB7560", "#BEA098", "#90CAD0", "#A4C5D2", "#D1ADBD", "#FF95A8", "grey")
+pie2 <- ggplot(pie_species, aes(x = "", y = Percentage, fill = label)) +
+          geom_bar(stat = "identity", width = 1) +
+          coord_polar(theta = "y") +
+          scale_fill_manual(values = species_colors) +
+          guides(fill = guide_legend(ncol = 1)) +
+          labs(title = "", fill = "") +
+          theme_void() +
+          theme(legend.position = "right", legend.text = element_text(size = 11),
+                text = element_text(family = "Montserrat"))
+ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 8, height = 8)
+
+cat("\\begin{figure}[H]\n")
+cat("\\centering\n")
+cat("\\includegraphics[height=15cm]{figures/report_piespecies.png}\n")
+cat("\\end{figure}\n\n")
+
+participant_data1 <- abdata_spec %>% select(all_of(params$participant_id))
+specificbacteria <- as.data.frame(t(as.matrix(participant_data1)))
+# Define pseudocount for log transformation
+pseudocount <- 0.001
+
 for (taxon in names(specificbacteria)) {
-  # Generate plot data
-  med <- abundance_medians[which(abundance_medians$var == "median"), taxon]
-  upper <- abundance_medians[which(abundance_medians$var == "max"), taxon]
+  # Get data points and add pseudocount for log scale
   pt <- specificbacteria[[taxon]]
+  med <- as.numeric(abundance_medians[which(abundance_medians$var == "median"), taxon])
+  upper <- as.numeric(abundance_medians[which(abundance_medians$var == "max"), taxon])
+    
+  # Format numbers
+  pt_formatted <- format(round(pt, 2), nsmall = 2)
+  med_formatted <- format(round(med, 2), nsmall = 2)
+  comparison <- pt > med
 
-  cat("\\subsection*{", taxon, "}\n\n", sep = "")
-  taxa_result <- str_c("The median level of ", taxon, " in this population was **", med, "%**,",
-                        " the level in your sample was **", pt, "%**. ")
-  taxa_text <- str_c(taxa_explanations[[taxon]], taxa_result)
-  cat(taxa_text, "\n\n")
+  # Properly escape percent signs with double backslashes
+  formatted_value <- ifelse(comparison,
+                        paste0("\\textcolor{goodcolor}{\\textbf{", pt_formatted, "\\%}}"),
+                        paste0("\\textcolor{warncolor}{\\textbf{", pt_formatted, "\\%}}"))
 
-  midpoint <- 0.5 * upper
-  textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
-  textplacing2 <- case_when(pt < midpoint ~ 0, .default = 1)
-  # Create the plot
+  # Create the result text with properly escaped percent signs
+  taxa_result <- paste0(
+    "The median level of ", taxon, " in this population was \\textbf{", med_formatted, "\\%}, ",
+    "the level in your sample was ", formatted_value, ". "
+  )
+  taxa_text <- paste0(taxa_explanations[[taxon]], " ", taxa_result)
+  infobox <- capture_infobox(taxa_text, taxon)
+  
+  # Create plot
   dir.create("figures", showWarnings = FALSE)
-  pl <- ggplot(specificbacteria, aes(x = "", y = .data[[taxon]])) +
-      geom_bar(aes(y = upper[[1]]), stat = "identity", fill = "grey90", width = 0.5) +
-      geom_bar(stat = "identity", fill = "#E18727FF", width = 0.5) +
-      geom_segment(aes(x = 1.30, xend = 0.75, y = med[[1]], yend = med[[1]]), 
-                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
-      geom_segment(aes(x = 1.4, xend = 0.60, y = .data[[taxon]], yend = .data[[taxon]]), 
-                    arrow = arrow(length = unit(0.3, "cm")), color = "black", linewidth = 1, alpha = 0.4) +
-      annotate("text", x = 1.35, y = med[[1]], label = "Population median", 
-                color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
-      annotate("text", x = 1.45, y = pt, label = "You", 
-                color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
-      geom_text(aes(x = 0.7, y = med[[1]], label = paste0(med[[1]])), 
-                    color = "#0072B5FF", size = 4, hjust = textplacing1, fontface = "bold") +
-      geom_text(aes(x = 0.55, y = pt, label = paste0(pt)), 
-                    color = "#E18727FF", size = 4, hjust = textplacing2, fontface = "bold") +
-      scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
-      theme_minimal(base_size = 12) +
-      theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-            axis.title = element_text(size = 12),
-            plot.margin = margin(5, 15, 5, 5),
-            panel.border = element_rect(color = "black", fill = NA, size = 1)) +
-      labs(y = "Levels in %", x = "") +
-      coord_flip()
+  
+  # Calculate positions for text labels
+  log_midpoint <- sqrt((pseudocount) * (upper + pseudocount))
+  textplacing1 <- case_when(med < log_midpoint ~ 0, .default = 1)
+  textplacing2 <- case_when(pt < log_midpoint ~ 0, .default = 1)
+  
+  # Create the plot
+  pl <- ggplot() +
+    # Background reference area
+    geom_rect(aes(xmin = 0.7, xmax = 1.3, ymin = pseudocount, ymax = upper + pseudocount),
+              fill = microbiome_colors$background, color = NA, alpha = 0.5) +
+              
+    # Population median lollipop
+    geom_segment(aes(x = 1, xend = 1, y = pseudocount, yend = med + pseudocount),
+                 color = microbiome_colors$population, linewidth = 2, alpha = 0.7) +
+    geom_point(aes(x = 1, y = med + pseudocount), 
+               color = microbiome_colors$population, size = 10, alpha = 0.9) +
+               
+    # Participant value lollipop
+    geom_segment(aes(x = 1, xend = 1, y = pseudocount, yend = pt + pseudocount),
+                 color = microbiome_colors$participant, linewidth = 2, alpha = 1.0) +
+    geom_point(aes(x = 1, y = pt + pseudocount), 
+               color = microbiome_colors$participant, size = 10, alpha = 1.0) +
+               
+    # Annotations with arrows
+    geom_segment(aes(x = 1.2, xend = 1.05, y = med + pseudocount, yend = med + pseudocount), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+    geom_segment(aes(x = 0.8, xend = 0.95, y = pt + pseudocount, yend = pt + pseudocount), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+                 
+    # Text labels
+    annotate("text", x = 1.25, y = med + pseudocount, 
+             label = "Population median", color = microbiome_colors$population, 
+             size = 7, hjust = textplacing1, fontface = "bold", family = "Montserrat") +
+    annotate("text", x = 0.75, y = pt + pseudocount, 
+             label = "You", color = microbiome_colors$participant, 
+             size = 7, hjust = textplacing2, fontface = "bold", family = "Montserrat") +
+             
+    # Scale and theme  
+    scale_y_log10(
+      limits = c(pseudocount, max(upper + pseudocount)),
+      expand = c(0, 0),
+      n.breaks = 5,
+      labels = function(x) paste0(round(x - pseudocount, 2), "%")
+    ) +
+    theme_microbiome_report() +
+    labs(y = "Levels in %", x = "") +
+    coord_flip()
+  
+  # Save and include the plot
   plot_filename <- paste0("figures/report_", taxon, ".png")
   ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
-
-  cat("\\begin{figure}[H]\n") # H to anchor figure
-  cat("\\centering\n")
-  cat("\\includegraphics[width=8cm]{", plot_filename, "}\n", sep = "")
-  cat("\\caption{\\textit{Levels of ", taxon, "}}\n", sep = "")
-  cat("\\end{figure}\n\n")
+  
+  create_side_by_side(infobox, plot_filename)
 }
 
-cat("\\subsection*{Disclaimer}\n\n")
-cat(disclaimer)
+```
+```{r conclusions, echo=FALSE, results='asis', warning=FALSE}
+cat("\\subsection*{Further reading}\n\n")
+cat(readmore)
+cat("\\vspace{1em}\n\n")
+cat(create_warningbox(disclaimer, "Disclaimer"))
 
 ```
