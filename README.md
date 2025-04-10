@@ -53,6 +53,7 @@ The following R packages will be automatically installed if missing:
 - optparse: For command line argument parsing
 - forcats: For factor level manipulation
 - tidyr: For data reshaping
+- vegan: For diversity indices
 
 **Test packages (only needed when running tests):**
 - testthat: For unit testing
@@ -63,7 +64,7 @@ All required R packages are automatically installed when first running the tool.
 
 ```r
 # Install core packages
-install.packages(c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr"))
+install.packages(c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr", "vegan"))
 
 # Install test packages (optional)
 install.packages(c("testthat", "mockery", "R6"))
