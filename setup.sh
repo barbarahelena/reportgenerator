@@ -79,3 +79,5 @@ fi
 echo "Note: Required R packages will be checked when the tool is run."
 echo "Note: On HPC systems, you may need to load required modules:"
 echo "  module load R quarto"
+echo "or alternatively, activate a mamba environment with the required packages:"
+echo "  mamba activate your_environment_name"
