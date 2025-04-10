@@ -1,7 +1,7 @@
 # File: /generate-reports-cli/run.R
 
 # Check required packages and load silently
-required_packages <- c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr")
+required_packages <- c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr", "vegan")
 for (pkg in required_packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     cat(paste("Package", pkg, "is required but not installed.\n"))
