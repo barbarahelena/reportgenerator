@@ -1,0 +1,630 @@
+---
+format:
+  pdf:
+    include-in-header: preamble_arabic.tex
+    pdf-engine: lualatex
+    documentclass: article
+    urlcolor: maincolor
+    linkcolor: maincolor
+    number-sections: false
+    dir: rtl
+params:
+  abundance_file_path: NULL
+  participant_id: NULL
+  sample_prefix: NULL
+title: |
+  ![](elinav_logo.png){width=5cm}
+  
+  \arabicfont{تقرير تحليل ميكروبيوم}
+  
+  \arabicfont{رقم المشارك}: `r params$participant_id`
+---
+
+```{r texts, include=FALSE}
+# Define all the text content in Arabic
+introduction <- "\\arabicfont{يتكون ميكروبيوم الأمعاء من تريليونات الكائنات الحية الدقيقة، بما في ذلك البكتيريا والفيروسات والفطريات والعتائق، التي تعيش في السبيل الهضمي. وتساعد هذه الميكروبات في عملية الهضم، وتدعم جهاز المناعة، وتؤثر على عملية التمثيل الغذائي. يمكن أن يتأثر توازن هذه الكائنات الحية الدقيقة بالنظام الغذائي ونمط الحياة والجينات.\n\n
+يقدم هذا التقرير تحليلًا لـ ميكروبيوم الأمعاء لديك باستخدام تحديد التوالي بالتشظية، وهي طريقة عالية الدقة تحدد الميكروبات المعروفة وغير المصنفة سابقًا. ومن خلال مقارنة التركيب الميكروبي لديك مع تركيب المشاركين الآخرين في الدراسة، فإننا نهدف إلى فهم طريقة ارتباط بكتيريا الأمعاء بالصحة فهمًا أفضل.\n\n
+في الصفحة التالية، سترى أولًا نظرة عامة على التنوع البكتيري في عينتك، متبوعًا بالمجموعات البكتيرية الرئيسية الموجودة عادةً في أمعاء الإنسان. وأخيرًا، سنسلط الضوء على البكتيريا المحددة الموجودة في الميكروبيوم لديك، مع قراءة إضافية في النهاية إذا كنت ترغب في معرفة المزيد.}"
+
+diversity <- "\\arabicfont{يشير التنوع الميكروبي إلى تنوع البكتيريا المختلفة والكائنات الحية الدقيقة الأخرى الموجودة في الأمعاء. وغالبًا ما يرتبط التنوع الأعلى بصحة أفضل، في حين يرتبط التنوع المنخفض بأمراض معينة. يمكن للعديد من العوامل، مثل النظام الغذائي والأدوية ونمط الحياة، أن تؤثر على التنوع الميكروبي.}\n\n"
+
+div_explanations <- list(
+  "Shannon index" = "مُعامل شانون هو مقياس للتنوع الميكروبي الذي يأخذ في الاعتبار عدد الأنواع المختلفة ومدى توزيعها بالتساوي. يشير معامل شانون الأعلى إلى ميكروبيوم أكثر تنوعًا وتوازنًا، وهو ما يرتبط غالبًا بصحة أفضل. ",
+  "Species richness" = "يشير ثراء الأنواع إلى عدد الأنواع الميكروبية المختلفة الموجودة في الأمعاء. ويشير ثراء الأنواع الأعلى بشكل عام إلى تنوع الميكروبيوم، الذي يرتبط غالبًا بمرونة أفضل وصحة أفضل. "
+)
+
+phylum_explanation <- "\\arabicfont{يوضح هذا المخطط البياني توزيع المجموعات (الشُعب) البكتيرية الكبرى في ميكروبيوم الأمعاء لديك. وتظهر المجموعات الست العليا الأكثر شيوعًا على نحو منفرد، مع تجميع البكتيريا المتبقية تحت عنوان \"شُعب أخرى\".}\n\n"
+
+main_groups <- list(
+  "Bacteroidota" = "باكتيروديتس واحدة من الشُعب البكتيرية السائدة في الأمعاء. وقد ارتبطت المستويات الأكثر انخفاضًا بالسمنة وارتفاع نسبة الدهون في الجسم وضعف التحكم في نسبة السكر في الدم، في حين ترتبط المستويات الأعلى بعملية التمثيل الغذائي الأكثر صحة والاستجابة المحسنة للأنظمة الغذائية لإنقاص الوزن. تشير بعض الدراسات إلى تأثيرات مختلطة أو معاكسة حسب العوامل الفردية.",
+  "Bacillota" = "فيرميكيوتس شُعبة بكتيرية رئيسية أخرى. وقد ارتبطت المستويات الأعلى منها بالسمنة والأنظمة الغذائية الغنية بالدهون والسكر. ترتبط المستويات الأكثر انخفاضًا بتحسن عملية التمثيل الغذائي، وانخفاض الكوليسترول، وتحسين صحة الأمعاء.",
+  "Pseudomonadota" = "بروتيوباكتيريا شعبة بكتيرية متنوعة تشمل العديد من الأنواع المرتبطة بالالتهابات واضطرابات التمثيل الغذائي. وقد ارتبطت المستويات الأعلى بمرض السكري من النوع 2 والسمنة ومقاومة الأنسولين، في حين ترتبط المستويات الأكثر انخفاضًا بالأنظمة الغذائية الغنية بالألياف وتحسين التحكم في نسبة السكر في الدم."
+)
+
+species_explanation <- "\\arabicfont{يوضح هذا المخطط البياني توزيع الأنواع البكتيرية في ميكروبيوم الأمعاء لديك. وتعرض أعلى 20 نوعًا الأكثر وفرة على نحو منفرد، مع تجميع الأنواع المتبقية تحت عنوان \"أنواع أخرى\".}\n\n"
+
+taxa_explanations <- list(
+  "Desulfovibrionaceae" = "لقد تم ربط المستويات الأعلى من ديسلفوفيبريوناسي، عائلة من البكتيريا المختزلة للكبريتات، بالعديد من النتائج الصحية السلبية. وتنتج هذه البكتيريا كبريتيد الهيدروجين، مركب يمكن أن يسهم في التهاب الأمعاء ويعطل وظيفة حاجز الأمعاء. ترتبط المستويات الأعلى من ديسلفوفيبريوناسي بضعف التحكم في نسبة السكر في الدم ومقاومة الأنسولين والسمنة.",
+  "Parabacteroides" = "ترتبط المستويات المرتفعة من باراباكتيرويديز بضعف التحكم في نسبة السكر في الدم والأنظمة الغذائية عالية الدهون، في حين تم العثور على مستويات أقل في الأشخاص الذين يستجيبون بشكل جيد لأدوية السكري.",
+  "Faecalibacterium" = "تعتبر أنواع فيكالبكتريم، وخاصةً فيكالبكتريم براوسنيتزي، من البكتيريا المفيدة في الأمعاء. وتشتهر بقدرتها على إنتاج الأحماض الدهنية قصيرة السلسلة، مثل بوتيرات، التي تلعب دورًا في الحفاظ على صحة الأمعاء وتقليل الالتهاب. ترتبط المستويات الأعلى من فيكالبكتريم بمستويات أكثر انخفاضًا من الالتهاب الجهازي، وتحسين وظيفة حاجز الأمعاء، وتحسين التحكم في نسبة السكر في الدم.",
+  "Lactobacillus" = "لاكتوباسيلس نوع من البكتيريا الموجودة عادةً في أطعمة البروبيوتيك مثل الزبادي والكَفير. تدعم صحة الأمعاء عن طريق إنتاج حمض اللاكتيك، الذي يساعد في الحفاظ على درجة حموضة الأمعاء الصحية ويثبط مسببات الأمراض الضارة. وترتبط المستويات الأعلى من لاكتوباسيلس بتحسين وظيفة حاجز الأمعاء وإنقاص الوزن والهضم الأفضل.",
+  "Roseburia" = "روزبوريا نوع من البكتيريا المِعَوية المفيدة التي تلعب دورًا رئيسيًا في عملية التمثيل الغذائي للكربوهيدرات، وخاصةً في تخمير الألياف الغذائية. وتقوم هذه البكتيريا بتفكيك الكربوهيدرات المعقدة إلى أحماض دهنية قصيرة السلسلة، مثل بوتيرات، التي تعد مهمة لصحة الأمعاء وتقليل الالتهاب. ترتبط المستويات الأعلى من روزبوريا عادةً بالأنظمة الغذائية الغنية بالألياف، حيث إنها تزدهر على الألياف الغذائية غير القابلة للهضم الأخرى. لقد تم ربط زيادة وفرة روزبوريا بتحسين التحكم في نسبة السكر في الدم، وتحسين الحساسية للأنسولين، والصحة الأيضية بشكل عام.",
+  "Bacteroides" = "تعتبر أنواع باكتيرويديز من بكتيريا الأمعاء الشائعة. وترتبط المستويات الأكثر انخفاضًا بالسمنة وضعف التحكم في نسبة السكر في الدم، في حين ترتبط المستويات الأعلى بإنقاص الوزن والتغييرات الغذائية.",
+  "Prevotella" = "ترتبط بريفوتيلا عادةً بالأنظمة الغذائية الغنية بالألياف وأنماط الأكل القائمة على النباتات. وغالبًا ما توجد المستويات الأعلى لدى الأفراد الذين يستهلكون الحبوب الكاملة والبقوليات والخضروات. تشير بعض الدراسات إلى أن ارتفاع نسبة بريفوتيلا إلى باكتيرويديز قد يكون مفيدًا للتمثيل الغذائي للجلوكوز، ولكن النتائج مختلطة.",
+  "Escherichia" = "تشمل الإشريكيَّة أنواع مفيدة وأنواع ضارة محتملة. في حين أن بعضها، مثل إشريكيَّة القولون، مهمة لصحة الأمعاء وإنتاج الفيتامينات، إلا أن البعض الآخر يمكن أن يرتبط بالتهاب الأمعاء والعدوى واضطرابات التمثيل الغذائي. يتأثر توازن أنواع الإشريكيَّة في الأمعاء بالنظام الغذائي والوظيفة المناعية.",
+  "Bifidobacterium" = "بيفيدوباكتيريوم نوع من بروبيوتيك معروف يلعب دورًا رئيسيًا في صحة الأمعاء. وترتبط المستويات الأعلى بتحسين الهضم وتعزيز وظيفة المناعة وتحسين تنظيم نسبة السكر في الدم. وغالبا ما توجد في الأفراد الذين يستهلكون الأطعمة المخمرة والألياف بريبايوتك.",
+  "Akkermansia muciniphila" = "أكيرمانسيا موسينيفيلا بكتيريا تنتمي إلى شُعبة فيروكوميكروبيا، المعروفة بدورها في الحفاظ على صحة الأمعاء. وتزدهر على مُوسين، مكون أساسي في طبقة المخاط التي تحمي بطانة الأمعاء، مما يساعد في دعم سلامة حاجز الأمعاء. لقد ارتبطت المستويات الأعلى من أكيرمانسيا موسينيفيلا بتحسين عملية التمثيل الغذائي، وتحسين الحساسية للأنسولين، وانخفاض الدهون في الجسم.",
+  "Dorea formicigenerans" = "دوريا فورميسيجينيرانس بكتيريا مِعَوية مرتبطة بصحة التمثيل الغذائي. وترتبط المستويات الأعلى من دوريا فورميسيجينيرانس بانخفاض وزن الجسم وتحسين التمثيل الغذائي. تشارك هذه البكتيريا في تخمير الألياف الغذائية، وإنتاج الأحماض الدهنية قصيرة السلسلة مثل بوتيرات، التي لها خواص مضادة للالتهابات وتدعم صحة الأمعاء."
+)
+
+bacteria_translations <- list(
+  "Bacteroidota" = "\\arabicfont{باكتيروديتس}",
+  "Bacillota" = "\\arabicfont{فيرميكيوتس}",
+  "Pseudomonadota" = "\\arabicfont{بروتيوباكتيريا}",
+  "Desulfovibrionaceae" = "\\arabicfont{ديسلفوفيبريوناسي}",
+  "Parabacteroides" = "\\arabicfont{باراباكتيرويديز}",
+  "Faecalibacterium" = "\\arabicfont{فيكالبكتريم}",
+  "Lactobacillus" = "\\arabicfont{لاكتوباسيلس}",
+  "Roseburia" = "\\arabicfont{روزبوريا}",
+  "Bacteroides" = "\\arabicfont{باكتيرويديز}",
+  "Prevotella" = "\\arabicfont{بريفوتيلا}",
+  "Escherichia" = "\\arabicfont{الإشريكيَّة}",
+  "Bifidobacterium" = "\\arabicfont{بيفيدوباكتيريوم}",
+  "Akkermansia muciniphila" = "\\arabicfont{أكيرمانسيا موسينيفيلا}",
+  "Dorea formicigenerans" = "\\arabicfont{دوريا فورميسيجينيرانس}"
+)
+
+readmore <- "\\arabicfont{هل ترغب في معرفة المزيد عن ميكروبيوم الأمعاء؟ فيما يلي بعض الموارد المفيدة:\n\n
+- \\href{https://my.clevelandclinic.org/health/body/25201-gut-microbiome}{معلومات أساسية} – نظرة عامة على ميكروبيوم الأمعاء من إعداد كليفلاند كلينك.\n
+- \\href{https://asm.org/resource-pages/microbiome-resources}{معلومات} عن ميكروبيوم الأمعاء من إعداد جمعية علم الأحياء الدقيقة الأمريكية.\n
+- \\href{https://patient.gastro.org/probiotics/}{دليل استخدام البروبيوتيك} الصادر عن جمعية أمراض الجهاز الهضمي الأمريكية.\n
+- \\href{https://nutritionsource.hsph.harvard.edu/microbiome/}{النظام الغذائي والميكروبيوم} – مصدر من كلية تي. إتش. تشان للصحة العامة هارفارد.\n\n\n}"
+
+disclaimer <- "يعتمد هذا التقرير على عينة براز واحدة، التي توفر لمحة عامة فقط عن ميكروبيوم أمعائك في نقطة زمنية واحدة. ويمكن أن يتغير تكوين الميكروبيوم لديك بسبب عوامل مثل النظام الغذائي والأدوية ونمط الحياة. ولذلك، يجب تفسير هذه النتائج بحذر، ويجب عدم اعتبارها تقييمًا نهائيًا لصحة أمعائك. إذا كان لديك أي مخاوف صحية، فيُرجى استشارة طبيب مختص."
+```
+
+```{r functions, include = FALSE}
+# In report_template_arabic.qmd, modify your functions:
+create_infobox <- function(content, title) {
+  cat("\\begin{tcolorbox}[",
+      "colback=lightgray, ",
+      "colframe=maincolor, ",
+      "boxrule=1pt, ",
+      "arc=2mm, ",
+      "boxsep=5pt, ",
+      "left=10pt, ",
+      "right=5pt, ",
+      "width=\\linewidth, ",
+      "halign=right, ", 
+      "title={", "\\begin{Arabic}", title, "\\end{Arabic}},",
+      "coltitle=white, ",
+      "fonttitle=\\sffamily\\bfseries, ",
+      "before upper={\\rightskip=0pt plus 1fil}",
+      "]\n", sep="")
+  cat("\\begin{Arabic}", content, "\\end{Arabic}")
+  cat("\n\\end{tcolorbox}\n\n")
+}
+
+create_warningbox <- function(content) {
+  cat("\\par\\noindent\n")
+  cat("\\begin{tabular}{@{}p{0.94\\textwidth}@{}}\n")
+  cat("\\begin{tcolorbox}[",
+      "colback=white, ",
+      "colframe=accentcolor, ",
+      "boxrule=1pt, ",
+      "arc=2mm, ",
+      "boxsep=5pt, ",
+      "left=10pt, ",
+      "right=10pt, ",
+      "width=\\linewidth, ", 
+      "halign=right, ",
+      "title={", "\\begin{Arabic}", "إخلاء المسؤولية", "\\end{Arabic}}, ",
+      "coltitle=white, ",
+      "fonttitle=\\sffamily\\bfseries, ",
+      "before upper={\\rightskip=0pt plus 1fil}",
+      "]\n", sep="")
+  cat("\\begin{Arabic}", content, "\\end{Arabic}")
+  cat("\n\\end{tcolorbox}\n")
+  cat("\\end{tabular}\n\n")
+}
+
+# Add this helper function to your setup
+create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
+  # Use a tabular environment for more reliable RTL layout
+  cat("\\par\\noindent\n")
+  cat("\\begin{tabular}{@{}p{0.5\\textwidth}@{\\hspace{0.03\\textwidth}}p{0.5\\textwidth}@{}}\n")
+  
+  # First column (plot) - will appear on LEFT in RTL
+  cat("\\begin{minipage}[t]{\\linewidth}\n")
+  cat("\\centering\n")
+  cat("\\includegraphics[width=0.95\\linewidth]{", gsub("_", "\\\\_", plot_filename), "}\n", sep="")
+  if (!is.null(caption)) {
+    cat("\\caption{\\textit{\\arabicfont{", caption, "}}}\n", sep="")
+  }
+  cat("\\end{minipage}\n")
+  
+  # Column separator
+  cat(" & ")
+  
+  # Second column (text) - will appear on RIGHT in RTL
+  cat("\\begin{minipage}[t]{\\linewidth}\n")
+  cat(text_content)
+  cat("\\end{minipage}\\\\\n")
+  
+  # End the tabular environment
+  cat("\\end{tabular}\n\n")
+  cat("\\vspace{1em}\n\n")
+}
+
+capture_infobox <- function(content, title) {
+  temp <- capture.output({
+    create_infobox(content, title)
+  })
+  paste(temp, collapse="\n")
+}
+
+# Define a custom theme function for consistent plotting
+theme_microbiome_report <- function(base_size = 16) {
+  th <- theme_minimal(base_size = base_size) +
+    theme(
+      # Font
+      text = element_text(family = "Montserrat"),
+
+      # General plot styling
+      plot.margin = margin(10, 15, 10, 10),
+      plot.background = element_rect(fill = "white", color = NA),
+      
+      # Panel
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_line(color = "gray85", linewidth = 0.6),
+      panel.grid.minor = element_blank(),
+      panel.background = element_rect(fill = "white", color = NA),
+      panel.border = element_rect(color = "gray85", fill = NA, linewidth = 0.5),
+      
+      # Axes
+      axis.title = element_text(size = base_size + 2, face = "bold", color = "gray20"),
+      axis.title.x = element_text(margin = margin(t = 10)),
+      axis.title.y = element_text(margin = margin(r = 10)),
+      axis.text = element_text(size = base_size + 2, color = "gray20"),
+      axis.text.x = element_text(margin = margin(t = 5)),
+      axis.text.y = element_blank(),
+      axis.ticks.x = element_line(color = "gray85")
+    )  
+  return(th)
+}
+
+# Define a consistent color palette
+microbiome_colors <- list(
+  participant = "#E18727",  # Orange for participant data
+  population = "#0072B5FF",   # Blue for population data
+  background = "grey95",      # Light grey for background elements
+  positive = "#32854E",       # Green for positive comparisons
+  negative = "#BC3C29"        # Red for negative comparisons
+)
+```
+
+```{r setup, include=FALSE}
+# Silently load required packages
+suppressPackageStartupMessages({
+  library(dplyr)      # For data manipulation
+  library(ggplot2)    # For plotting
+  library(stringr)    # For string manipulation
+  library(forcats)    # For factor manipulation
+  library(tidyr)      # For pivot_longer and pivot_wider
+  library(vegan)      # For diversity indices
+})
+
+# Load data
+abdata <- read.delim(params$abundance_file_path)
+
+# Get phylum-level data from abdata
+N <- 4
+pie_phylum <- abdata %>%
+  dplyr::filter(rank == "P") %>%
+  mutate(name = trimws(name)) %>%
+  select(name, contains(params$participant_id))
+colnames(pie_phylum) <- c("name", "Percentage")
+other_phyl_pct <- pie_phylum %>% arrange(desc(Percentage)) %>% slice((N+1):n()) %>% 
+                      summarise(Percentage = sum(Percentage)) %>% pull(Percentage)
+pie_phylum <- pie_phylum %>%
+  arrange(desc(Percentage)) %>%
+  mutate(
+    group = ifelse(row_number() <= N, name, "Other species"),
+    label = ifelse(row_number() <= N, 
+                  paste0(name, " (", round(Percentage, 1), "%)"),
+                  paste0("Other groups (", round(other_phyl_pct, 1), "%)"))
+  ) %>%
+  group_by(group, label) %>%
+  summarise(Percentage = sum(Percentage), .groups = "drop") %>%
+  arrange(desc(Percentage)) %>%
+  mutate(label = fct_inorder(label), 
+          label = fct_relevel(label, paste0("Other groups (", round(other_phyl_pct, 1), "\\%)"), after = 4L))
+
+# Get species-level data from abdata
+N <- 20
+pie_species <- abdata %>%
+  dplyr::filter(rank == "S") %>%
+  mutate(name = trimws(name)) %>%
+  select(name, contains(params$participant_id))
+colnames(pie_species) <- c("name", "Percentage")
+other_spec_pct <- pie_species %>% arrange(desc(Percentage)) %>% slice((N+1):n()) %>% 
+                      summarise(Percentage = sum(Percentage)) %>% pull(Percentage)
+pie_species <- pie_species %>%
+  arrange(desc(Percentage)) %>%
+  mutate(
+    group = ifelse(row_number() <= N, name, "Other species"),
+    label = ifelse(row_number() <= N, 
+                  paste0(name, " (", round(Percentage, 1), "%)"),
+                  paste0("Other species (", round(other_spec_pct, 1), "%)"))
+  ) %>%
+  group_by(group, label) %>%
+  summarise(Percentage = sum(Percentage), .groups = "drop") %>%
+  arrange(desc(Percentage)) %>%
+  mutate(label = fct_inorder(label), 
+          label = fct_relevel(label, paste0("Other species (", round(other_spec_pct, 1), "%)"), after = 20L))
+
+# Calculate diversity indices
+abdiv <- abdata %>% dplyr::filter(rank == "S") %>% 
+                    select(contains("report_bracken")) %>%
+                    rename_at(c(colnames(.)[which(str_detect(colnames(.), 'report_bracken'))]), 
+                              ~str_remove(str_remove(.x, "Sample"), '.kraken2.report_bracken'))
+abdivflip <- as.data.frame(t(as.matrix(abdiv)))
+shannon <- vegan::diversity(abdivflip, index = 'shannon')
+df_shan <- data.frame(ID = names(shannon), `Shannon index` = shannon)
+specrich <- vegan::specnumber(abdivflip)
+df_spec <- data.frame(ID = names(specrich), `Species richness` = specrich)
+dfdiv <- left_join(df_shan, df_spec, by = "ID") %>%
+                          rename(`Shannon index` = Shannon.index, `Species richness` = Species.richness)
+div_medians <- dfdiv %>% summarise(across(c(`Shannon index`, `Species richness`), 
+                            list(median = ~median(.x, na.rm = TRUE), max = ~max(.x, na.rm = TRUE)))) %>% 
+                          pivot_longer(., cols = 1:ncol(.), 
+                                            names_sep = "_",
+                                            names_to = c("metric", "var"), 
+                                            values_to = "outcome") %>%
+                          pivot_wider(., id_cols = var, names_from = metric, values_from = outcome)
+
+# Select variables
+namelist <- c(names(main_groups), names(taxa_explanations))
+abdata2 <- abdata %>% 
+  mutate(name = trimws(name)) %>%
+  dplyr::filter(name %in% namelist) %>%
+  mutate(rank = fct_relevel(rank, "D", "D1", "P", "C", "O", "F", "G", "S")) %>%
+  arrange(rank)
+rownames(abdata2) <- abdata2$name
+abdata_filt <- abdata2 %>% select(contains("report_bracken")) %>%
+                              rename_at(c(colnames(.)[which(str_detect(colnames(.), 'report_bracken'))]), 
+                              ~str_remove(str_remove(.x, params$sample_prefix), '.kraken2.report_bracken'))
+abdata_key <- abdata_filt %>% filter(rownames(.) %in% names(main_groups))
+abdata_spec <- abdata_filt %>% filter(rownames(.) %in% names(taxa_explanations))
+
+# Calculate the population medians per variable
+abflip <- as.data.frame(t(as.matrix(abdata_filt)))
+abundance_medians <- abflip %>% summarise(across(c(names(main_groups), names(taxa_explanations)), 
+                                  list(median = ~median(.x, na.rm = TRUE), 
+                                        max = ~max(.x, na.rm = TRUE)))
+                                ) %>% pivot_longer(., cols = 1:ncol(.), names_sep = "_",
+                                                  names_to = c("tax", "var"), 
+                                                  values_to = "outcome") %>%
+                                      pivot_wider(., id_cols = var, names_from = tax, values_from = outcome)
+```
+
+```{r intro, echo=FALSE, results='asis', warning=FALSE}
+cat("\\subsection*{\\arabicfont{مقدمة}}\n\n")
+cat(introduction)
+cat("\\newpage\n\n")
+```
+
+```{r diversity, echo=FALSE, results='asis', warning=FALSE}
+participant_data3 <- dfdiv %>% filter(ID == params$participant_id)
+cat("\\subsection*{\\arabicfont{تنوع البكتيريا}}\n\n")
+
+cat(diversity)
+cat("\n\n")
+
+for (metric in c("Shannon index", "Species richness")) {
+    med <- div_medians[[which(div_medians$var == "median"), metric]]
+    upper <- div_medians[[which(div_medians$var == "max"), metric]]
+    
+    # Format the values properly
+    if(metric == "Shannon index") {
+      participant_value <- format(round(participant_data3[[metric]], 2), nsmall = 2)
+      median_value <- format(round(med, 2), nsmall = 2)
+    } else {
+      participant_value <- as.character(participant_data3[[metric]])
+      median_value <- as.character(med)
+    }
+ 
+    # Add color formatting based on comparison
+    comparison <- participant_data3[[metric]] > med
+
+    metric_translations <- list(
+      "مُعامل شانون" = "Shannon index",
+      "ثراء الأنواع" = "Species richness"
+    )
+    metric_arabic <- names(metric_translations)[metric_translations == metric][1]
+
+    colored_value <- ifelse(comparison,
+                        paste0("\\textcolor{goodcolor}{\\textbf{\\texten{", participant_value, "}}}"),
+                        paste0("\\textcolor{warncolor}{\\textbf{\\texten{", participant_value, "}}}"))
+
+    # Then build the complete string with simpler structure
+    div_result <- paste0(
+      div_explanations[[metric]],
+      "كان المستوى المتوسط ",
+      "ل", metric_arabic,
+      " في هذا المجتمع \\texten{", median_value, "}, ",
+      "وكان المستوى في عينتك ",
+      colored_value, ". ",
+      "\n\n"
+    )
+    
+    infobox <- capture_infobox(div_result, metric_arabic)
+
+    midpoint <- 0.5 * upper
+    textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
+    textplacing2 <- case_when(participant_data3[[metric]] < midpoint ~ 0, .default = 1)
+    # Create the plot
+    dir.create("figures", showWarnings = FALSE)
+    pl <- ggplot(participant_data3) +
+        geom_rect(aes(xmin = 0.7, xmax = 1.3, ymin = 0, ymax = upper[[1]]),
+                  fill = microbiome_colors$background, color = NA, alpha = 0.5) +
+        # Population median lollipop
+        geom_segment(aes(x = 1, xend = 1, y = 0, yend = med[[1]]),
+                     color = microbiome_colors$population, linewidth = 2, alpha = 0.7) +
+        geom_point(aes(x = 1, y = med[[1]]), 
+                   color = microbiome_colors$population, size = 10, alpha = 0.9) +
+        # Participant value lollipop
+        geom_segment(aes(x = 1, xend = 1, y = 0, yend = .data[[metric]]),
+                     color = microbiome_colors$participant, linewidth = 2, alpha = 1.0) +
+        geom_point(aes(x = 1, y = .data[[metric]]), 
+                   color = microbiome_colors$participant, size = 10, alpha = 1.0) +
+        # Annotations with arrows
+        geom_segment(aes(x = 1.15, xend = 1.05, y = med[[1]], yend = med[[1]]), 
+                     arrow = arrow(length = unit(0.3, "cm")), 
+                     color = "black", linewidth = 0.8, alpha = 0.8) +
+        geom_segment(aes(x = 0.85, xend = 0.95, y = .data[[metric]], yend = .data[[metric]]), 
+                     arrow = arrow(length = unit(0.3, "cm")), 
+                     color = "black", linewidth = 0.8, alpha = 0.8) +
+        # Text labels (horizontal, no angle)
+        annotate("text", x = 1.25, y = med[[1]], 
+                label = "الوسيط السكاني", color = microbiome_colors$population, 
+                size = 7, hjust = textplacing1, fontface = "bold", family = "Changa") +
+        annotate("text", x = 0.75, y = participant_data3[[metric]], 
+                label = "أنت", color = microbiome_colors$participant, 
+                size = 7, hjust = textplacing2, fontface = "bold", family = "Changa") +
+        # Scale and theme  
+        scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
+        theme_microbiome_report() +
+        labs(y = "المستويات بالنسب المئوية", x = "") +
+        coord_flip()
+    plot_filename <- paste0("figures/report_", metric, ".png")
+    ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
+
+    create_side_by_side(infobox, plot_filename)
+}
+cat("\\newpage\n\n")
+```
+
+```{r phyla, echo=FALSE, results='asis', warning=FALSE}
+cat("\\subsection*{\\arabicfont{المجموعات البكتيرية الرئيسية}}\n\n")
+
+phylum_colors <- c("#FF6F00FF", "#C71000FF", "#008EA0FF", "#8A4198FF", "grey")
+pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
+          geom_bar(stat = "identity", width = 1) +
+          coord_polar(theta = "y") +
+          scale_fill_manual(values = phylum_colors) +
+          labs(title = "", fill = "") +
+          theme_void() +
+          theme(legend.position = "right", legend.text = element_text(size = 14),
+                text = element_text(family = "Montserrat"))
+ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 10, height = 3)
+
+create_side_by_side(phylum_explanation,
+                    "figures/report_piephylum.png")
+
+participant_data2 <- abdata_key %>% select(all_of(params$participant_id))
+keygroups <- as.data.frame(t(as.matrix(participant_data2)))
+for (taxon in names(keygroups)) {
+  # Generate plot data
+  med <- abundance_medians[which(abundance_medians$var == "median"), taxon][[1]]
+  upper <- abundance_medians[which(abundance_medians$var == "max"), taxon][[1]]
+  pt <- keygroups[[taxon]]
+
+  # Format numbers
+  pt_formatted <- format(round(pt, 2), nsmall = 2)
+  med_formatted <- paste0("\\textbf{\\texten{\\%", format(round(med, 2), nsmall = 2), "}}")
+  comparison <- pt > med
+
+  # Create the result text with properly escaped percent signs
+  taxon_title <- bacteria_translations[[taxon]]
+  # First prepare the colored value separately
+  colored_value <- ifelse(comparison,
+                        paste0("\\textcolor{goodcolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"),
+                        paste0("\\textcolor{warncolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"))
+
+  # Then build the complete string with simpler structure
+  taxa_result <- paste0(
+    "كان المستوى المتوسط ل", taxon_title, " في هذا المجتمع \\textbf{\\texten{", med_formatted, "}}, ",
+    "وكان المستوى في عينتك ",
+    colored_value, "."
+  )
+  taxa_text <- paste0(main_groups[[taxon]], " ", taxa_result)
+  infobox <- capture_infobox(taxa_text, taxon_title)
+
+  midpoint <- 0.5 * upper
+  textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
+  textplacing2 <- case_when(pt < midpoint ~ 0, .default = 1)
+  # Create the plot
+  dir.create("figures", showWarnings = FALSE)
+  pl <- ggplot() +
+    # Adding a background rect
+    geom_rect(aes(xmin = 0.7, xmax = 1.3, ymin = 0, ymax = upper),
+              fill = microbiome_colors$background, color = NA, alpha = 0.5) +
+    # Population median lollipop
+    geom_segment(aes(x = 1, xend = 1, y = 0, yend = med),
+                 color = microbiome_colors$population, linewidth = 2, alpha = 0.7) +
+    geom_point(aes(x = 1, y = med), 
+               color = microbiome_colors$population, size = 10, alpha = 0.9) +
+               
+    # Participant value lollipop
+    geom_segment(aes(x = 1, xend = 1, y = 0, yend = pt),
+                 color = microbiome_colors$participant, linewidth = 2, alpha = 1.0) +
+    geom_point(aes(x = 1, y = pt), 
+               color = microbiome_colors$participant, size = 10, alpha = 1.0) +
+               
+    # Annotations with arrows
+    geom_segment(aes(x = 1.2, xend = 1.05, y = med, yend = med), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+    geom_segment(aes(x = 0.8, xend = 0.95, y = pt, yend = pt), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+                 
+    # Fix for the participant annotation in the diversity block
+    annotate("text", x = 1.25, y = med[[1]], 
+        label = "الوسيط السكاني", color = microbiome_colors$population, 
+        size = 7, hjust = textplacing1, fontface = "bold", family = "Changa") +
+    annotate("text", x = 0.75, y = participant_data3[[metric]], 
+            label = "أنت", color = microbiome_colors$participant, 
+            size = 7, hjust = textplacing2, fontface = "bold", family = "Changa") +
+    scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
+    theme_microbiome_report() +
+    labs(y = "المستويات بالنسب المئوية %", x = "") +
+    coord_flip()
+
+    plot_filename <- paste0("figures/report_", gsub(" ", "_", taxon), ".png")
+    ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
+    
+    create_side_by_side(infobox, plot_filename)
+}
+cat("\\newpage\n\n")
+```
+
+```{r species, echo=FALSE, results='asis', warning=FALSE}
+cat("\\subsection*{\\arabicfont{بكتيريا محددة}}\n\n")
+cat(species_explanation)
+
+species_colors <- c("#FF6F00", "#EA4C00", "#D52900", "#B21D10", "#684B4B", "#1F7A86", "#1D7D9E",
+"#4F619B", "#824598", "#7A5B98", "#697A98", "#629294", "#9F7F76", "#DC6D59",
+"#EB7560", "#BEA098", "#90CAD0", "#A4C5D2", "#D1ADBD", "#FF95A8", "grey")
+pie2 <- ggplot(pie_species, aes(x = "", y = Percentage, fill = label)) +
+          geom_bar(stat = "identity", width = 1) +
+          coord_polar(theta = "y") +
+          scale_fill_manual(values = species_colors) +
+          guides(fill = guide_legend(ncol = 1)) +
+          labs(title = "", fill = "") +
+          theme_void() +
+          theme(legend.position = "right", legend.text = element_text(size = 11),
+                text = element_text(family = "Montserrat"))
+ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 8, height = 8)
+
+cat("\\begin{figure}[H]\n")
+cat("\\centering\n")
+cat("\\includegraphics[height=15cm]{figures/report_piespecies.png}\n")
+cat("\\end{figure}\n\n")
+
+participant_data1 <- abdata_spec %>% select(all_of(params$participant_id))
+specificbacteria <- as.data.frame(t(as.matrix(participant_data1)))
+# Define pseudocount for log transformation
+pseudocount <- 0.001
+
+for (taxon in names(specificbacteria)) {
+  # Get data points and add pseudocount for log scale
+  pt <- specificbacteria[[taxon]]
+  med <- as.numeric(abundance_medians[which(abundance_medians$var == "median"), taxon])
+  upper <- as.numeric(abundance_medians[which(abundance_medians$var == "max"), taxon])
+    
+  # Format numbers
+  pt_formatted <- format(round(pt, 2), nsmall = 2)
+  med_formatted <- paste0("\\textbf{\\texten{", format(round(med, 2), nsmall = 2), "\\%}}")
+  comparison <- pt > med
+
+  # Properly escape percent signs with double backslashes
+  formatted_value <- ifelse(comparison,
+                        paste0("\\textbf{\\texten{\\textcolor{goodcolor}{\\%", pt_formatted, "}}}."),
+                       paste0("\\textbf{\\texten{\\textcolor{warncolor}{\\%", pt_formatted, "}}}."))
+
+  # Create the result text with properly escaped percent signs
+  taxon_title <- bacteria_translations[[taxon]]
+  # First prepare the colored value separately
+  colored_value <- ifelse(comparison,
+                        paste0("\\textcolor{goodcolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"),
+                        paste0("\\textcolor{warncolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"))
+
+  # Then build the complete string with simpler structure
+  taxa_result <- paste0(
+    "كان المستوى المتوسط ل", taxon_title, " في هذا المجتمع \\textbf{\\texten{", med_formatted, "}}, ",
+    "وكان المستوى في عينتك ",
+    colored_value, "."
+  )
+  taxa_text <- paste0(taxa_explanations[[taxon]], " ", taxa_result)
+  infobox <- capture_infobox(taxa_text, taxon_title)
+  
+  # Create plot
+  dir.create("figures", showWarnings = FALSE)
+  
+  # Calculate positions for text labels
+  log_midpoint <- sqrt((pseudocount) * (upper + pseudocount))
+  textplacing1 <- case_when(med < log_midpoint ~ 0, .default = 1)
+  textplacing2 <- case_when(pt < log_midpoint ~ 0, .default = 1)
+  
+  # Create the plot
+  pl <- ggplot() +
+    # Background reference area
+    geom_rect(aes(xmin = 0.7, xmax = 1.3, ymin = pseudocount, ymax = upper + pseudocount),
+              fill = microbiome_colors$background, color = NA, alpha = 0.5) +
+              
+    # Population median lollipop
+    geom_segment(aes(x = 1, xend = 1, y = pseudocount, yend = med + pseudocount),
+                 color = microbiome_colors$population, linewidth = 2, alpha = 0.7) +
+    geom_point(aes(x = 1, y = med + pseudocount), 
+               color = microbiome_colors$population, size = 10, alpha = 0.9) +
+               
+    # Participant value lollipop
+    geom_segment(aes(x = 1, xend = 1, y = pseudocount, yend = pt + pseudocount),
+                 color = microbiome_colors$participant, linewidth = 2, alpha = 1.0) +
+    geom_point(aes(x = 1, y = pt + pseudocount), 
+               color = microbiome_colors$participant, size = 10, alpha = 1.0) +
+               
+    # Annotations with arrows
+    geom_segment(aes(x = 1.2, xend = 1.05, y = med + pseudocount, yend = med + pseudocount), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+    geom_segment(aes(x = 0.8, xend = 0.95, y = pt + pseudocount, yend = pt + pseudocount), 
+                 arrow = arrow(length = unit(0.3, "cm")), 
+                 color = "black", linewidth = 0.8, alpha = 0.4) +
+                 
+    # Text labels
+    annotate("text", x = 1.25, y = med + pseudocount, 
+         label = "الوسيط السكاني", color = microbiome_colors$population, 
+         size = 7, hjust = textplacing1, fontface = "bold", family = "Changa") +
+    annotate("text", x = 0.75, y = pt + pseudocount, 
+         label = "أنت", color = microbiome_colors$participant, 
+         size = 7, hjust = textplacing2, fontface = "bold", family = "Changa") +
+         
+    # Scale and theme  
+    scale_y_log10(
+      limits = c(pseudocount, max(upper + pseudocount)),
+      expand = c(0, 0),
+      n.breaks = 5,
+      labels = function(x) paste0(round(x - pseudocount, 2), "%")
+    ) +
+    theme_microbiome_report() +
+    labs(y = "المستويات بالنسب المئوية %", x = "") +
+    coord_flip()
+  
+  # Save and include the plot
+  plot_filename <- paste0("figures/report_", gsub(" ", "_", taxon), ".png")
+  ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
+  
+  create_side_by_side(infobox, plot_filename)
+}
+
+```
+```{r conclusions, echo=FALSE, results='asis', warning=FALSE}
+cat("\\subsection*{\\arabicfont{قراءة إضافية}}\n\n")
+cat(readmore)
+cat("\\vspace{1em}\n\n")
+
+cat(create_warningbox(disclaimer))
+```

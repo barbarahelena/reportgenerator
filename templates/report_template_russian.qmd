@@ -1,7 +1,7 @@
 ---
 format:
   pdf:
-    include-in-header: preamble.tex
+    include-in-header: preamble_russian.tex
     pdf-engine: lualatex
     documentclass: article
     urlcolor: maincolor
@@ -11,59 +11,57 @@ params:
   abundance_file_path: NULL
   participant_id: NULL
   sample_prefix: NULL
-  language: NULL
-  dir: NULL
 title: |
   ![](elinav_logo.png){width=5cm} \
   \
-  **Microbiome Analysis Report** \
-  Participant ID: `r params$participant_id`
+  **ОТЧЕТ ОБ АНАЛИЗЕ МИКРОБИОМА** \
+  ИН участника: `r params$participant_id`
 ---
 
 ```{r texts, include=FALSE}
 # All texts
-introduction <- "The gut microbiome is made up of trillions of microorganisms, including bacteria, viruses, fungi, and archaea, that live in the digestive tract. These microbes help with digestion, support the immune system, and influence metabolism. The balance of these microorganisms can be affected by diet, lifestyle, and genetics.\n\n 
+introduction <- "Микробиом кишечника состоит из триллионов микроорганизмов, включая бактерии, вирусы, грибки и археи, которые живут в пищеварительном тракте. Эти микроорганизмы способствуют пищеварению, поддерживают функцию иммунной системы и влияют на обмен веществ. Состав микробиома может изменяться под воздействием питания, образа жизни и генетических факторов.\n\n 
 
-This report presents an analysis of your gut microbiome using shotgun sequencing, a high-resolution method that identifies both well-known and previously uncharacterized microbes. By comparing your microbial composition to that of other study participants, we aim to better understand how gut bacteria relate to health.\n\n
+В этом отчете представлен анализ микробиома вашего кишечника по методу дробовика (shotgun sequencing). Это высокоточная технология, которая позволяет выявить как известные, так и ранее неизученные микроорганизмы. Сравнивая состав вашего микробиома с показателями других участников исследования, мы пытаемся лучше понять, как кишечные бактерии связаны с общим состоянием здоровья человека.\n\n
 
-On the next page, you'll first see an overview of the bacterial diversity in your sample, followed by key bacterial groups commonly found in the human gut. Lastly, we’ll highlight specific bacteria in your microbiome, with additional reading at the end if you’d like to learn more."
+Далее представлен обзор бактерий, которые есть в вашем образце, а также описание основных групп бактерий, которые обычно присутствуют в кишечнике человека. В завершение мы расскажем о некоторых отдельных бактериях вашего микробиома, и предложим дополнительные материалы для ознакомления, если вы захотите узнать больше."
 
-diversity <- "Microbial diversity refers to the variety of different bacteria and other microorganisms in the gut. A higher diversity is often linked to better health, while lower diversity has been associated with certain diseases. Many factors, such as diet, medication, and lifestyle, can influence microbial diversity.\n\n"
+diversity <- "Микробное разнообразие — это совокупность различных бактерий и других микроорганизмов в кишечнике. Часто чем выше разнообразие, тем лучше состояние здоровья человека. Низкое разнообразие микроорганизмов может быть связано с некоторыми заболеваниями. На микробный состав могут влиять различные факторы, включая питание, прием лекарств и образ жизни.\n\n"
 
-div_explanations <- list("Shannon index" = "The Shannon index is a measure of microbial diversity that considers both the number of different species and how evenly they are distributed. A higher Shannon index indicates a more diverse and balanced microbiome, which is often linked to better health. ",
-                        "Species richness" = "Species richness refers to the number of different microbial species present in the gut. A higher species richness generally indicates a more diverse microbiome, which is often linked to better resilience and health.")
+div_explanations <- list("Shannon index" = "Индекс Шеннона — это показатель микробного разнообразия, который учитывает как количество различных видов микроорганизмов, так и равномерность их распределения. Высокие значения индекса Шеннона свидетельствуют о более разнообразном и сбалансированном микробиоме, и часто это указывает на хорошее состояние здоровья человека. ",
+                        "Species richness" = "Видовое богатство — это количество разных видов микроорганизмов, которые находятся в кишечнике. Высокие значения видового богатства обычно указывают на более разнообразный микробиом, и часто это говорит о хорошем состоянии здоровья и устойчивости организма человека.")
 
-phylum_explanation <- "This chart shows the distribution of large bacterial groups (phyla) in your gut microbiome. The top 6 most common groups are shown individually, with the remaining bacteria grouped as 'Other phyla'.\n\n"
+phylum_explanation <- "На диаграмме представлено распределение крупных таксономических групп бактерий (типов) в микробиоме вашего кишечника. Шесть самых распространенных групп показаны по отдельности. Все оставшиеся группы объединены в категорию «прочие типы».\n\n"
 
 main_groups <- list(
-  "Bacteroidota" = "Bacteroidetes is one of the dominant bacterial phyla in the gut. Lower levels have been linked to obesity, higher body fat, and poor blood sugar control, while higher levels are associated with a healthier metabolism and improved response to weight-loss diets. Some studies suggest mixed or opposite effects depending on individual factors.",
-  "Bacillota" = "Firmicutes is another major bacterial phylum. Higher levels have been associated with obesity and diets high in fat and sugar. Lower levels are linked to better metabolism, lower cholesterol, and improved gut health.",
-  "Pseudomonadota" = "Proteobacteria is a diverse bacterial phylum that includes many species linked to inflammation and metabolic disorders. Higher levels have been associated with type 2 diabetes, obesity, and insulin resistance, while lower levels are linked to fiber-rich diets and better blood sugar control."
+  "Bacteroidota" = "Bacteroidetes — одна из доминирующих групп бактерий в кишечнике. Низкие уровни Bacteroidetes связаны с развитием ожирения, повышенным содержанием жировой ткани в теле и нарушением регуляции показателей глюкозы в крови. Высокое содержание этих бактерий способствует лучшему обмену веществ и хорошей реакции организма на диеты для снижения веса. Некоторые исследования указывают на смешанные или противоположные эффекты в зависимости от индивидуальных факторов.",
+  "Bacillota" = "Firmicutes — еще одна большая группа бактерий. Высокие уровни Firmicutes наблюдаются при ожирении и у людей, которые питаются продуктами с большим содержанием жиров и сахара. Низкие уровни этих бактерий сопровождает лучший обмен веществ, низкие значения холестерина и более здоровое состояние кишечника.",
+  "Pseudomonadota" = "Proteobacteria — это разнотипная группа бактерий, состоящая из множества видов, которые сопровождают воспалительные процессы и метаболические нарушения. Высокое содержание Proteobacteria связано сахарным диабетом 2 типа, ожирением и инсулинорезистентностью. Низкие уровни этих бактерий наблюдаются параллельно с лучшим контролем уровня сахара в крови, а также у людей, которые употребляют в пищу много клетчатки."
 )
 
-species_explanation <- "This chart shows the distribution of bacterial species in your gut microbiome. The top 20 most abundant species are shown individually, with the remaining species grouped as 'Other species'.\n\n"
+species_explanation <- "На диаграмме представлено распределение видов бактерий в микробиоме вашего кишечника. Двадцать самых распространенных видов показаны по отдельности. Все оставшиеся виды объединены в категорию «прочие виды».\n\n"
 
 taxa_explanations <- list(
-  "Bacteroides" = "Bacteroides species are common gut bacteria. Lower levels are linked to obesity and poor blood sugar control, while higher levels are associated with weight loss and dietary changes.",
-  "Parabacteroides" = "Higher levels of Parabacteroides are linked to poor blood sugar control and high-fat diets, while lower levels have been found in people responding well to diabetes medication.",
-  "Prevotella" = "Prevotella is commonly associated with fiber-rich diets and plant-based eating patterns. Higher levels are often found in individuals consuming whole grains, legumes, and vegetables. Some studies suggest that a high Prevotella-to-Bacteroides ratio may be beneficial for glucose metabolism, but findings are mixed.",
-  "Escherichia" = "Escherichia includes both beneficial and potentially harmful species. While some, like Escherichia coli, are important for gut health and vitamin production, others can be linked to gut inflammation, infections, and metabolic disturbances. The balance of Escherichia species in the gut is influenced by diet and immune function.",
-  "Faecalibacterium" = "Faecalibacterium species, particularly Faecalibacterium prausnitzii, are considered beneficial bacteria in the gut. They are known for their ability to produce short-chain fatty acids (SCFAs), such as butyrate, which play a role in maintaining gut health and reducing inflammation. Higher levels of Faecalibacterium are associated with lower levels of systemic inflammation, improved gut barrier function, and better blood sugar control.",
-  "Akkermansia muciniphila" = "Akkermansia muciniphila is a bacterium within the Verrucomicrobia phylum, known for its role in maintaining gut health. It thrives on mucin, a key component of the mucus layer that protects the gut lining, helping to support gut barrier integrity. Higher levels of A. muciniphila have been linked to improved metabolism, better insulin sensitivity, and lower body fat.",
-  "Lactobacillus" = "Lactobacillus is a genus of bacteria commonly found in probiotic foods like yogurt and kefir. It supports gut health by producing lactic acid, which helps maintain a healthy gut pH and inhibits harmful pathogens. Higher levels of Lactobacillus are linked to improved gut barrier function, weight loss, and better digestion. ",
-  "Bifidobacterium" = "Bifidobacterium is a well-known probiotic genus that plays a key role in gut health. Higher levels are associated with improved digestion, enhanced immune function, and better blood sugar regulation. It is often found in individuals consuming fermented foods and prebiotic fibers.",
-  "Roseburia" = "Roseburia is a genus of beneficial gut bacteria that plays a key role in carbohydrate metabolism, particularly in the fermentation of dietary fibers. These bacteria break down complex carbohydrates into short-chain fatty acids, such as butyrate, which are important for gut health and inflammation reduction. Higher levels of Roseburia are commonly associated with fiber-rich diets, as they thrive on otherwise non-digestible dietary fibers. Increased Roseburia abundance has been linked to better blood sugar control, improved insulin sensitivity, and overall metabolic health.",
-  "Desulfovibrionaceae" = "Higher levels of Desulfovibrionaceae, a family of sulfate-reducing bacteria, have been linked to several negative health outcomes. These bacteria produce hydrogen sulfide, a compound that can contribute to gut inflammation and disrupt the gut barrier function. Elevated levels of Desulfovibrionaceae are associated with poor blood sugar control, insulin resistance, and obesity.",
-  "Dorea formicigenerans" = "Dorea formicigenerans is a gut bacterium that has been associated with metabolic health. Higher levels of Dorea formicigenerans are linked to lower body weight and better metabolic profiles. This bacterium is involved in the fermentation of dietary fiber, producing short-chain fatty acids like butyrate, which have anti-inflammatory properties and support gut health."
+  "Bacteroides" = "Виды Bacteroides — это бактерии, которые широко представлены в кишечнике. Низкие уровни Bacteroides связаны с ожирением и плохим контролем уровня глюкозы в крови. Высокое содержание этих бактерий наблюдается при коррекции питания, способствуя снижению веса.",
+  "Parabacteroides" = "Повышенный уровень Parabacteroides связан с плохим контролем уровня сахара в крови и наблюдается у людей, которые питаются продуктами с высоким содержанием жиров. Низкие уровни этих бактерий встречаются у людей, которые хорошо отвечают на лечение противодиабетическими препаратами.",
+  "Prevotella" = "Prevotella — это бактерии, которые часто встречаются у людей, которые употребляют много клетчатки и питаются преимущественно пищей растительного происхождения. Высокие уровни этих бактерий часто наблюдаются у людей, которые едят цельнозерновые продукты, бобовые и овощи. Некоторые исследования показывают, что высокое соотношение Prevotella к Bacteroides может способствовать метаболизму глюкозы, однако данные противоречивы.",
+  "Escherichia" = "Род Escherichia включает как полезные, так и потенциально патогенные виды. Некоторые из них, например, Escherichia coli, важны для здоровья кишечника и синтеза витаминов. Другие же виды могут провоцировать воспаление кишечника, развитие инфекций и метаболических нарушений. Баланс видов Escherichia в кишечнике зависит от питания и функции иммунной системы.",
+  "Faecalibacterium" = "Бактерии рода Faecalibacterium, особенно Faecalibacterium prausnitzii, считаются полезными представителями кишечной микрофлоры. Они известны своей способностью продуцировать короткоцепочечные жирные кислоты (КЦЖК), например, бутират. Эти соединения помогают поддерживать здоровье кишечника и уменьшают воспалительные процессы. Повышенный уровень Faecalibacterium наблюдается в связи с низкими показателями системного воспаления, лучшей барьерной функции кишечника и лучшем контроле уровня глюкозы в крови.",
+  "Akkermansia muciniphila" = "Akkermansia muciniphila — бактерия класса Verrucomicrobia, которая участвует в поддержании здоровья кишечника. Эти бактерии хорошо развиваются в присутствии муцина — основного компонента слизистой оболочки, который защищает внутреннюю выстилку кишечника и обеспечивает целостность кишечного барьера. Повышенные уровни A. muciniphila связаны с улучшением метаболизма, лучшей чувствительностью к инсулину и сниженным содержанием жировой ткани в теле.",
+  "Lactobacillus" = "Lactobacillus — это род бактерий, который часто встречается в пробиотических продуктах, таких как йогурт и кефир. Эти бактерии улучшают здоровье кишечника, вырабатывая молочную кислоту, которая помогает поддерживать оптимальный pH и подавляет рост патогенных микроорганизмов. Высокие уровни Lactobacillus способствуют улучшению барьерной функции кишечника, снижению массы тела и улучшению пищеварения.",
+  "Bifidobacterium" = "Bifidobacterium — это известный род пробиотиков, который играет ключевую роль в здоровье кишечника. Высокие уровни Bifidobacterium связаны с улучшенным пищеварением, усилением иммунитета и лучшим контролем уровня глюкозы в крови. Эти бактерии часто встречаются у людей, которые употребляют в пищу ферментированные продукты и пребиотическую клетчатку.",
+  "Roseburia" = "Roseburia — это род полезных кишечных бактерий, который играет основную роль в метаболизме углеводов, особенно в ферментации клетчатки. Эти бактерии расщепляют сложные углеводы до короткоцепочечных жирных кислот, таких как бутират, которые способствуют здоровью кишечника и уменьшению воспалительных процессов. Высокое содержание Roseburia обычно наблюдается у людей, которые употребляют в пищу много клетчатки, поскольку эти бактерии хорошо растут при наличии неперевариваемых пищевых волокон. Высокие уровни Roseburia связаны с лучшим контролем уровня сахара в крови, лучшей чувствительностью к инсулину и общим метаболическим здоровьем.",
+  "Desulfovibrionaceae" = "Повышенное содержание Desulfovibrionaceae — семейства сульфатредуцирующих бактерий — связано с рядом отрицательных последствий для здоровья. Эти бактерии продуцируют сероводород — соединение, которое способствует развитию воспаления в кишечнике и нарушает его барьерную функцию. Повышенный уровень Desulfovibrionaceae связан с плохим контролем уровня глюкозы в крови, инсулинорезистентностью и ожирением.",
+  "Dorea formicigenerans" = "Dorea formicigenerans — кишечная бактерия, которая способствует здоровому метаболизму. Высокие уровни Dorea formicigenerans связаны с меньшей массой тела и лучшими показателями метаболизма. Эта бактерия участвует в ферментации пищевых волокон с образованием короткоцепочечных жирных кислот, таких как бутират, которые обладают противовоспалительным действием и помогают поддерживать здоровье кишечника."
 )
 
-readmore <- "Would you like to learn more about the gut microbiome? Here are some helpful resources:\n\n
-- \\href{https://my.clevelandclinic.org/health/body/25201-gut-microbiome}{Background} – Overview of the gut microbiome by the Cleveland Clinic.\n
-- \\href{https://asm.org/resource-pages/microbiome-resources}{Information} on the gut microbiome by the American Society for Microbiology.\n
-- \\href{https://patient.gastro.org/probiotics/}{Guide on probiotic use} by the American Gastroenterological Association.\n
-- \\href{https://nutritionsource.hsph.harvard.edu/microbiome/}{Diet and the microbiome} – Resource from the Harvard T.H. Chan School of Public Health.\n\n\n"
+readmore <- "Хотите узнать больше о микробиоме кишечника? Вот несколько полезных ресурсов:\n\n
+- \\href{https://my.clevelandclinic.org/health/body/25201-gut-microbiome}{Общие сведения} — обзор информации о микробиоме кишечника от клиники Кливленда.\n
+- \\href{https://asm.org/resource-pages/microbiome-resources}{Информация} о микробиоме кишечника от Американского общества микробиологии.\n
+- \\href{https://patient.gastro.org/probiotics/}{Руководство по применению пробиотиков} от Американской ассоциации гастроэнтерологов.\n
+- \\href{https://nutritionsource.hsph.harvard.edu/microbiome/}{Питание и микробиом} — материалы Школы общественного здравоохранения им. Т. Х. Чана Гарвардского университета.\n\n\n"
 
-disclaimer <- "This report is based on a single stool sample, which provides only a snapshot of your gut microbiome at one point in time. The composition of your microbiome can change due to factors such as diet, medication, and lifestyle. Therefore, these results should be interpreted with caution and should not be considered a definitive assessment of your gut health. If you have any health concerns, please consult a medical professional."
+disclaimer <- "Этот отчет основан на анализе одного образца кала, который отражает состояние микробиома вашего кишечника в текущий момент времени. Состав микробиома может изменяться под влиянием таких факторов, как питание, прием лекарств и образ жизни. Поэтому интерпретировать результаты следует с осторожностью. Эти данные не представляют окончательную оценку состояния здоровья вашего кишечника. При наличии вопросов относительно своего здоровья, обратитесь к врачу."
 ```
 
 ```{r functions, include = FALSE}
@@ -85,7 +83,7 @@ create_infobox <- function(content, title = "Key Findings") {
   cat("\n\\end{tcolorbox}\n\n")
 }
 
-create_warningbox <- function(content, title = "Important Note") {
+create_warningbox <- function(content, title = "Заявление об ограничении ответственности") {
   # Escape quotes in title if present
   title <- gsub('"', '\\"', title)
   
@@ -106,7 +104,7 @@ create_warningbox <- function(content, title = "Important Note") {
 
 # Add this helper function to your setup
 create_side_by_side <- function(left_content, plot_filename, caption = NULL) {
-  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{minipage}{0.52\\textwidth}\n")
   cat(left_content)  # This will be the output from capture.output()
   cat("\\end{minipage}\\hfill\n")
   
@@ -279,7 +277,7 @@ abundance_medians <- abflip %>% summarise(across(c(names(main_groups), names(tax
 ```
 
 ```{r intro, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{Introduction}\n\n")
+cat("\\subsection*{Введение}\n\n")
 cat(introduction)
 
 cat("\\newpage\n\n")
@@ -288,7 +286,7 @@ cat("\\newpage\n\n")
 ```{r diversity, echo=FALSE, results='asis', warning=FALSE}
 participant_data3 <- dfdiv %>% filter(ID == params$participant_id)
 
-cat("\\subsection*{Diversity of bacteria}\n\n")
+cat("\\subsection*{Разнообразие бактерий}\n\n")
 cat(diversity)
 cat("\n\n")
 for (metric in c("Shannon index", "Species richness")) {
@@ -297,8 +295,8 @@ for (metric in c("Shannon index", "Species richness")) {
     
     # Format the values properly
     if(metric == "Shannon index") {
-      participant_value <- format(round(participant_data3[[metric]], 2), nsmall = 2)
-      median_value <- format(round(med, 2), nsmall = 2)
+      participant_value <- format(round(participant_data3[[metric]], 2), nsmall = 2, decimal.mark = ",")
+      median_value <- format(round(med, 2), nsmall = 2, decimal.mark = ",")
     } else {
       participant_value <- as.character(participant_data3[[metric]])
       median_value <- as.character(med)
@@ -307,15 +305,21 @@ for (metric in c("Shannon index", "Species richness")) {
     # Add color formatting based on comparison
     comparison <- participant_data3[[metric]] > med
 
+    metric_translations <- list(
+      "Индекс Шеннона" = "Shannon index",
+      "Видовое богатство" = "Species richness"
+    )
+    metric_russian <- names(metric_translations)[metric_translations == metric][1]
+
     # Create the result text with LaTeX bold formatting and conditional colors
     div_result <- paste0(
-      "The median level of ", metric, " in this population was \\textbf{", median_value, "}, ",
-      "the level in your sample was ",
+      "В данной выборке медианное значение ", metric, " составляет \\textbf{", median_value, "}. ",
+      "В вашем образце этот показатель равен ", 
       ifelse(comparison, 
             "\\textbf{\\textcolor{goodcolor}{", 
             "\\textbf{\\textcolor{warncolor}{"),
       participant_value, 
-      "}}. "
+      "}}."
     )
 
     div_text <- paste0(div_explanations[[metric]], div_result, "\n\n")
@@ -367,7 +371,7 @@ cat("\\newpage\n\n")
 ```
 
 ```{r phyla, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{Key groups of bacteria}\n\n")
+cat("\\subsection*{Основные группы бактерий}\n\n")
 
 phylum_colors <- c("#FF6F00FF", "#C71000FF", "#008EA0FF", "#8A4198FF", "grey")
 pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
@@ -391,8 +395,8 @@ for (taxon in names(keygroups)) {
   pt <- keygroups[[taxon]]
 
   # Format numbers
-  pt_formatted <- format(round(pt, 2), nsmall = 2)
-  med_formatted <- format(round(med, 2), nsmall = 2)
+  pt_formatted <- format(round(pt, 2), nsmall = 2, decimal.mark = ",")
+  med_formatted <- format(round(med, 2), nsmall = 2, decimal.mark = ",")
   comparison <- pt > med
   formatted_value <- ifelse(comparison,
                           paste0("\\textcolor{goodcolor}{\\textbf{", pt_formatted, "\\%}}"),
@@ -400,8 +404,8 @@ for (taxon in names(keygroups)) {
 
   # Create the result text
   taxa_result <- paste0(
-    "The median level of ", taxon, " in this population was \\textbf{", med_formatted, "\\%}, ",
-    "the level in your sample was ", formatted_value, ". "
+    "В данной выборке медианный уровень ", taxon, " составляет \\textbf{", med_formatted, "\\%}. ",
+    "В вашем образце этот показатель равен ", formatted_value, "."
   )
   taxa_text <- paste0(main_groups[[taxon]], " ", taxa_result)
   infobox <- capture_infobox(taxa_text, taxon)
@@ -415,7 +419,6 @@ for (taxon in names(keygroups)) {
     # Adding a background rect
     geom_rect(aes(xmin = 0.7, xmax = 1.3, ymin = 0, ymax = upper),
               fill = microbiome_colors$background, color = NA, alpha = 0.5) +
-    
     # Population median lollipop
     geom_segment(aes(x = 1, xend = 1, y = 0, yend = med),
                  color = microbiome_colors$population, linewidth = 2, alpha = 0.7) +
@@ -458,7 +461,7 @@ cat("\\newpage\n\n")
 ```
 
 ```{r species, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{Specific bacteria}\n\n")
+cat("\\subsection*{Определенные виды бактерий}\n\n")
 cat(species_explanation)
 
 species_colors <- c("#FF6F00", "#EA4C00", "#D52900", "#B21D10", "#684B4B", "#1F7A86", "#1D7D9E",
@@ -492,8 +495,8 @@ for (taxon in names(specificbacteria)) {
   upper <- as.numeric(abundance_medians[which(abundance_medians$var == "max"), taxon])
     
   # Format numbers
-  pt_formatted <- format(round(pt, 2), nsmall = 2)
-  med_formatted <- format(round(med, 2), nsmall = 2)
+  pt_formatted <- format(round(pt, 2), nsmall = 2, decimal.mark = ",")
+  med_formatted <- format(round(med, 2), nsmall = 2, decimal.mark = ",")
   comparison <- pt > med
 
   # Properly escape percent signs with double backslashes
@@ -503,8 +506,8 @@ for (taxon in names(specificbacteria)) {
 
   # Create the result text with properly escaped percent signs
   taxa_result <- paste0(
-    "The median level of ", taxon, " in this population was \\textbf{", med_formatted, "\\%}, ",
-    "the level in your sample was ", formatted_value, ". "
+    "В данной выборке медианный уровень ", taxon, " составляет \\textbf{", med_formatted, "\\%}. ",
+    "В вашем образце этот показатель равен ", formatted_value, "."
   )
   taxa_text <- paste0(taxa_explanations[[taxon]], " ", taxa_result)
   infobox <- capture_infobox(taxa_text, taxon)
@@ -571,9 +574,9 @@ for (taxon in names(specificbacteria)) {
 
 ```
 ```{r conclusions, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{Further reading}\n\n")
+cat("\\subsection*{Дополнительные материалы для чтения}\n\n")
 cat(readmore)
 cat("\\vspace{1em}\n\n")
-cat(create_warningbox(disclaimer, "Disclaimer"))
+cat(create_warningbox(disclaimer, "Заявление об ограничении ответственности"))
 
 ```

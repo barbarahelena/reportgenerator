@@ -17,6 +17,7 @@ suppressPackageStartupMessages({
 
 # Get the installation and work directory
 report_home <- Sys.getenv("REPORT_GENERATOR_HOME", getwd())
+cat(paste0("This is the home folder I'm using: ", report_home, "\n"))
 work_dir <- Sys.getenv("WORKING_DIR", "")
 
 # Define command-line options with proper default paths
@@ -48,7 +49,12 @@ option_list <- list(
   make_option(c("-s", "--sample"), 
               type = "character", 
               default = "Sample", 
-              help = "Sample prefix [default: %default]")
+              help = "Sample prefix [default: %default]"),
+  
+  make_option(c("-l", "--language"), 
+            type = "character", 
+            default = "en", 
+            help = "Report language, comma-separated for multiple [default: %default, options: en, he, ru, ar]")
 )
 
 # Parse command-line options
@@ -127,17 +133,22 @@ if (opt$test == TRUE) {
 } else {
   # Normal operation
   if (!is.null(opt$abundance)) {
-      abundance_table_path <- opt$abundance
-      if(!is.null(opt$output)) { output_dir <- file.path(work_dir, opt$output) } else{
-        output_dir <- file.path(work_dir, "reports")
-      }
-      template_dir <- ifelse(!is.null(opt$template), opt$template, file.path(report_home, "templates/report_template.qmd"))
-      info_dir <- ifelse(!is.null(opt$template), opt$infosheet, file.path(report_home, "templates/physician_info_template.qmd"))
-      sample_prefix <- ifelse(is.null(opt$sample), "Sample", opt$sample)
-      path_to_script <- file.path(report_home, "lib/generate_report.R")
-      source(path_to_script)
-      generate_report(opt$abundance, template_dir, info_dir, 
-          output_dir, sample_prefix)
+    abundance_table_path <- opt$abundance
+    if(!is.null(opt$output)) { output_dir <- file.path(work_dir, opt$output) } else{
+      output_dir <- file.path(work_dir, "reports")
+    }
+    template_dir <- ifelse(!is.null(opt$template), opt$template, file.path(report_home, "templates/report_template.qmd"))
+    info_dir <- ifelse(!is.null(opt$template), opt$infosheet, file.path(report_home, "templates/physician_info_template.qmd"))
+    sample_prefix <- ifelse(is.null(opt$sample), "Sample", opt$sample)
+    path_to_script <- file.path(report_home, "lib/generate_report.R")
+    source(path_to_script)
+    
+    # Split language parameter into a vector
+    languages <- unlist(strsplit(opt$language, ","))
+    languages <- trimws(languages)  # Remove any whitespace
+    
+    generate_report(opt$abundance, template_dir, info_dir, 
+        output_dir, sample_prefix, language = languages)
   } else{
     print_help(opt_parser)
     stop("Abundance table path is required.")

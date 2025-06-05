@@ -2,6 +2,7 @@
 format:
   pdf:
     include-in-header: preamble.tex
+    pdf-engine: lualatex
     documentclass: article
     fontfamily: roboto
     number-sections: false
