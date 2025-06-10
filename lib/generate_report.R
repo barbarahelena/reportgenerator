@@ -53,7 +53,7 @@ generate_report <- function(ab_path,
     # Set up template path based on language
     if (lang == "he") {
       template_path <- file.path(report_home, "templates/report_template_hebrew.qmd")
-      premble_path <- file.path(report_home, "templates/preamble_hebrew.tex")
+      preamble_path <- file.path(report_home, "templates/preamble_hebrew.tex")
       
       # Try to detect available Hebrew fonts
       font_check <- system("fc-list | grep -i hebrew", intern = TRUE, ignore.stderr = TRUE)
@@ -108,7 +108,7 @@ generate_report <- function(ab_path,
             "% Configure Hebrew fonts",
             "\\newfontfamily\\hebrewfont{Noto Sans Hebrew}[Script=Hebrew]",
             "\\newfontfamily\\hebrewfontsf{Noto Sans Hebrew}[Script=Hebrew]",
-            "\\setmainfont{Noto Sans Hebrew}",
+            "\\setmainfont{Noto Sans Hebrew}[Scale=1.1]",
             "\\newfontfamily\\montserratfont{Montserrat}[Scale=MatchLowercase]",
             "",
             "% Simple RTL text commands",
@@ -130,8 +130,10 @@ generate_report <- function(ab_path,
             "\\renewcommand{\\headrulewidth}{0.4pt}",
             "\\renewcommand{\\footrulewidth}{0.4pt}",
             sprintf("\\fancyhead[R]{\\texten{\\textit{%s}}}", date_string),  
+            "\\fancyhead[L]{\\texten{Elinav Lab}}",
+            "\\fancyhead[C]{\\sffamily ניתוח מיקרוביום}",
             "\\fancyfoot[C]{\\thepage}",
-            "\\fancyfoot[L]{\\textcolor{maincolor}{\\sffamily מידע חסוי}}",
+            "\\fancyfoot[L]{\\textcolor{maincolor}{\\sffamily חסוי}}",
             "",
             "% Section formatting with RTL alignment",
             "\\titleformat{\\subsection}{\\raggedright\\color{maincolor}\\sffamily\\large\\bfseries}{}{0em}{}",
@@ -139,7 +141,7 @@ generate_report <- function(ab_path,
             "",
             "% Box settings - with RTL text direction",
             "\\tcbset{",
-            "  halign=left,",
+            "  halign=justify,",
             "  arc=2mm,",
             "  boxsep=5pt,", 
             "}",
@@ -200,6 +202,7 @@ generate_report <- function(ab_path,
       "\\usepackage{tcolorbox}",
       "\\usepackage{fancyhdr}",
       "\\usepackage{titlesec}",
+      "\\usepackage{ragged2e}", 
       "\\usepackage{hyperref}",
       "",
       "% Language support",
@@ -215,17 +218,18 @@ generate_report <- function(ab_path,
       "\\definecolor{warncolor}{RGB}{188, 60, 41}",
       "",
       "% Configure Russian fonts",
-      paste0("\\setmainfont{", russian_font, "}[Script=Cyrillic]"),
-      paste0("\\setsansfont{", russian_font, "}[Script=Cyrillic]"),
+      paste0("\\setmainfont[Scale=1.1,Script=Cyrillic]{", russian_font, "}"),
+      paste0("\\setsansfont[Scale=1.1,Script=Cyrillic]{", russian_font, "}"),
+      "\\newfontfamily\\cyrillicfontsf[Script=Cyrillic]{", russian_font, "}",
       "\\newfontfamily\\montserratfont{Montserrat}[Scale=MatchLowercase]",
       "",
       "% Simple text commands for language switching",
-      "\\newcommand{\\texten}[1]{\\foreignlanguage{english}{#1}}",
-      "\\newcommand{\\textentitle}[1]{\\foreignlanguage{english}{\\montserratfont\\bfseries #1}}",
+      "\\newcommand{\\texten}[1]{\\foreignlanguage{english}{\\textit{#1}}}",
+      "\\newcommand{\\textentitle}[1]{\\foreignlanguage{english}{\\montserratfont\\bfseries\\scalebox{1.1}{#1}}}",
       "",
       "% Basic document settings",
       "\\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}",
-      "\\parindent=0pt",
+      "\\parindent=1em",
       "",
       "% Header and footer setup",
       "\\pagestyle{fancy}",
@@ -247,19 +251,20 @@ generate_report <- function(ab_path,
       "  halign=justify,",  # Changed from left to justify
       "  arc=2mm,",
       "  boxsep=5pt,", 
+      "  before={\\noindent\\ignorespaces},",
       "}",
       "",
       "% Document structure improvements",
-      "\\parfillskip=0pt plus 1fil",
+      "\\justifying", 
       "\\setlength{\\headheight}{15pt}",
-      "\\parindent=0em",  # Can be changed to 1em for russian
-      "",
+      "\\hyphenpenalty=50",
+      "\\exhyphenpenalty=50",
+      "\\emergencystretch=3em",
+      "\\sloppy",
+      "\\hyphenation{пре-дста-вле-ние ис-сле-до-ва-ние ми-кро-би-о-та ба-кте-рии про-би-о-ти-ки}",
       "",
       "% Ensure figures stay where placed",
-      "\\floatplacement{figure}{H}",
-      "\\hyphenpenalty=3000",
-      "\\exhyphenpenalty=3000",
-      "\\sloppy"
+      "\\floatplacement{figure}{H}"
     )
       writeLines(preamble_content, preamble_path)
 
@@ -335,7 +340,7 @@ generate_report <- function(ab_path,
         "\\fancyhead[L]{\\texten{Elinav Lab}}",
         sprintf("\\fancyhead[C]{\\arabicfont{تقرير تحليل ميكروبيوم}}"),
         sprintf("\\fancyhead[R]{\\arabicfont{%s}}", arabic_date),
-        "\\fancyfoot[C]{\\texten{\\thepage}}",
+        "\\fancyfoot[C]{\\thepage}",
         "\\fancyfoot[L]{\\textcolor{maincolor}{\\sffamily ســــــــــــــري}}",
         "",
         "% Section formatting with RTL alignment",
@@ -344,7 +349,7 @@ generate_report <- function(ab_path,
         "",
         "% Box settings - with RTL text direction",
         "\\tcbset{",
-        "  halign=left,",
+        "  halign=justify,",
         "  arc=2mm,",
         "  boxsep=5pt,", 
         "}",
@@ -375,6 +380,7 @@ generate_report <- function(ab_path,
           "",
           "% Define alternative fallback in case fonts arent found",
           "\\newfontfamily\\fallbackfont{DejaVu Sans}[Scale=MatchLowercase]",
+          "\\newfontfamily\\montserratitalic{Montserrat}[ItalicFont=Montserrat-Italic]",
           "",
           "% Set appropriate margins",
           "\\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}",
@@ -448,7 +454,10 @@ generate_report <- function(ab_path,
           "\\setlength{\\tabcolsep}{8pt}",
           "",
           "% Ensure figures stay where placed",
-          "\\floatplacement{figure}{H}"
+          "\\floatplacement{figure}{H}",
+          "\\hyphenpenalty=1500",
+          "\\exhyphenpenalty=1500",
+          "\\sloppy"
         )
         writeLines(preamble_content, preamble_path)
     }
@@ -458,24 +467,30 @@ generate_report <- function(ab_path,
     dir.create(lang_folder, showWarnings = FALSE, recursive = TRUE)
     cat("Created language folder:", lang_folder, "\n")
     
+    # Add debug information
+    cat("Template path:", template_path, "\n")
+    cat("Number of participants:", length(colnames(abdata_filt)), "\n")
+    
     # Loop through participants and make report
     setwd(report_home)
     cat(paste0("This is the kraken table: ", ab_path, "\n"))
     for (participant_id in colnames(abdata_filt)[1]) {
-      output_file <- paste0("report_", participant_id, ".pdf")
+      cat("Processing participant:", participant_id, "\n")
+      output_file <- paste0("report_", participant_id, lang_map[[lang]]$suffix, ".pdf")
       command <- paste0("quarto render ", template_path, " -P participant_id:'", participant_id, "'",
                     " -P abundance_file_path:'", ab_path, "'",
                     " -P sample_prefix:'", sample_prefix, "'",
                     " --output ", output_file)
+      cat("Executing command:", command, "\n")
       system(command)
       system(paste0("mv ", output_file, " ", lang_folder))
     }
   }
   
   # Generate information sheet for physicians
-  # command <- paste0("quarto render ", infosheet_path, " --output ", "physician_info.pdf")
-  # system(command)
-  # system(paste0("mv physician_info.pdf ", output_dir))
+  command <- paste0("quarto render ", infosheet_path, " --output ", "physician_info.pdf")
+  system(command)
+  system(paste0("mv physician_info.pdf ", output_dir))
 
 
   cat("\nReport generation complete.\n")

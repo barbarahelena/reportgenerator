@@ -15,6 +15,7 @@ params:
 title: |
   ![](elinav_logo.png){width=5cm}
   
+
   דו"ח ניתוח מיקרוביום
   
   זיהוי משתתף\texten{`r gsub("_", "\\\\_", params[["participant_id"]])` :}
@@ -23,13 +24,13 @@ title: |
 ```{r texts, include=FALSE}
 introduction <- "\\hebrewfontsf{המיקרוביום של המעי מורכב מטריליוני מיקרואורגניזמים, כולל חיידקים, וירוסים, פטריות וארכאונים, החיים בצינור העיכול. מיקרובים אלו תורמים לתהליך העיכול, תומכים במערכת החיסון ומשפיעים על חילוף החומרים בגוף. האיזון בין המיקרואורגניזמים האלה עשוי להשתנות בהתאם לתזונה, לאורח החיים ולגורמים גנטיים.\n\n דו\"ח זה מציג ניתוח של הרכב החיידקים במעי שלך באמצעות שיטת 'ריצוף שוטגאן'} \\texten{(shotgun sequencing)}, \\hebrewfontsf{שיטה בעלת רזולוציה גבוהה לזיהוי מדויק של מיקרובים מוכרים וגם של מיקרובים חדשים שטרם זוהו. באמצעות השוואת ההרכב המיקרוביאלי שלך לזה של משתתפים אחרים במחקר, אנו שואפים להבין טוב יותר את הקשר בין חיידקי המעי למצב הבריאותי.\n\n בעמוד הבא תוכל/י לראות תחילה סקירה כללית של מגוון החיידקים שנמצאו בדגימה שלך, ולאחר מכן יוצגו קבוצות חיידקים מרכזיות הנפוצות במעי האנושי. לבסוף, נתמקד בחיידקים מסוימים שנמצאו במיקרוביום שלך, ונצרף חומר קריאה נוסף אם תרצה/י להעמיק.\n\n}"
 
-diversity <- "'מגוון מיקרוביאלי' מתייחס למגוון סוגי החיידקים ושאר המיקרואורגניזמים החיים במעי. רמת גיוון גבוהה מקושרת לרוב לבריאות טובה יותר, בעוד שמגוון נמוך נהוג להיות מקושר למחלות מסוימות. גורמים רבים, כמו תזונה, תרופות ואורח חיים, יכולים להשפיע על המגוון המיקרוביאלי.\n\n"
+diversity <- "'מגוון מיקרוביאלי' מתייחס למגוון סוגי החיידקים ושאר המיקרואורגניזמים החיים במעי. רמת גיוון גבוהה מקושרת לרוב לבריאות טובה יותר, בעוד שמגוון נמוך נהוג להיות מקושר למחלות מסוימות. גורמים רבים, כמו תזונה, תרופות ואורח חיים, יכולים להשפיע על המגוון המיקרוביאלי.\\par\\vspace{1.0em}"
 
 div_explanations <- list("Shannon index" = "מדד שאנון הוא כלי למדידת מגוון מיקרוביאלי המתחשב גם במספר המינים השונים וגם באיזון שבהתפלגותם. ערך גבוה יותר במדד שאנון מצביע על מיקרוביום מגוון ומאוזן יותר, מצב שמקושר לרוב לבריאות טובה יותר. ",
                         "Species richness" = "המונח 'עושר מינים' מתייחס למספר המינים המיקרוביאליים השונים הנמצאים במעי. ערך גבוה יותר של 'עושר מינים' מעיד בדרך כלל על מיקרוביום מגוון יותר, המקושר לרוב לעמידות גבוהה יותר ולבריאות טובה יותר. ")
 
 phylum_explanation <- "תרשים זה מציג את התפלגות קבוצות החיידקים הגדולות (מערכות חיידקים) במיקרוביום המעי שלך.
-שש הקבוצות הנפוצות ביותר מוצגות בנפרד, בעוד שאר החיידקים מאוגדים יחד תחת הקטגוריה \"מערכות אחרות\".\n\n"
+שש הקבוצות הנפוצות ביותר מוצגות בנפרד, בעוד שאר החיידקים מאוגדים יחד תחת הקטגוריה \"מערכות אחרות\"."
 
 main_groups <- list(
   "Bacteroidota" = "מערכת \\texten{Bacteroidota} היא אחת ממערכות החיידקים הדומיננטיות במעי. נהוג לקשר רמות נמוכות של חיידקים ממערכת זו להשמנת יתר, אחוזי שומן גוף גבוהים ובקרה לקויה של רמת הסוכר בדם., בעוד שרמות גבוהות יותר מקושרות לחילוף חומרים בריא יותר ולתגובה משופרת לדיאטות לירידה במשקל. מחקרים מסוימים מצביעים על השפעות מעורבות או הפוכות בהתאם לגורמים אינדיבידואליים.",
@@ -37,7 +38,7 @@ main_groups <- list(
   "Pseudomonadota" = "מערכת \\texten{Proteobacteria} היא מערכת חיידקים מגוונת הכוללת מינים רבים שמקושרים לפעילות דלקתית ולהפרעות בחילוף חומרים. נהוג לקשר רמות גבוהות של חיידקים ממערכת זו לסוכרת סוג 2, להשמנת יתר ולעמידות לאינסולין, בעוד שרמות נמוכות יותר מקושרות לתזונה עשירה בסיבים ולבקרה טובה יותר של רמת הסוכר בדם."
 )
 
-species_explanation <- "תרשים זה מציג את התפלגות מיני החיידקים במיקרוביום המעי שלך. עשרים המינים השכיחים ביותר מוצגים בנפרד, בעוד שאר המינים מאוגדים יחד תחת הקטגוריה \"מינים אחרים\".\n\n."
+species_explanation <- "תרשים זה מציג את התפלגות מיני החיידקים במיקרוביום המעי שלך. עשרים המינים השכיחים ביותר מוצגים בנפרד, בעוד שאר המינים מאוגדים יחד תחת הקטגוריה \"מינים אחרים\".\\par\\vspace{1.0em}"
 
 taxa_explanations <- list(
   "Bacteroides" = "חיידקי \\texten{Bacteroides} הם חיידקים נפוצים במעי. נהוג לקשר רמות נמוכות להשמנת יתר ולבקרה לקויה של רמת הסוכר בדם, בעוד שרמות גבוהות יותר מקושרות לירידה במשקל ולשינויים תזונתיים.",
@@ -46,7 +47,7 @@ taxa_explanations <- list(
   "Escherichia" = "\\texten{Escherichia} הוא סוג של חיידקים הכולל גם מינים מועילים וגם מינים שעלולים להיות מזיקים. חלק מהמינים, כמו \\texten{Escherichia coli}, חשובים לבריאות המעי ולייצור ויטמינים, בעוד שמינים אחרים מקושרים לדלקות במעי, לזיהומים ולהפרעות מטבוליות. האיזון בין מיני \\texten{Escherichia} במעי מושפע מתזונה ומתפקוד מערכת החיסון.",
   "Faecalibacterium" = "חיידקי \\texten{Faecalibacterium}, ובמיוחד \\texten{Faecalibacterium prausnitzii}, נחשבים לחיידקים מועילים במעי. הם ידועים ביכולתם לייצר חומצות שומן קצרות שרשרת \\texten{(SCFAs)} כמו בוטיראט, התורמות לשמירה על בריאות המעי ולהפחתת דלקות. נהוג לקשר רמות גבוהות יותר של \\texten{Faecalibacterium} להפחתה של דלקות סיסטמיות, לחיזוק מחסום המעי ולבקרה טובה יותר של רמת הסוכר בדם.",
   "Akkermansia muciniphila" = "\\texten{Akkermansia muciniphila} הוא חיידק השייך למערכת \\texten{Verrucomicrobia} הידוע בתרומתו לשמירה על בריאות המעי. חיידק זה מתפתח בסביבה עשירה במוצין, רכיב עיקרי בשכבת הרירית המגינה על דפנות המעי, התורם לחיזוק שלמות מחסום המעי. נהוג לקשר רמות גבוהות יותר של \\texten{A. muciniphila} לשיפור בחילוף החומרים, לרגישות טובה יותר לאינסולין ולהפחתת שומן הגוף.",
-  "Lactobacillus" = "\\texten{Lactobacillus} הוא סוג של חיידקים המצויים לרוב במזונות פרוביוטיים כמו יוגורט וקפיר. חיידקים אלה תומכים בבריאות המעי על ידי ייצור חומצה לקטית, המסייעת לשמירה על רמת חומציות תקינה במעי ומעכבת התפתחות פתוגנים מזיקים. רמות גבוהות יותר של \\texten{Lactobacillus} מקושרות לשיפור תפקוד מחסום המעי, לירידה במשקל ולשיפור תהליכי העיכול.",
+  # "Lactobacillus" = "\\texten{Lactobacillus} הוא סוג של חיידקים המצויים לרוב במזונות פרוביוטיים כמו יוגורט וקפיר. חיידקים אלה תומכים בבריאות המעי על ידי ייצור חומצה לקטית, המסייעת לשמירה על רמת חומציות תקינה במעי ומעכבת התפתחות פתוגנים מזיקים. רמות גבוהות יותר של \\texten{Lactobacillus} מקושרות לשיפור תפקוד מחסום המעי, לירידה במשקל ולשיפור תהליכי העיכול.",
   "Bifidobacterium" = "\\texten{Bifidobacterium} הוא סוג חיידקים פרוביוטיים מוכר, המשחק תפקיד מרכזי בשמירה על בריאות המעי. נהוג לקשר רמות גבוהות יותר לשיפור תהליכי העיכול, לחיזוק תפקוד מערכת החיסון ולבקרה טובה יותר של רמת הסוכר בדם. הוא נמצא לעתים קרובות אצל אנשים הצורכים מזונות מותססים וסיבים פרה-ביוטיים.",
   "Roseburia" = "\\texten{Roseburia} הוא סוג של חיידקים מועילים במעי, המשחק תפקיד מרכזי במטבוליזם של פחמימות, במיוחד בתסיסת סיבים תזונתיים. חיידקים אלה מפרקים פחמימות מורכבות והופכים אותן לחומצות שומן קצרות שרשרת, כמו בוטיראט, החשובות לבריאות המעי ולהפחתת תהליכי דלקת. נהוג לקשר רמות גבוהות יותר של \\texten{Roseburia} לתזונה עשירה בסיבים תזונתיים, שכן חיידקים אלה משגשגים בזכות סיבים תזונתיים שאינם מתעכלים בדרך כלל. רמות גבוהות של \\texten{Roseburia} מקושרות לשיפור בבקרת רמת הסוכר בדם, לשיפור רגישות לאינסולין ולבריאות מטבולית כללית טובה יותר.",
   "Desulfovibrionaceae" = "רמות גבוהות יותר של \\texten{Desulfovibrionaceae}, משפחה של חיידקים מפחיתי סולפט, קושרו למספר השפעות שליליות על הבריאות. חיידקים אלה מייצרים מימן גופרתי, תרכובת שיכולה לגרום לדלקת במעי ולפגוע בתפקוד מחסום המעי. רמות גבוהות של \\texten{Desulfovibrionaceae} מקושרות גם לבקרה לקויה של רמת הסוכר בדם, לעמידות לאינסולין ולהשמנת יתר.",
@@ -93,7 +94,10 @@ readmore <- "רוצים ללמוד עוד על המיקרוביום של המע�
 - \\href{https://patient.gastro.org/probiotics/}{מדריך לשימוש בפרוביוטיקה} מאת האיגוד האמריקאי לגסטרואנטרולוגיה.\n
 - \\href{https://nutritionsource.hsph.harvard.edu/microbiome/}{תזונה והמיקרוביום} – מקור מידע מבית הספר לבריאות הציבור ע\"ש ט.ה. צ'אן באוניברסיטת הרווארד.\n\n\n"
 
-disclaimer <- "דו\"ח זה מבוסס על דגימת צואה בודדת, אשר מספקת תמונת מצב נקודתית של המיקרוביום במעי שלך. הרכב המיקרוביום שלך עשוי להשתנות בעקבות גורמים שונים כגון תזונה, שימוש בתרופות ואורח חיים. לכן, יש לפרש את התוצאות בזהירות, ואין לראות בהן הערכה סופית או מוחלטת של מצב בריאות המעי שלך."
+disclaimer <- "דו\"ח זה מבוסס על דגימת צואה בודדת, אשר מספקת תמונת מצב נקודתית של המיקרוביום במעי שלך. הרכב המיקרוביום שלך עשוי להשתנות בעקבות גורמים שונים כגון תזונה, שימוש בתרופות ואורח חיים.
+לכן, יש לפרש את התוצאות בזהירות, ואין לראות בהן הערכה סופית או מוחלטת של מצב בריאות המעי שלך.
+במקרה של חששות או שאלות רפואיות, מומלץ לפנות להיוועץ בגורם רפואי מוסמך.
+"
 
 ```
 
@@ -109,12 +113,12 @@ create_infobox <- function(content, title) {
       "left=10pt, ",
       "right=5pt, ",
       "width=\\linewidth, ",
-      "halign=right, ", 
+      "halign=justify, ", 
+      "halign title=left, ",
       "title={\\begin{hebrew}", title, "\\end{hebrew}}, ",
       "coltitle=white, ",
       "fontupper=\\small, ",
-      "fonttitle=\\sffamily\\bfseries, ", 
-      "before upper={\\rightskip=0pt plus 1fil}",
+      "fonttitle=\\sffamily\\bfseries",
       "]\n", sep="")
   cat("\\begin{hebrew}", content, " \\end{hebrew}")
   cat("\n\\end{tcolorbox}\n\n")
@@ -132,11 +136,10 @@ create_warningbox <- function(content) {
       "left=10pt, ",
       "right=10pt, ",
       "width=\\linewidth, ", 
-      "halign=right, ",
+      "halign=justify, ",
       "title={\\raggedright{\\begin{hebrew}הצהרת הבהרה\\end{hebrew}}}, ",
       "coltitle=white, ",
-      "fonttitle=\\sffamily\\bfseries, ",
-      "before upper={\\rightskip=0pt plus 1fil}",
+      "fonttitle=\\sffamily\\bfseries",
       "]\n", sep="")
   cat("\\begin{hebrew} ", content, " \\end{hebrew}")
   cat("\n\\end{tcolorbox}\n")
@@ -148,10 +151,10 @@ create_warningbox <- function(content) {
 create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
   # Use a tabular environment for more reliable RTL layout
   cat("\\par\\noindent\n")
-  cat("\\begin{tabular}{@{}p{0.5\\textwidth}@{\\hspace{0.03\\textwidth}}p{0.45\\textwidth}@{}}\n")
+  cat("\\begin{tabular}{@{}p{0.548\\textwidth}@{\\hspace{0.03\\textwidth}}p{0.48\\textwidth}@{}}\n")
   
   # First column (plot) - will appear on LEFT in RTL
-  cat("\\begin{minipage}[t]{\\linewidth}\n")
+  cat("\\begin{minipage}{\\linewidth}\n")  # Removed [t] alignment
   cat("\\centering\n")
   cat("\\includegraphics[width=0.95\\linewidth]{", gsub("_", "\\\\_", plot_filename), "}\n", sep="")
   if (!is.null(caption)) {
@@ -163,12 +166,33 @@ create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
   cat(" & ")
   
   # Second column (text) - will appear on RIGHT in RTL
-  cat("\\begin{minipage}[t]{\\linewidth}\n")
+  cat("\\begin{minipage}{\\linewidth}\n")  # Removed [t] alignment
   cat(text_content)
   cat("\\end{minipage}\\\\\n")
   
   # End the tabular environment
   cat("\\end{tabular}\n\n")
+  cat("\\vspace{1em}\n\n")
+}
+
+create_side_by_side2 <- function(left_content, plot_filename, caption = NULL) {
+  cat("\\begin{minipage}{0.52\\textwidth}\n")
+  cat(left_content)
+  cat("\\end{minipage}\\hfill\n")
+
+  # Add explicit spacing between columns
+  cat("\\hspace{0.05\\textwidth}")
+  
+  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{figure}[H]\n")
+  cat("\\centering\n")
+  cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
+  if (!is.null(caption)) {
+    cat("\\caption{\\textit{", caption, "}}\n", sep="")
+  }
+  cat("\\end{figure}\n")
+  cat("\\end{minipage}\n\n")
+  
   cat("\\vspace{1em}\n\n")
 }
 
@@ -246,6 +270,8 @@ pie_phylum <- pie_phylum %>%
   arrange(desc(Percentage)) %>%
   mutate(
     group = ifelse(row_number() <= N, name, "Other species"),
+    name = fct_recode(name, "Bacteroides" = "Bacteroidota", "Firmicutes" = "Bacillota",
+              "Proteobacteria" = "Pseudomonadota"),
     label = ifelse(row_number() <= N, 
                   paste0(name, " (", round(Percentage, 1), "%)"),
                   paste0("Other groups (", round(other_phyl_pct, 1), "%)"))
@@ -254,7 +280,8 @@ pie_phylum <- pie_phylum %>%
   summarise(Percentage = sum(Percentage), .groups = "drop") %>%
   arrange(desc(Percentage)) %>%
   mutate(label = fct_inorder(label), 
-          label = fct_relevel(label, paste0("Other groups (", round(other_phyl_pct, 1), "\\%)"), after = 4L))
+          label = fct_relevel(label, paste0("Other groups (", round(other_phyl_pct, 1), "%)"),  
+                    after = 5L))
 
 # Get species-level data from abdata
 N <- 20
@@ -337,7 +364,6 @@ participant_data3 <- dfdiv %>% filter(ID == params$participant_id)
 cat("\\subsection*{\\hebrewfontsf{מגוון חיידקי}}\n\n")
 
 cat(diversity)
-cat("\n\n")
 
 for (metric in c("Shannon index", "Species richness")) {
     med <- div_medians[[which(div_medians$var == "median"), metric]]
@@ -363,11 +389,10 @@ for (metric in c("Shannon index", "Species richness")) {
     metric_hebrew <- names(metric_translations)[metric_translations == metric][1]
 
     div_title <- str_c(metric_hebrew, "\\textentitle{ (", metric, ") }")
-    div_titletext <- str_c(metric_hebrew, "\\texten{ (", metric, ") }")
 
     # Create the result text with LaTeX bold formatting and conditional colors
     div_result <- paste0(div_explanations[[metric]],
-      "רמת החציון של ", div_titletext, " באוכלוסייה שנבדקה הייתה \\textbf{\\texten{", median_value, "}}, ",
+      "רמת החציון של ", metric_hebrew, " באוכלוסייה שנבדקה הייתה \\textbf{\\texten{", median_value, "}}, ",
       "הרמה בדגימה שלך הייתה ",
       ifelse(comparison, 
             "\\textbf{\\texten{\\textcolor{goodcolor}{", 
@@ -424,8 +449,9 @@ cat("\\newpage\n\n")
 ```
 
 ```{r phyla, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{\\hebrewfontsf{קבוצות עיקריות של חיידקים}}\n\n")
+cat("\\subsection*{\\hebrewfontsf{קבוצות עיקריות של חיידקים}}\n")
 
+# Pie plot phylum level
 phylum_colors <- c("#FF6F00FF", "#C71000FF", "#008EA0FF", "#8A4198FF", "grey")
 pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
           geom_bar(stat = "identity", width = 1) +
@@ -435,14 +461,14 @@ pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
           theme_void() +
           theme(legend.position = "right", legend.text = element_text(size = 14),
                 text = element_text(family = "Montserrat"))
-ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 10, height = 3)
+ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 7, height = 5)
 
-create_side_by_side(paste0("\\begin{hebrew}", phylum_explanation, "\\end{hebrew}"),
+create_side_by_side2(phylum_explanation,
                     "figures/report_piephylum.png")
 
 participant_data2 <- abdata_key %>% select(all_of(params$participant_id))
 keygroups <- as.data.frame(t(as.matrix(participant_data2)))
-for (taxon in names(keygroups)) {
+for (taxon in c("Bacteroidota", "Bacillota", "Pseudomonadota")) {
   # Generate plot data
   med <- abundance_medians[which(abundance_medians$var == "median"), taxon][[1]]
   upper <- abundance_medians[which(abundance_medians$var == "max"), taxon][[1]]
@@ -455,19 +481,17 @@ for (taxon in names(keygroups)) {
 
   # Properly escape percent signs with double backslashes
   formatted_value <- ifelse(comparison,
-                        paste0("\\textbf{\\texten{\\textcolor{goodcolor}{", pt_formatted, "\\%}}}."),
-                        paste0("\\textbf{\\texten{\\textcolor{goodcolor}{", pt_formatted, "\\%}}}."))
+                        paste0("\\textbf{\\texten{\\textcolor{goodcolor}{", pt_formatted, "\\%}}}"),
+                        paste0("\\textbf{\\texten{\\textcolor{warncolor}{", pt_formatted, "\\%}}}"))
 
   # Create the result text with properly escaped percent signs
-  taxon_title <- bacteria_translations[[taxon]]
-  taxon_title_text <- bacteria_translations_text[[taxon]]
   taxa_result <- paste0(
-    "\\hebrewfontsf{רמת החציון של }", taxon_title_text, 
+    "\\hebrewfontsf{רמת החציון של }\\texten{", bacteria_translations_text[[taxon]], "}",
     "\\hebrewfontsf{ באוכלוסייה שנבדקה הייתה } ", med_formatted,
-    " \\hebrewfontsf{בדגימה שלך נמצאה רמה של }", formatted_value
+    " \\hebrewfontsf{בדגימה שלך נמצאה רמה של }", formatted_value, "."
   )
   taxa_text <- paste0(main_groups[[taxon]], " ", taxa_result)
-  infobox <- capture_infobox(taxa_text, taxon_title)
+  infobox <- capture_infobox(taxa_text, bacteria_translations[[taxon]])
 
   midpoint <- 0.5 * upper
   textplacing1 <- case_when(med < midpoint ~ 0, .default = 1)
@@ -560,16 +584,16 @@ for (taxon in names(specificbacteria)) {
 
   # Properly escape percent signs with double backslashes
   formatted_value <- ifelse(comparison,
-                        paste0("\\textbf{\\texten{\\textcolor{goodcolor}{", pt_formatted, "\\%}}}."),
-                       paste0("\\textbf{\\texten{\\textcolor{warncolor}{", pt_formatted, "\\%}}}."))
+                        paste0("\\textbf{\\texten{\\textcolor{goodcolor}{", pt_formatted, "\\%}}}"),
+                       paste0("\\textbf{\\texten{\\textcolor{warncolor}{", pt_formatted, "\\%}}}"))
 
   # Create the result text with properly escaped percent signs
   taxon_title <- bacteria_translations[[taxon]]
   taxon_title_text <- bacteria_translations_text[[taxon]]
   taxa_result <- paste0(
-    "\\hebrewfontsf{רמת החציון של }", taxon_title_text, 
+    "\\hebrewfontsf{רמת החציון של }\\texten{", taxon, "}",
     "\\hebrewfontsf{ באוכלוסייה שנבדקה הייתה } ", med_formatted,
-    " \\hebrewfontsf{בדגימה שלך נמצאה רמה של }", formatted_value
+    " \\hebrewfontsf{בדגימה שלך נמצאה רמה של }", formatted_value, "."
   )
   taxa_text <- paste0(taxa_explanations[[taxon]], " ", taxa_result)
   infobox <- capture_infobox(taxa_text, taxon_title)

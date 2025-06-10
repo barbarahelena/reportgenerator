@@ -13,65 +13,64 @@ params:
   participant_id: NULL
   sample_prefix: NULL
 title: |
-  ![](elinav_logo.png){width=5cm}
+  ![](elinav_logo.png){width=5cm} \
+  \
+  تقرير تحليل ميكروبيوم
   
-  \arabicfont{تقرير تحليل ميكروبيوم}
-  
-  \arabicfont{رقم المشارك}: `r params$participant_id`
+  رقم المشارك\texten{`r gsub("_", "\\\\_", params[["participant_id"]])` :}
 ---
 
 ```{r texts, include=FALSE}
-# Define all the text content in Arabic
 introduction <- "\\arabicfont{يتكون ميكروبيوم الأمعاء من تريليونات الكائنات الحية الدقيقة، بما في ذلك البكتيريا والفيروسات والفطريات والعتائق، التي تعيش في السبيل الهضمي. وتساعد هذه الميكروبات في عملية الهضم، وتدعم جهاز المناعة، وتؤثر على عملية التمثيل الغذائي. يمكن أن يتأثر توازن هذه الكائنات الحية الدقيقة بالنظام الغذائي ونمط الحياة والجينات.\n\n
 يقدم هذا التقرير تحليلًا لـ ميكروبيوم الأمعاء لديك باستخدام تحديد التوالي بالتشظية، وهي طريقة عالية الدقة تحدد الميكروبات المعروفة وغير المصنفة سابقًا. ومن خلال مقارنة التركيب الميكروبي لديك مع تركيب المشاركين الآخرين في الدراسة، فإننا نهدف إلى فهم طريقة ارتباط بكتيريا الأمعاء بالصحة فهمًا أفضل.\n\n
 في الصفحة التالية، سترى أولًا نظرة عامة على التنوع البكتيري في عينتك، متبوعًا بالمجموعات البكتيرية الرئيسية الموجودة عادةً في أمعاء الإنسان. وأخيرًا، سنسلط الضوء على البكتيريا المحددة الموجودة في الميكروبيوم لديك، مع قراءة إضافية في النهاية إذا كنت ترغب في معرفة المزيد.}"
 
-diversity <- "\\arabicfont{يشير التنوع الميكروبي إلى تنوع البكتيريا المختلفة والكائنات الحية الدقيقة الأخرى الموجودة في الأمعاء. وغالبًا ما يرتبط التنوع الأعلى بصحة أفضل، في حين يرتبط التنوع المنخفض بأمراض معينة. يمكن للعديد من العوامل، مثل النظام الغذائي والأدوية ونمط الحياة، أن تؤثر على التنوع الميكروبي.}\n\n"
+diversity <- "\\arabicfont{يشير التنوع الميكروبي إلى تنوع البكتيريا المختلفة والكائنات الحية الدقيقة الأخرى الموجودة في الأمعاء. وغالبًا ما يرتبط التنوع الأعلى بصحة أفضل، في حين يرتبط التنوع المنخفض بأمراض معينة. يمكن للعديد من العوامل، مثل النظام الغذائي والأدوية ونمط الحياة، أن تؤثر على التنوع الميكروبي.}\\par\\vspace{1.0em}"
 
 div_explanations <- list(
   "Shannon index" = "مُعامل شانون هو مقياس للتنوع الميكروبي الذي يأخذ في الاعتبار عدد الأنواع المختلفة ومدى توزيعها بالتساوي. يشير معامل شانون الأعلى إلى ميكروبيوم أكثر تنوعًا وتوازنًا، وهو ما يرتبط غالبًا بصحة أفضل. ",
   "Species richness" = "يشير ثراء الأنواع إلى عدد الأنواع الميكروبية المختلفة الموجودة في الأمعاء. ويشير ثراء الأنواع الأعلى بشكل عام إلى تنوع الميكروبيوم، الذي يرتبط غالبًا بمرونة أفضل وصحة أفضل. "
 )
 
-phylum_explanation <- "\\arabicfont{يوضح هذا المخطط البياني توزيع المجموعات (الشُعب) البكتيرية الكبرى في ميكروبيوم الأمعاء لديك. وتظهر المجموعات الست العليا الأكثر شيوعًا على نحو منفرد، مع تجميع البكتيريا المتبقية تحت عنوان \"شُعب أخرى\".}\n\n"
+phylum_explanation <- "\\arabicfont{يوضح هذا المخطط البياني توزيع المجموعات (الشُعب) البكتيرية الكبرى في ميكروبيوم الأمعاء لديك. وتظهر المجموعات الست العليا الأكثر شيوعًا على نحو منفرد، مع تجميع البكتيريا المتبقية تحت عنوان \"شُعب أخرى\".}\\par\\vspace{1.0em}"
 
 main_groups <- list(
   "Bacteroidota" = "باكتيروديتس واحدة من الشُعب البكتيرية السائدة في الأمعاء. وقد ارتبطت المستويات الأكثر انخفاضًا بالسمنة وارتفاع نسبة الدهون في الجسم وضعف التحكم في نسبة السكر في الدم، في حين ترتبط المستويات الأعلى بعملية التمثيل الغذائي الأكثر صحة والاستجابة المحسنة للأنظمة الغذائية لإنقاص الوزن. تشير بعض الدراسات إلى تأثيرات مختلطة أو معاكسة حسب العوامل الفردية.",
   "Bacillota" = "فيرميكيوتس شُعبة بكتيرية رئيسية أخرى. وقد ارتبطت المستويات الأعلى منها بالسمنة والأنظمة الغذائية الغنية بالدهون والسكر. ترتبط المستويات الأكثر انخفاضًا بتحسن عملية التمثيل الغذائي، وانخفاض الكوليسترول، وتحسين صحة الأمعاء.",
-  "Pseudomonadota" = "بروتيوباكتيريا شعبة بكتيرية متنوعة تشمل العديد من الأنواع المرتبطة بالالتهابات واضطرابات التمثيل الغذائي. وقد ارتبطت المستويات الأعلى بمرض السكري من النوع 2 والسمنة ومقاومة الأنسولين، في حين ترتبط المستويات الأكثر انخفاضًا بالأنظمة الغذائية الغنية بالألياف وتحسين التحكم في نسبة السكر في الدم."
+  "Pseudomonadota" = "بروتيوباكتيريا شعبة بكتيرية متنوعة تشمل العديد من الأنواع المرتبطة بالالتهابات واضطرابات التمثيل الغذائي. وقد ارتبطت المستويات الأعلى بمرض السكري من النوع \\texten{2} والسمنة ومقاومة الأنسولين، في حين ترتبط المستويات الأكثر انخفاضًا بالأنظمة الغذائية الغنية بالألياف وتحسين التحكم في نسبة السكر في الدم."
 )
 
-species_explanation <- "\\arabicfont{يوضح هذا المخطط البياني توزيع الأنواع البكتيرية في ميكروبيوم الأمعاء لديك. وتعرض أعلى 20 نوعًا الأكثر وفرة على نحو منفرد، مع تجميع الأنواع المتبقية تحت عنوان \"أنواع أخرى\".}\n\n"
+species_explanation <- "\\arabicfont{يوضح هذا المخطط البياني توزيع الأنواع البكتيرية في ميكروبيوم الأمعاء لديك. وتعرض أعلى \\texten{20} نوعًا الأكثر وفرة على نحو منفرد، مع تجميع الأنواع المتبقية تحت عنوان \"أنواع أخرى\".}\\par\\vspace{1.0em}"
 
 taxa_explanations <- list(
   "Desulfovibrionaceae" = "لقد تم ربط المستويات الأعلى من ديسلفوفيبريوناسي، عائلة من البكتيريا المختزلة للكبريتات، بالعديد من النتائج الصحية السلبية. وتنتج هذه البكتيريا كبريتيد الهيدروجين، مركب يمكن أن يسهم في التهاب الأمعاء ويعطل وظيفة حاجز الأمعاء. ترتبط المستويات الأعلى من ديسلفوفيبريوناسي بضعف التحكم في نسبة السكر في الدم ومقاومة الأنسولين والسمنة.",
   "Parabacteroides" = "ترتبط المستويات المرتفعة من باراباكتيرويديز بضعف التحكم في نسبة السكر في الدم والأنظمة الغذائية عالية الدهون، في حين تم العثور على مستويات أقل في الأشخاص الذين يستجيبون بشكل جيد لأدوية السكري.",
   "Faecalibacterium" = "تعتبر أنواع فيكالبكتريم، وخاصةً فيكالبكتريم براوسنيتزي، من البكتيريا المفيدة في الأمعاء. وتشتهر بقدرتها على إنتاج الأحماض الدهنية قصيرة السلسلة، مثل بوتيرات، التي تلعب دورًا في الحفاظ على صحة الأمعاء وتقليل الالتهاب. ترتبط المستويات الأعلى من فيكالبكتريم بمستويات أكثر انخفاضًا من الالتهاب الجهازي، وتحسين وظيفة حاجز الأمعاء، وتحسين التحكم في نسبة السكر في الدم.",
-  "Lactobacillus" = "لاكتوباسيلس نوع من البكتيريا الموجودة عادةً في أطعمة البروبيوتيك مثل الزبادي والكَفير. تدعم صحة الأمعاء عن طريق إنتاج حمض اللاكتيك، الذي يساعد في الحفاظ على درجة حموضة الأمعاء الصحية ويثبط مسببات الأمراض الضارة. وترتبط المستويات الأعلى من لاكتوباسيلس بتحسين وظيفة حاجز الأمعاء وإنقاص الوزن والهضم الأفضل.",
+  # "Lactobacillus" = "لاكتوباسيلس نوع من البكتيريا الموجودة عادةً في أطعمة البروبيوتيك مثل الزبادي والكَفير. تدعم صحة الأمعاء عن طريق إنتاج حمض اللاكتيك، الذي يساعد في الحفاظ على درجة حموضة الأمعاء الصحية ويثبط مسببات الأمراض الضارة. وترتبط المستويات الأعلى من لاكتوباسيلس بتحسين وظيفة حاجز الأمعاء وإنقاص الوزن والهضم الأفضل.",
   "Roseburia" = "روزبوريا نوع من البكتيريا المِعَوية المفيدة التي تلعب دورًا رئيسيًا في عملية التمثيل الغذائي للكربوهيدرات، وخاصةً في تخمير الألياف الغذائية. وتقوم هذه البكتيريا بتفكيك الكربوهيدرات المعقدة إلى أحماض دهنية قصيرة السلسلة، مثل بوتيرات، التي تعد مهمة لصحة الأمعاء وتقليل الالتهاب. ترتبط المستويات الأعلى من روزبوريا عادةً بالأنظمة الغذائية الغنية بالألياف، حيث إنها تزدهر على الألياف الغذائية غير القابلة للهضم الأخرى. لقد تم ربط زيادة وفرة روزبوريا بتحسين التحكم في نسبة السكر في الدم، وتحسين الحساسية للأنسولين، والصحة الأيضية بشكل عام.",
   "Bacteroides" = "تعتبر أنواع باكتيرويديز من بكتيريا الأمعاء الشائعة. وترتبط المستويات الأكثر انخفاضًا بالسمنة وضعف التحكم في نسبة السكر في الدم، في حين ترتبط المستويات الأعلى بإنقاص الوزن والتغييرات الغذائية.",
   "Prevotella" = "ترتبط بريفوتيلا عادةً بالأنظمة الغذائية الغنية بالألياف وأنماط الأكل القائمة على النباتات. وغالبًا ما توجد المستويات الأعلى لدى الأفراد الذين يستهلكون الحبوب الكاملة والبقوليات والخضروات. تشير بعض الدراسات إلى أن ارتفاع نسبة بريفوتيلا إلى باكتيرويديز قد يكون مفيدًا للتمثيل الغذائي للجلوكوز، ولكن النتائج مختلطة.",
   "Escherichia" = "تشمل الإشريكيَّة أنواع مفيدة وأنواع ضارة محتملة. في حين أن بعضها، مثل إشريكيَّة القولون، مهمة لصحة الأمعاء وإنتاج الفيتامينات، إلا أن البعض الآخر يمكن أن يرتبط بالتهاب الأمعاء والعدوى واضطرابات التمثيل الغذائي. يتأثر توازن أنواع الإشريكيَّة في الأمعاء بالنظام الغذائي والوظيفة المناعية.",
   "Bifidobacterium" = "بيفيدوباكتيريوم نوع من بروبيوتيك معروف يلعب دورًا رئيسيًا في صحة الأمعاء. وترتبط المستويات الأعلى بتحسين الهضم وتعزيز وظيفة المناعة وتحسين تنظيم نسبة السكر في الدم. وغالبا ما توجد في الأفراد الذين يستهلكون الأطعمة المخمرة والألياف بريبايوتك.",
   "Akkermansia muciniphila" = "أكيرمانسيا موسينيفيلا بكتيريا تنتمي إلى شُعبة فيروكوميكروبيا، المعروفة بدورها في الحفاظ على صحة الأمعاء. وتزدهر على مُوسين، مكون أساسي في طبقة المخاط التي تحمي بطانة الأمعاء، مما يساعد في دعم سلامة حاجز الأمعاء. لقد ارتبطت المستويات الأعلى من أكيرمانسيا موسينيفيلا بتحسين عملية التمثيل الغذائي، وتحسين الحساسية للأنسولين، وانخفاض الدهون في الجسم.",
-  "Dorea formicigenerans" = "دوريا فورميسيجينيرانس بكتيريا مِعَوية مرتبطة بصحة التمثيل الغذائي. وترتبط المستويات الأعلى من دوريا فورميسيجينيرانس بانخفاض وزن الجسم وتحسين التمثيل الغذائي. تشارك هذه البكتيريا في تخمير الألياف الغذائية، وإنتاج الأحماض الدهنية قصيرة السلسلة مثل بوتيرات، التي لها خواص مضادة للالتهابات وتدعم صحة الأمعاء."
+  "Dorea formicigenerans" = "دوريا فورميسيجينيرانس بكتيريا مِعَوية مرتبطة بصحة التمثيل الغذائي. وترتبط المستويات الأعلى من دوريا فورميسيجينيرانس بانخفاض وزن الجسم وتحسين التمثيل الغذائي. تشارك هذه البكتيريا في تخمر الألياف الغذائية، وإنتاج الأحماض الدهنية قصيرة السلسلة مثل بوتيرات، التي لها خواص مضادة للالتهابات وتدعم صحة الأمعاء."
 )
 
 bacteria_translations <- list(
-  "Bacteroidota" = "\\arabicfont{باكتيروديتس}",
-  "Bacillota" = "\\arabicfont{فيرميكيوتس}",
-  "Pseudomonadota" = "\\arabicfont{بروتيوباكتيريا}",
-  "Desulfovibrionaceae" = "\\arabicfont{ديسلفوفيبريوناسي}",
-  "Parabacteroides" = "\\arabicfont{باراباكتيرويديز}",
-  "Faecalibacterium" = "\\arabicfont{فيكالبكتريم}",
-  "Lactobacillus" = "\\arabicfont{لاكتوباسيلس}",
-  "Roseburia" = "\\arabicfont{روزبوريا}",
-  "Bacteroides" = "\\arabicfont{باكتيرويديز}",
-  "Prevotella" = "\\arabicfont{بريفوتيلا}",
-  "Escherichia" = "\\arabicfont{الإشريكيَّة}",
-  "Bifidobacterium" = "\\arabicfont{بيفيدوباكتيريوم}",
-  "Akkermansia muciniphila" = "\\arabicfont{أكيرمانسيا موسينيفيلا}",
-  "Dorea formicigenerans" = "\\arabicfont{دوريا فورميسيجينيرانس}"
+  "Bacteroidota" = "باكتيروديتس",
+  "Bacillota" = "فيرميكيوتس",
+  "Pseudomonadota" = "بروتيوباكتيريا",
+  "Desulfovibrionaceae" = "ديسلفوفيبريوناسي",
+  "Parabacteroides" = "باراباكتيرويديز",
+  "Faecalibacterium" = "فيكالبكتريم",
+  "Lactobacillus" = "لاكتوباسيلس",
+  "Roseburia" = "روزبوريا",
+  "Bacteroides" = "باكتيرويديز",
+  "Prevotella" = "بريفوتيلا",
+  "Escherichia" = "الإشريكيَّة",
+  "Bifidobacterium" = "بيفيدوباكتيريوم",
+  "Akkermansia muciniphila" = "أكيرمانسيا موسينيفيلا",
+  "Dorea formicigenerans" = "دوريا فورميسيجينيرانس"
 )
 
 readmore <- "\\arabicfont{هل ترغب في معرفة المزيد عن ميكروبيوم الأمعاء؟ فيما يلي بعض الموارد المفيدة:\n\n
@@ -95,7 +94,7 @@ create_infobox <- function(content, title) {
       "left=10pt, ",
       "right=5pt, ",
       "width=\\linewidth, ",
-      "halign=right, ", 
+      "halign=justify, ", 
       "title={", "\\begin{Arabic}", title, "\\end{Arabic}},",
       "coltitle=white, ",
       "fonttitle=\\sffamily\\bfseries, ",
@@ -117,7 +116,7 @@ create_warningbox <- function(content) {
       "left=10pt, ",
       "right=10pt, ",
       "width=\\linewidth, ", 
-      "halign=right, ",
+      "halign=justify, ",
       "title={", "\\begin{Arabic}", "إخلاء المسؤولية", "\\end{Arabic}}, ",
       "coltitle=white, ",
       "fonttitle=\\sffamily\\bfseries, ",
@@ -153,6 +152,24 @@ create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
   
   # End the tabular environment
   cat("\\end{tabular}\n\n")
+  cat("\\vspace{1em}\n\n")
+}
+
+create_side_by_side2 <- function(left_content, plot_filename, caption = NULL) {
+  cat("\\begin{minipage}{0.52\\textwidth}\n")
+  cat(left_content)
+  cat("\\end{minipage}\\hfill\n")
+  
+  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{figure}[H]\n")
+  cat("\\centering\n")
+  cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
+  if (!is.null(caption)) {
+    cat("\\caption{\\textit{", caption, "}}\n", sep="")
+  }
+  cat("\\end{figure}\n")
+  cat("\\end{minipage}\n\n")
+  
   cat("\\vspace{1em}\n\n")
 }
 
@@ -230,6 +247,8 @@ pie_phylum <- pie_phylum %>%
   arrange(desc(Percentage)) %>%
   mutate(
     group = ifelse(row_number() <= N, name, "Other species"),
+    name = fct_recode(name, "Bacteroides" = "Bacteroidota", "Firmicutes" = "Bacillota",
+              "Proteobacteria" = "Pseudomonadota"),
     label = ifelse(row_number() <= N, 
                   paste0(name, " (", round(Percentage, 1), "%)"),
                   paste0("Other groups (", round(other_phyl_pct, 1), "%)"))
@@ -238,7 +257,8 @@ pie_phylum <- pie_phylum %>%
   summarise(Percentage = sum(Percentage), .groups = "drop") %>%
   arrange(desc(Percentage)) %>%
   mutate(label = fct_inorder(label), 
-          label = fct_relevel(label, paste0("Other groups (", round(other_phyl_pct, 1), "\\%)"), after = 4L))
+          label = fct_relevel(label, paste0("Other groups (", round(other_phyl_pct, 1), "%)"),  
+                    after = 5L))
 
 # Get species-level data from abdata
 N <- 20
@@ -316,10 +336,9 @@ cat("\\newpage\n\n")
 
 ```{r diversity, echo=FALSE, results='asis', warning=FALSE}
 participant_data3 <- dfdiv %>% filter(ID == params$participant_id)
-cat("\\subsection*{\\arabicfont{تنوع البكتيريا}}\n\n")
+cat("\\subsection*{\\arabicfont{تنوع البكتيريا}}")
 
 cat(diversity)
-cat("\n\n")
 
 for (metric in c("Shannon index", "Species richness")) {
     med <- div_medians[[which(div_medians$var == "median"), metric]]
@@ -336,13 +355,11 @@ for (metric in c("Shannon index", "Species richness")) {
  
     # Add color formatting based on comparison
     comparison <- participant_data3[[metric]] > med
-
     metric_translations <- list(
       "مُعامل شانون" = "Shannon index",
       "ثراء الأنواع" = "Species richness"
     )
     metric_arabic <- names(metric_translations)[metric_translations == metric][1]
-
     colored_value <- ifelse(comparison,
                         paste0("\\textcolor{goodcolor}{\\textbf{\\texten{", participant_value, "}}}"),
                         paste0("\\textcolor{warncolor}{\\textbf{\\texten{", participant_value, "}}}"))
@@ -352,7 +369,7 @@ for (metric in c("Shannon index", "Species richness")) {
       div_explanations[[metric]],
       "كان المستوى المتوسط ",
       "ل", metric_arabic,
-      " في هذا المجتمع \\texten{", median_value, "}, ",
+      " في هذا المجتمع \\textbf{\\texten{", median_value, "}}, ",
       "وكان المستوى في عينتك ",
       colored_value, ". ",
       "\n\n"
@@ -379,10 +396,10 @@ for (metric in c("Shannon index", "Species richness")) {
         geom_point(aes(x = 1, y = .data[[metric]]), 
                    color = microbiome_colors$participant, size = 10, alpha = 1.0) +
         # Annotations with arrows
-        geom_segment(aes(x = 1.15, xend = 1.05, y = med[[1]], yend = med[[1]]), 
+        geom_segment(aes(x = 1.18, xend = 1.05, y = med[[1]], yend = med[[1]]), 
                      arrow = arrow(length = unit(0.3, "cm")), 
                      color = "black", linewidth = 0.8, alpha = 0.8) +
-        geom_segment(aes(x = 0.85, xend = 0.95, y = .data[[metric]], yend = .data[[metric]]), 
+        geom_segment(aes(x = 0.82, xend = 0.95, y = .data[[metric]], yend = .data[[metric]]), 
                      arrow = arrow(length = unit(0.3, "cm")), 
                      color = "black", linewidth = 0.8, alpha = 0.8) +
         # Text labels (horizontal, no angle)
@@ -406,8 +423,9 @@ cat("\\newpage\n\n")
 ```
 
 ```{r phyla, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{\\arabicfont{المجموعات البكتيرية الرئيسية}}\n\n")
+cat("\\subsection*{\\arabicfont{المجموعات الرئيسية للبكتيريا}}")
 
+# Now create the pie chart
 phylum_colors <- c("#FF6F00FF", "#C71000FF", "#008EA0FF", "#8A4198FF", "grey")
 pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
           geom_bar(stat = "identity", width = 1) +
@@ -417,14 +435,13 @@ pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
           theme_void() +
           theme(legend.position = "right", legend.text = element_text(size = 14),
                 text = element_text(family = "Montserrat"))
-ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 10, height = 3)
+ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 7, height = 5)
 
-create_side_by_side(phylum_explanation,
-                    "figures/report_piephylum.png")
+create_side_by_side2(phylum_explanation, "figures/report_piephylum.png")
 
 participant_data2 <- abdata_key %>% select(all_of(params$participant_id))
 keygroups <- as.data.frame(t(as.matrix(participant_data2)))
-for (taxon in names(keygroups)) {
+for (taxon in c("Bacteroidota", "Bacillota", "Pseudomonadota")) {
   # Generate plot data
   med <- abundance_medians[which(abundance_medians$var == "median"), taxon][[1]]
   upper <- abundance_medians[which(abundance_medians$var == "max"), taxon][[1]]
@@ -437,17 +454,19 @@ for (taxon in names(keygroups)) {
 
   # Create the result text with properly escaped percent signs
   taxon_title <- bacteria_translations[[taxon]]
-  # First prepare the colored value separately
-  colored_value <- ifelse(comparison,
-                        paste0("\\textcolor{goodcolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"),
-                        paste0("\\textcolor{warncolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"))
 
-  # Then build the complete string with simpler structure
+  # First prepare the colored value separately (keep this as is)
+  colored_value <- ifelse(comparison,
+                      paste0("\\textcolor{goodcolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"),
+                      paste0("\\textcolor{warncolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"))
+
+  # Then build the result string with the official format
   taxa_result <- paste0(
-    "كان المستوى المتوسط ل", taxon_title, " في هذا المجتمع \\textbf{\\texten{", med_formatted, "}}, ",
+    " كان المستوى المتوسط لـ ", taxon_title, " في هذا المجتمع \\textbf{\\texten{", med_formatted, "}}, ",
     "وكان المستوى في عينتك ",
     colored_value, "."
   )
+
   taxa_text <- paste0(main_groups[[taxon]], " ", taxa_result)
   infobox <- capture_infobox(taxa_text, taxon_title)
 
@@ -473,31 +492,31 @@ for (taxon in names(keygroups)) {
                color = microbiome_colors$participant, size = 10, alpha = 1.0) +
                
     # Annotations with arrows
-    geom_segment(aes(x = 1.2, xend = 1.05, y = med, yend = med), 
+    geom_segment(aes(x = 1.18, xend = 1.05, y = med, yend = med), 
                  arrow = arrow(length = unit(0.3, "cm")), 
-                 color = "black", linewidth = 0.8, alpha = 0.4) +
-    geom_segment(aes(x = 0.8, xend = 0.95, y = pt, yend = pt), 
+                 color = "black", linewidth = 0.8, alpha = 0.8) +
+    geom_segment(aes(x = 0.82, xend = 0.95, y = pt, yend = pt), 
                  arrow = arrow(length = unit(0.3, "cm")), 
-                 color = "black", linewidth = 0.8, alpha = 0.4) +
+                 color = "black", linewidth = 0.8, alpha = 0.8) +
                  
     # Fix for the participant annotation in the diversity block
-    annotate("text", x = 1.25, y = med[[1]], 
+    # Correct annotation code for phylum section:
+    annotate("text", x = 1.25, y = med, 
         label = "الوسيط السكاني", color = microbiome_colors$population, 
         size = 7, hjust = textplacing1, fontface = "bold", family = "Changa") +
-    annotate("text", x = 0.75, y = participant_data3[[metric]], 
-            label = "أنت", color = microbiome_colors$participant, 
-            size = 7, hjust = textplacing2, fontface = "bold", family = "Changa") +
-    scale_y_continuous(limits = c(0, upper[[1]]), expand = c(0, 0)) +
+    annotate("text", x = 0.75, y = pt, 
+        label = "أنت", color = microbiome_colors$participant, 
+        size = 7, hjust = textplacing2, fontface = "bold", family = "Changa") +
+    scale_y_continuous(limits = c(0, upper), expand = c(0, 0)) +  # Remove [[1]]
     theme_microbiome_report() +
-    labs(y = "المستويات بالنسب المئوية %", x = "") +
+    labs(y = "المستويات بالنسب المئوية", x = "") +
     coord_flip()
-
     plot_filename <- paste0("figures/report_", gsub(" ", "_", taxon), ".png")
     ggsave(filename = plot_filename, plot = pl, width = 8, height = 3)
     
     create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage\n\n")
+cat("\\newpage")
 ```
 
 ```{r species, echo=FALSE, results='asis', warning=FALSE}
@@ -536,7 +555,7 @@ for (taxon in names(specificbacteria)) {
     
   # Format numbers
   pt_formatted <- format(round(pt, 2), nsmall = 2)
-  med_formatted <- paste0("\\textbf{\\texten{", format(round(med, 2), nsmall = 2), "\\%}}")
+  med_formatted <- paste0("\\textbf{\\texten{\\%", format(round(med, 2), nsmall = 2), "}}")
   comparison <- pt > med
 
   # Properly escape percent signs with double backslashes
@@ -551,12 +570,13 @@ for (taxon in names(specificbacteria)) {
                         paste0("\\textcolor{goodcolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"),
                         paste0("\\textcolor{warncolor}{\\textbf{\\texten{\\%", pt_formatted, "}}}"))
 
-  # Then build the complete string with simpler structure
+  # Then build the complete string
   taxa_result <- paste0(
-    "كان المستوى المتوسط ل", taxon_title, " في هذا المجتمع \\textbf{\\texten{", med_formatted, "}}, ",
+    " كان المستوى المتوسط لـ ", taxon_title, " في هذا المجتمع \\textbf{\\texten{", med_formatted, "}}, ",
     "وكان المستوى في عينتك ",
     colored_value, "."
   )
+
   taxa_text <- paste0(taxa_explanations[[taxon]], " ", taxa_result)
   infobox <- capture_infobox(taxa_text, taxon_title)
   
@@ -587,12 +607,12 @@ for (taxon in names(specificbacteria)) {
                color = microbiome_colors$participant, size = 10, alpha = 1.0) +
                
     # Annotations with arrows
-    geom_segment(aes(x = 1.2, xend = 1.05, y = med + pseudocount, yend = med + pseudocount), 
+    geom_segment(aes(x = 1.18, xend = 1.05, y = med + pseudocount, yend = med + pseudocount), 
                  arrow = arrow(length = unit(0.3, "cm")), 
-                 color = "black", linewidth = 0.8, alpha = 0.4) +
-    geom_segment(aes(x = 0.8, xend = 0.95, y = pt + pseudocount, yend = pt + pseudocount), 
+                 color = "black", linewidth = 0.8, alpha = 0.8) +
+    geom_segment(aes(x = 0.82, xend = 0.95, y = pt + pseudocount, yend = pt + pseudocount), 
                  arrow = arrow(length = unit(0.3, "cm")), 
-                 color = "black", linewidth = 0.8, alpha = 0.4) +
+                 color = "black", linewidth = 0.8, alpha = 0.8) +
                  
     # Text labels
     annotate("text", x = 1.25, y = med + pseudocount, 
