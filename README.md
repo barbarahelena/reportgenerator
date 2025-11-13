@@ -45,7 +45,7 @@ To install the CLI, follow these steps:
 - LaTeX distribution (TinyTex)
 
 ### Mamba environment
-I recommend using the env.yml in this folder to make a mamba (or conda) environment, so that you have all R packages you need.
+It is recommended to use the env.yml in this folder to make a mamba (or conda) environment, so that you have all R packages you need. After that, you can install tinytex with quarto:
 
 ```sh
 mamba create -f env.yml
@@ -112,7 +112,7 @@ The test uses an example minimal abudance table from the testfolder of the packa
 ### Command Line Options
 | Option | Description | Required? | Default |
 |--------|-------------|-----------|---------|
-| `-a, --abundance` | Path to abundance table file | **REQUIRED** | - |
+| `-a, --abundance` | Path to abundance table file | Required | - |
 | `-p, --template` | Path to report template | Optional | templates/report_template.qmd |
 | `-i, --infosheet` | Path to physician info template | Optional | templates/physician_info_template.qmd | 
 | `-o, --output` | Output directory for reports | Optional | reports |
@@ -126,7 +126,10 @@ The abundance table should be a tab-delimited file with the following format:
 - Second column: Taxonomic rank (D, P, C, O, F, G, S)
 - Remaining columns: Sample abundances with names like `Sample001.kraken2.report_bracken`
 
-The following taxonomy should occur in your table: Bacteroidota, Bacillota, Pseudomonadota, Parabacteroides, Odoribacter, Blautia, Faecalibacterium, Verrucomicrobiota, Anaerostipes, Lactobacillus, Roseburia, Akkermansia muciniphila, Dorea formicigenerans, Desulfovibrionaceae, Bacteroides, Prevotella, Escherichia, Bifidobacterium. Note that taxonomic names such as Bacteroidota and Bacillota were updated around 2021. If you're using an older database, these might be named differently.
+The following taxonomy should occur in your table for the reports to be generated: Bacteroidota, Bacillota, Pseudomonadota, Parabacteroides, Odoribacter, Blautia, Faecalibacterium, Verrucomicrobiota, Anaerostipes, Lactobacillus, Roseburia, Akkermansia muciniphila, Dorea formicigenerans, Desulfovibrionaceae, Bacteroides, Prevotella, Escherichia, Bifidobacterium. To make sure that the pie chart with all species is correct, you should leave all species in the abundance table.
+
+> [!WARNING]
+> Note that taxonomic names such as Bacteroidota and Bacillota were updated around 2021. If you're using an older database, these might be named differently.
 
 ## Output
 The tool generates:
