@@ -27,7 +27,7 @@ The following R packages will be automatically installed if missing:
 
 **Test packages (only needed when running tests):** testthat, mockery and R6.
 
-You can also install them manually:
+These are already part of the mamba environment (see above), so in that case you can skip this step. Alternatively, you can install the R packages manually:
 
 ```r
 # Install core packages
