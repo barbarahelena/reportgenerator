@@ -43,7 +43,7 @@ if (!file.exists(test_abundance_path)) {
   
   # Create test data matching your real data structure
   mock_abundance <- data.frame(
-    name = c("Bacteroidetes", "Firmicutes", "Proteobacteria", "Parabacteroides", 
+    name = c("Bacteroidota", "Bacillota", "Pseudomonadota", "Parabacteroides", 
              "Odoribacter", "Blautia", "Faecalibacterium", "Verrucomicrobia",
              "Anaerostipes", "Lactobacillus", "Roseburia", 
              "Akkermansia muciniphila", "Dorea formicigenerans", 
@@ -78,7 +78,7 @@ test_that("generate_report runs without errors", {
       ab_path = test_abundance_path,
       template_path = templ,
       infosheet_path = info,
-      output_dir = "test_reports",
+      output_dir = output_dir,
       sample_prefix = "Sample"
     ), 
     NA
@@ -87,7 +87,6 @@ test_that("generate_report runs without errors", {
 
 # Test that the output directory is created
 test_that("output directory is created", {
-  output_dir <- "test_reports"
   if (dir.exists(output_dir)) {
     unlink(output_dir, recursive = TRUE)
   }
@@ -102,10 +101,12 @@ test_that("output directory is created", {
     template_path = templ,
     infosheet_path = info,
     output_dir = output_dir,
-    sample_prefix = "Sample"
+    sample_prefix = "Sample",
+    language = c("en", "ar", "he", "ru")
   )
   
   expect_true(dir.exists(output_dir))
+  expect_true(dir.exists(file.path(output_dir, "english")))
 })
 
 # Test error handling
@@ -132,21 +133,29 @@ test_that("generate_report generates reports using actual templates", {
   expect_true(file.exists(templ), info = "Report template not found.")
   expect_true(file.exists(info), info = "Physician info template not found.")
 
-  # Call the generate_report function
+  dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+
+  # Call the generate_report function (default is English)
   generate_report(
     ab_path = test_abundance_path,
     template_path = templ,
     infosheet_path = info,
     output_dir = output_dir,
-    sample_prefix = "Sample"
+    sample_prefix = "Sample",
+    language = c("en")
   )
   
-  # Check that at least one report is generated
-  report_files <- list.files(output_dir, pattern = "report_.*\\.pdf", full.names = TRUE)
-  expect_true(length(report_files) > 0, info = "No participant reports were generated.")
+  # Check that language subfolder is created in work_dir
+  expected_output_dir <- file.path(work_dir, output_dir)
+  english_folder <- file.path(expected_output_dir, "english")
+  expect_true(dir.exists(english_folder), info = "English language folder was not created.")
   
-  # Check that the physician info sheet is generated
-  info_sheet <- file.path(output_dir, "physician_info.pdf")
+  # Check that at least one report is generated in the language folder
+  report_files <- list.files(english_folder, pattern = "report_.*_en\\.pdf", full.names = TRUE)
+  expect_true(length(report_files) > 0, info = "No participant reports were generated in english folder.")
+  
+  # Check that the physician info sheet is generated in main output directory
+  info_sheet <- file.path(expected_output_dir, "physician_info.pdf")
   expect_true(file.exists(info_sheet), info = "Physician info sheet was not generated.")
 
 })

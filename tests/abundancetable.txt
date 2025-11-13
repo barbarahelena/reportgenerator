@@ -1,12 +1,12 @@
 name	rank	SampleTEST000.kraken2.report_bracken	SampleTEST001.kraken2.report_bracken	SampleTEST002.kraken2.report_bracken
-Bacteroidetes	P	55.13	31.04	50.12
-Firmicutes	P	28.76	49.45	30.45
-Proteobacteria	P	5.42	7.91	4.89
+Bacteroidota	P	55.13	31.04	50.12
+Bacillota	P	28.76	49.45	30.45
+Pseudomonadota	P	5.42	7.91	4.89
 Parabacteroides	G	4.81	2.14	6.32
 Odoribacter	G	0.76	0.31	1.25
 Blautia	G	6.18	9.65	3.78
 Faecalibacterium	G	1.75	10.27	9.14
-Verrucomicrobia	P	5.25	4.76	2.87
+Verrucomicrobiota	P	5.25	4.76	2.87
 Anaerostipes	G	1.86	3.45	3.12
 Lactobacillus	G	0.42	2.58	0.98
 Roseburia	G	1.53	3.98	5.67
