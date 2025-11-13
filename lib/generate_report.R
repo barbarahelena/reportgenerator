@@ -29,6 +29,11 @@ generate_report <- function(ab_path,
                             sample_prefix = "Sample",
                             language = c("en")) {
 
+  # Normalize ALL input paths to avoid symlink issues
+  ab_path <- normalizePath(ab_path, mustWork = TRUE)
+  template_path <- normalizePath(template_path, mustWork = TRUE)
+  infosheet_path <- normalizePath(infosheet_path, mustWork = TRUE)
+  
   abdata <- utils::read.delim(ab_path)
   bracken_cols <- grep("report_bracken", colnames(abdata), value = TRUE)
   abdata_filt <- abdata[, bracken_cols, drop = FALSE]
@@ -36,8 +41,17 @@ generate_report <- function(ab_path,
     new_names <- gsub(paste0(sample_prefix, "(.+)\\.kraken2\\.report_bracken"), "\\1", bracken_cols)
     colnames(abdata_filt) <- new_names
   }
-  report_home <- Sys.getenv("REPORT_GENERATOR_HOME", getwd())
-  work_dir <- Sys.getenv("WORKING_DIR", getwd())
+  
+  # Normalize environment paths 
+  report_home <- normalizePath(Sys.getenv("REPORT_GENERATOR_HOME", getwd()), mustWork = TRUE)
+  work_dir <- normalizePath(Sys.getenv("WORKING_DIR", getwd()), mustWork = TRUE)
+  # cat("Using work dir:", work_dir, "\n")
+  
+  # Create and normalize output directory
+  dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+  output_dir <- normalizePath(output_dir, mustWork = TRUE)
+  # cat("Using output dir:", output_dir, "\n")
+  
   date_string <- format(Sys.Date(), "%B %Y")
 
   # Language mapping for folders and suffixes
@@ -50,9 +64,9 @@ generate_report <- function(ab_path,
 
   # For each language, create appropriate directories and render reports
   for (lang in language) {
-    # Set up template path based on language
+    # Set up template path based on language - normalize all paths
     if (lang == "he") {
-      template_path <- file.path(report_home, "templates/report_template_hebrew.qmd")
+      template_path <- normalizePath(file.path(report_home, "templates/report_template_hebrew.qmd"))
       preamble_path <- file.path(report_home, "templates/preamble_hebrew.tex")
       
       # Try to detect available Hebrew fonts
@@ -160,7 +174,7 @@ generate_report <- function(ab_path,
       writeLines(preamble_content, preamble_path)
 
     } else if (lang == "ru") {
-      template_path <- file.path(report_home, "templates/report_template_russian.qmd")
+      template_path <- normalizePath(file.path(report_home, "templates/report_template_russian.qmd"))
       preamble_path <- file.path(report_home, "templates/preamble_russian.tex")
       
       # Try to detect available Russian fonts
@@ -269,7 +283,7 @@ generate_report <- function(ab_path,
       writeLines(preamble_content, preamble_path)
 
     } else if (lang == "ar") {
-      template_path <- file.path(report_home, "templates/report_template_arabic.qmd")
+      template_path <- normalizePath(file.path(report_home, "templates/report_template_arabic.qmd"))
       preamble_path <- file.path(report_home, "templates/preamble_arabic.tex")
       
       # Try to detect available Arabic fonts
@@ -465,33 +479,42 @@ generate_report <- function(ab_path,
     # Create output subfolder for this language
     lang_folder <- file.path(output_dir, lang_map[[lang]]$folder)
     dir.create(lang_folder, showWarnings = FALSE, recursive = TRUE)
-    cat("Created language folder:", lang_folder, "\n")
+    # cat("Created language folder:", lang_folder, "\n")
     
     # Add debug information
-    cat("Template path:", template_path, "\n")
-    cat("Number of participants:", length(colnames(abdata_filt)), "\n")
+    # cat("Template path:", template_path, "\n")
+    # cat("Number of participants:", length(colnames(abdata_filt)), "\n")
     
     # Loop through participants and make report
+    original_wd <- getwd()
     setwd(report_home)
-    cat(paste0("This is the kraken table: ", ab_path, "\n"))
-    for (participant_id in colnames(abdata_filt)[1]) {
+    
+    for (participant_id in colnames(abdata_filt)) {
       cat("Processing participant:", participant_id, "\n")
       output_file <- paste0("report_", participant_id, lang_map[[lang]]$suffix, ".pdf")
-      command <- paste0("quarto render ", template_path, " -P participant_id:'", participant_id, "'",
-                    " -P abundance_file_path:'", ab_path, "'",
-                    " -P sample_prefix:'", sample_prefix, "'",
-                    " --output ", output_file)
-      cat("Executing command:", command, "\n")
+      
+      command <- paste0("quarto render ", shQuote(template_path), " -P participant_id:", shQuote(participant_id),
+                    " -P abundance_file_path:", shQuote(ab_path),
+                    " -P sample_prefix:", shQuote(sample_prefix),
+                    " --output ", shQuote(output_file))
+      
       system(command)
-      system(paste0("mv ", output_file, " ", lang_folder))
+      # Quarto creates files as ../filename, so look there directly
+      target_path <- file.path(lang_folder, output_file)
+
+      system(paste("mv", shQuote(output_file), shQuote(target_path)))
     }
+    
+    setwd(original_wd)
   }
   
   # Generate information sheet for physicians
-  command <- paste0("quarto render ", infosheet_path, " --output ", "physician_info.pdf")
-  system(command)
-  system(paste0("mv physician_info.pdf ", output_dir))
+  setwd(report_home)
+  system(paste0("quarto render ", shQuote(infosheet_path), " --output physician_info.pdf"))
+  if (file.exists("physician_info.pdf")) {
+    system(paste("mv", shQuote("physician_info.pdf"), shQuote(file.path(output_dir, "physician_info.pdf"))))
+  }
+  setwd(original_wd)
 
-
-  cat("\nReport generation complete.\n")
+  cat("\nReport content generation complete, proceed to rendering.\n")
 }

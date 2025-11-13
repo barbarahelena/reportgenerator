@@ -1,7 +1,7 @@
 # File: /generate-reports-cli/run.R
 
 # Check required packages and load silently
-required_packages <- c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr", "vegan")
+required_packages <- c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr", "vegan", "rmarkdown")
 for (pkg in required_packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     cat(paste("Package", pkg, "is required but not installed.\n"))
@@ -17,7 +17,7 @@ suppressPackageStartupMessages({
 
 # Get the installation and work directory
 report_home <- Sys.getenv("REPORT_GENERATOR_HOME", getwd())
-cat(paste0("This is the home folder I'm using: ", report_home, "\n"))
+# cat(paste0("This is the home folder I'm using: ", report_home, "\n"))
 work_dir <- Sys.getenv("WORKING_DIR", "")
 
 # Define command-line options with proper default paths
