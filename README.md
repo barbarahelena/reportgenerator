@@ -11,23 +11,27 @@ This project provides a command line interface for generating reports from a Kra
 - Bash shell environment
 - LaTeX distribution (TinyTex)
 
-### Mamba environment
-It is recommended to use the env.yml in this folder to make a mamba (or conda) environment, so that you have all R packages you need. After that, you can install tinytex with quarto:
+### Mamba environment and tinytex installation
+It is recommended to use the env.yml in this folder to make a mamba (or conda) environment, so that you have all R packages you need.
 
 ```sh
 mamba create -f env.yml
 mamba activate reports
+```
+
+After that, you can install tinytex with quarto:
+```
 quarto install tinytex
 ```
 
-### R Packages
+### Alternative: Install R Packages
 The following R packages will be automatically installed if missing:
 
 **Core packages:** dplyr, stringr, ggplot2, optparse, forcats, tidyr, vegan and rmarkdown.
 
 **Test packages (only needed when running tests):** testthat, mockery and R6.
 
-These are already part of the mamba environment (see above), so in that case you can skip this step. Alternatively, you can install the R packages manually:
+Alternatively, you can install the R packages manually:
 
 ```r
 # Install core packages
