@@ -75,9 +75,9 @@ The reports need a number of fonts, depending on the language:
 - Roboto
 - Noto Sans Hebrew
 - Noto Sans Arabic
-You can get them via [Google Fonts](https://fonts.google.com/share?selection.family=Montserrat:ital,wght@0,100..900;1,100..900|Noto+Sans+Arabic:wght@100..900|Noto+Sans+Hebrew:wght@100..900|Roboto:ital,wght@0,100..900;1,100..900). 
 
-To install these fonts, download them, unzip, move them to your fonts folder and update the font cache, for example:
+You can get them via [Google Fonts](https://fonts.google.com/share?selection.family=Montserrat:ital,wght@0,100..900;1,100..900|Noto+Sans+Arabic:wght@100..900|Noto+Sans+Hebrew:wght@100..900|Roboto:ital,wght@0,100..900;1,100..900). To install these fonts, download them, unzip, move them to your fonts folder and update the font cache, for example:
+
 ```sh
 # Unzip and move to your fonts folder
 unzip 'Montserrat,Noto_Sans_Arabic,Noto_Sans_Hebrew,Roboto.zip'
@@ -134,15 +134,8 @@ The tool generates:
 - A general information sheet (physician_info.pdf)
 - All files are saved to the specified output directory
 
-## HPC Usage
-When using on an HPC system, you may need to load the required modules:
-```bash
-module load R module load quarto
-```
-Or activate a mamba environment with the dependencies needed for this tool.
-
 ## Development
-To modify templates, edit files in the `templates/` directory.
+To modify templates, edit files in the `templates/` directory. Run `setup.sh` again to make sure that you can use the updated `reportgenerator` on the command line.
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any enhancements or bug fixes.
