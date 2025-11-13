@@ -122,7 +122,7 @@ The test uses an example minimal abudance table from the testfolder of the packa
 | `-t, --test` | Run tests instead of normal operation | Optional | FALSE |
 
 ### Input Format
-The abundance table should be a tab-delimited file with the following format:
+The Kraken-style Bracken abundance table should be a tab-delimited file with the following format:
 - First column: Taxonomic name 
 - Second column: Taxonomic rank (D, P, C, O, F, G, S)
 - Remaining columns: Sample abundances with names like `Sample001.kraken2.report_bracken`. If the column names start with a number, an X will be appended for the sample ID in the report IDs.
