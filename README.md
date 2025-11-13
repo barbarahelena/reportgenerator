@@ -116,7 +116,7 @@ The test uses an example minimal abudance table from the testfolder of the packa
 | `-p, --template` | Path to report template | Optional | templates/report_template.qmd |
 | `-i, --infosheet` | Path to physician info template | Optional | templates/physician_info_template.qmd | 
 | `-o, --output` | Output directory for reports | Optional | reports |
-| `-s, --sample` | Sample prefix in column names | Optional | Sample |
+| `-s, --sample` | Sample prefix in column names that will be stripped off | Optional | Sample |
 | `-l, --language` | Languages needed, comma-separated | Optional | en,he,ru,ar (all languages) |
 | `-t, --test` | Run tests instead of normal operation | Optional | FALSE |
 
