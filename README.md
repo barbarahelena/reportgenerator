@@ -42,32 +42,53 @@ To install the CLI, follow these steps:
 - R (version 4.0 or higher)
 - Quarto (version 1.3 or higher)
 - Bash shell environment
+- LaTeX distribution (TinyTex)
+
+### Mamba environment
+I recommend using the env.yml in this folder to make a mamba (or conda) environment, so that you have all R packages you need.
+
+```sh
+mamba create -f env.yml
+mamba activate reports
+quarto install tinytex
+```
 
 ### R Packages
 The following R packages will be automatically installed if missing:
 
-**Core packages:**
-- dplyr: For data manipulation
-- stringr: For string handling
-- ggplot2: For generating visualizations
-- optparse: For command line argument parsing
-- forcats: For factor level manipulation
-- tidyr: For data reshaping
-- vegan: For diversity indices
+**Core packages:** dplyr, stringr, ggplot2, optparse, forcats, tidyr, vegan and rmarkdown.
+**Test packages (only needed when running tests):** testthat, mockery and R6.
 
-**Test packages (only needed when running tests):**
-- testthat: For unit testing
-- mockery: For mocking in tests
-- R6: For test reporter classes
-
-All required R packages are automatically installed when first running the tool. If you prefer to install them manually:
+You can also install them manually:
 
 ```r
 # Install core packages
-install.packages(c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr", "vegan"))
+install.packages(c("dplyr", "stringr", "ggplot2", "optparse", "forcats", "tidyr", "vegan", "rmarkdown"))
 
 # Install test packages (optional)
 install.packages(c("testthat", "mockery", "R6"))
+```
+
+### Install fonts
+The reports need a number of fonts, depending on the language:
+- Montserrat
+- Roboto
+- Noto Sans Hebrew
+- Noto Sans Arabic
+You can get them via [Google Fonts](https://fonts.google.com/share?selection.family=Montserrat:ital,wght@0,100..900;1,100..900|Noto+Sans+Arabic:wght@100..900|Noto+Sans+Hebrew:wght@100..900|Roboto:ital,wght@0,100..900;1,100..900). 
+
+To install these fonts, download them, unzip, move them to your fonts folder and update the font cache, for example:
+```sh
+# Unzip and move to your fonts folder
+unzip 'Montserrat,Noto_Sans_Arabic,Noto_Sans_Hebrew,Roboto.zip'
+cd 'Montserrat,Noto_Sans_Arabic,Noto_Sans_Hebrew,Roboto'
+find . -name "*.ttf" -exec cp {} ~/.local/share/fonts/ \;
+
+# Update font cache
+fc-cache -f -v 
+
+# List fonts to check 
+fc-list || ls ~/.local/share/fonts/
 ```
 
 ## Usage
@@ -96,6 +117,7 @@ The test uses an example minimal abudance table from the testfolder of the packa
 | `-i, --infosheet` | Path to physician info template | Optional | templates/physician_info_template.qmd | 
 | `-o, --output` | Output directory for reports | Optional | reports |
 | `-s, --sample` | Sample prefix in column names | Optional | Sample |
+| `-l, --language` | Languages needed, comma-separated | Optional | en,he,ru,ar (all languages) |
 | `-t, --test` | Run tests instead of normal operation | Optional | FALSE |
 
 ### Input Format
@@ -103,6 +125,8 @@ The abundance table should be a tab-delimited file with the following format:
 - First column: Taxonomic name 
 - Second column: Taxonomic rank (D, P, C, O, F, G, S)
 - Remaining columns: Sample abundances with names like `Sample001.kraken2.report_bracken`
+
+The following taxonomy should occur in your table: Bacteroidota, Bacillota, Pseudomonadota, Parabacteroides, Odoribacter, Blautia, Faecalibacterium, Verrucomicrobiota, Anaerostipes, Lactobacillus, Roseburia, Akkermansia muciniphila, Dorea formicigenerans, Desulfovibrionaceae, Bacteroides, Prevotella, Escherichia, Bifidobacterium. Note that taxonomic names such as Bacteroidota and Bacillota were updated around 2021. If you're using an older database, these might be named differently.
 
 ## Output
 The tool generates:
