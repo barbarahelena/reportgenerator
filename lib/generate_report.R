@@ -70,8 +70,8 @@ generate_report <- function(ab_path,
       preamble_path <- file.path(report_home, "templates/preamble_hebrew.tex")
       
       # Try to detect available Hebrew fonts
-      font_check <- system("fc-list | grep -i hebrew", intern = TRUE, ignore.stderr = TRUE)
-      open_sans_check <- system("fc-list | grep -i 'open sans'", intern = TRUE, ignore.stderr = TRUE)
+      font_check <- system("fc-list | grep -i hebrew")
+      open_sans_check <- system("fc-list | grep -i 'open sans'")
       
       # Set default Hebrew font
       hebrew_font <- "DejaVu Sans"  # Default final fallback
@@ -178,11 +178,11 @@ generate_report <- function(ab_path,
       preamble_path <- file.path(report_home, "templates/preamble_russian.tex")
       
       # Try to detect available Russian fonts
-      roboto_check <- system("fc-list | grep -i 'roboto'", intern = TRUE, ignore.stderr = TRUE)
+      roboto_check <- system("fc-list | grep -i 'roboto'")
       if (any(grepl("Roboto", roboto_check))) {
         russian_font <- "Roboto"
       } else{
-        font_check <- system("fc-list | grep -i 'cyrillic\\|russian'", intern = TRUE, ignore.stderr = TRUE)
+        font_check <- system("fc-list | grep -i 'cyrillic\\|russian'")
         fallback_font <- "DejaVu Sans"
         if (any(grepl("PT Sans", font_check))) {
           russian_font <- "PT Sans"
@@ -286,14 +286,16 @@ generate_report <- function(ab_path,
       template_path <- normalizePath(file.path(report_home, "templates/report_template_arabic.qmd"))
       preamble_path <- file.path(report_home, "templates/preamble_arabic.tex")
       
-      # Try to detect available Arabic fonts
-      noto_check <- system("fc-list | grep -i 'noto sans arabic'", intern = TRUE, ignore.stderr = TRUE)
+      # Use DejaVu Sans as fallback for Arabic
       fallback_font <- "DejaVu Sans"
+      noto_check <- system("fc-list | grep -i 'Noto Sans Arabic'")
+      
       if (any(grepl("Noto", noto_check))) {
         arabic_font <- "Noto Sans Arabic"
-      } else{
-        arabic_font <- fallback_font  # Default final fallback
+      } else {
+        arabic_font <- fallback_font
       }
+      
       cat("Using Arabic font:", arabic_font, "\n")
 
       # Create Arabic month names mapping
@@ -324,8 +326,8 @@ generate_report <- function(ab_path,
         "% Configure Arabic fonts",
         paste0("\\newfontfamily\\arabicfont{", arabic_font, "}[Script=Arabic]"),
         paste0("\\setmainfont{", arabic_font, "}"),
-        "\\setsansfont{Changa}",
-        "\\newfontfamily\\montserratfont{Montserrat}[Scale=MatchLowercase]",
+        paste0("\\setsansfont{", fallback_font, "}"),
+        "\\newfontfamily\\montserratfont{DejaVu Sans}[Scale=MatchLowercase]",
         "",
         "% Define colors",
         "\\definecolor{maincolor}{RGB}{0, 114, 181}",

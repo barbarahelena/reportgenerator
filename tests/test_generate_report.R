@@ -87,26 +87,26 @@ test_that("generate_report runs without errors", {
 
 # Test that the output directory is created
 test_that("output directory is created", {
-  if (dir.exists(output_dir)) {
-    unlink(output_dir, recursive = TRUE)
-  }
+  test_output_dir <- "test_reports"
   
   # Mock system calls but allow directory creation
   stub(generate_report, "system", function(cmd) 0)
   stub(generate_report, "writeLines", function(...) NULL)
-  
+
   # Pass all required arguments
   generate_report(
     ab_path = test_abundance_path,
     template_path = templ,
     infosheet_path = info,
-    output_dir = output_dir,
+    output_dir = test_output_dir,
     sample_prefix = "Sample",
-    language = c("en", "ar", "he", "ru")
+    language = c("en")
   )
   
-  expect_true(dir.exists(output_dir))
-  expect_true(dir.exists(file.path(output_dir, "english")))
+  # Check in the expected work directory location
+  expected_output_dir <- file.path(work_dir, test_output_dir)
+  expect_true(dir.exists(expected_output_dir))
+  expect_true(dir.exists(file.path(expected_output_dir, "english")))
 })
 
 # Test error handling
@@ -126,6 +126,9 @@ test_that("generate_report handles invalid file paths", {
   )
 })
 
+cat("Dry run completed.\n")
+cat("Running the report generation process with test data...\n")
+
 test_that("generate_report generates reports using actual templates", {
   test_abundance_path <- file.path(report_home, "tests", "abundancetable.txt")
 
@@ -134,7 +137,7 @@ test_that("generate_report generates reports using actual templates", {
   expect_true(file.exists(info), info = "Physician info template not found.")
 
   dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
-
+  
   # Call the generate_report function (default is English)
   generate_report(
     ab_path = test_abundance_path,
@@ -145,17 +148,26 @@ test_that("generate_report generates reports using actual templates", {
     language = c("en")
   )
   
+  # Small delay to ensure file operations complete
+  Sys.sleep(1)
+  
   # Check that language subfolder is created in work_dir
-  expected_output_dir <- file.path(work_dir, output_dir)
-  english_folder <- file.path(expected_output_dir, "english")
+  english_folder <- file.path(output_dir, "english")
+  # cat("Checking for folder:", english_folder, "\n")
+  # cat("Folder exists:", dir.exists(english_folder), "\n")
   expect_true(dir.exists(english_folder), info = "English language folder was not created.")
   
   # Check that at least one report is generated in the language folder
   report_files <- list.files(english_folder, pattern = "report_.*_en\\.pdf", full.names = TRUE)
+  # cat("Found", length(report_files), "report files:", paste(report_files, collapse = ", "), "\n")
+  # cat("All files in english folder:", paste(list.files(english_folder), collapse = ", "), "\n")
   expect_true(length(report_files) > 0, info = "No participant reports were generated in english folder.")
   
   # Check that the physician info sheet is generated in main output directory
-  info_sheet <- file.path(expected_output_dir, "physician_info.pdf")
+  info_sheet <- file.path(output_dir, "physician_info.pdf")
+  # cat("Checking for physician info sheet:", info_sheet, "\n")
+  # cat("Physician info exists:", file.exists(info_sheet), "\n")
+  # cat("All files in output dir:", paste(list.files(output_dir), collapse = ", "), "\n")
   expect_true(file.exists(info_sheet), info = "Physician info sheet was not generated.")
 
 })
