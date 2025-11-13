@@ -194,12 +194,14 @@ microbiome_colors <- list(
 ```{r setup, include=FALSE}
 # Silently load required packages
 suppressPackageStartupMessages({
-  library(dplyr)      # For data manipulation
-  library(ggplot2)    # For plotting
-  library(stringr)    # For string manipulation
-  library(forcats)    # For factor manipulation
-  library(tidyr)      # For pivot_longer and pivot_wider
-  library(vegan)      # For diversity indices
+  suppressMessages({
+    library(dplyr)      # For data manipulation
+    library(ggplot2)    # For plotting
+    library(stringr)    # For string manipulation
+    library(forcats)    # For factor manipulation
+    library(tidyr)      # For pivot_longer and pivot_wider
+    library(vegan)      # For diversity indices
+  })
 })
 
 # Load data
