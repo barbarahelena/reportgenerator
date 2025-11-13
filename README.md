@@ -3,39 +3,6 @@
 ## Overview
 This project provides a command line interface for generating reports from a Kraken-style Bracken abundance table. The reports are generated using templates and can be customized based on participant data. This package was made for a project in the Elinav Lab (Weizmann Institute of Science, DKFZ Heidelberg).
 
-## Installation
-To install the CLI, follow these steps:
-
-1. **Download or clone the repository** to your local directory.
-
-2. **Run the setup script** to install the CLI. You can run the script without any arguments to install it to the default directory (`~/bin`), or specify a custom directory.
-
-   ```sh
-   sh setup.sh
-   ```
-
-   Or, to specify a custom directory:
-
-   ```sh
-   sh setup.sh /path/to/custom/dir
-   ```
-
-3. **Ensure the target directory is in your PATH**. When prompted by the script, say 'yes' if you want the report generator to be available in your path. Otherwise manually: If you installed the CLI to `~/bin`, add the following line to your shell profile (e.g., `.bashrc`), followed by a command to reload your shell profile:
-
-   ```sh
-   export PATH="$HOME/bin:$PATH"
-   source ~/.bashrc
-   ```
-   If you specified a custom directory, replace `~/bin` with your custom directory path.
-
-4. **Verify the installation** by running the `reportgenerator` command:
-
-   ```sh
-   reportgenerator --help
-   ```
-
-   This should display the help message for the `reportgenerator` script, confirming that the installation was successful.
-
 ## Dependencies
 
 ### System Requirements
@@ -57,6 +24,7 @@ quarto install tinytex
 The following R packages will be automatically installed if missing:
 
 **Core packages:** dplyr, stringr, ggplot2, optparse, forcats, tidyr, vegan and rmarkdown.
+
 **Test packages (only needed when running tests):** testthat, mockery and R6.
 
 You can also install them manually:
@@ -91,6 +59,39 @@ fc-cache -f -v
 fc-list || ls ~/.local/share/fonts/
 ```
 
+## Installation
+To install the CLI, follow these steps:
+
+1. **Download or clone the repository** to your local directory.
+
+2. **Run the setup script** to install the CLI. You can run the script without any arguments to install it to the default directory (`~/bin`), or specify a custom directory.
+
+   ```sh
+   sh setup.sh
+   ```
+
+   Or, to specify a custom directory:
+
+   ```sh
+   sh setup.sh /path/to/custom/dir
+   ```
+
+3. **Ensure the target directory is in your PATH**. When prompted by the script, say 'yes' if you want the report generator to be available in your path. Otherwise manually: If you installed the CLI to `~/bin`, add the following line to your shell profile (e.g., `.bashrc`), followed by a command to reload your shell profile:
+
+   ```sh
+   export PATH="$HOME/bin:$PATH"
+   source ~/.bashrc
+   ```
+   If you specified a custom directory, replace `~/bin` with your custom directory path.
+
+4. **Verify the installation** by running the `reportgenerator` command:
+
+   ```sh
+   reportgenerator --help
+   ```
+
+   This should display the help message for the `reportgenerator` script, confirming that the installation was successful.
+
 ## Usage
 To generate a report, use the `reportgenerator` command followed by the necessary arguments. For example:
 
@@ -107,7 +108,7 @@ Running tests:
 ```bash
 reportgenerator --test
 ```
-The test uses an example minimal abudance table from the testfolder of the package.
+The test uses an example minimal abudance table from the testfolder of the package; it creates three English reports and a physician info report in a test_reports folder in your current directory.
 
 ### Command Line Options
 | Option | Description | Required? | Default |
@@ -116,24 +117,24 @@ The test uses an example minimal abudance table from the testfolder of the packa
 | `-p, --template` | Path to report template | Optional | templates/report_template.qmd |
 | `-i, --infosheet` | Path to physician info template | Optional | templates/physician_info_template.qmd | 
 | `-o, --output` | Output directory for reports | Optional | reports |
-| `-s, --sample` | Sample prefix in column names that will be stripped off | Optional | Sample |
-| `-l, --language` | Languages needed, comma-separated | Optional | en,he,ru,ar (all languages) |
+| `-s, --sample` | Sample prefix in column names that will be stripped off in the report | Optional | - |
+| `-l, --language` | Languages, comma-separated | Optional | en,he,ru,ar (all languages) |
 | `-t, --test` | Run tests instead of normal operation | Optional | FALSE |
 
 ### Input Format
 The abundance table should be a tab-delimited file with the following format:
 - First column: Taxonomic name 
 - Second column: Taxonomic rank (D, P, C, O, F, G, S)
-- Remaining columns: Sample abundances with names like `Sample001.kraken2.report_bracken`
+- Remaining columns: Sample abundances with names like `Sample001.kraken2.report_bracken`. If the column names start with a number, an X will be appended for the sample ID in the report IDs.
 
 The following taxonomy should occur in your table for the reports to be generated: Bacteroidota, Bacillota, Pseudomonadota, Parabacteroides, Odoribacter, Blautia, Faecalibacterium, Verrucomicrobiota, Anaerostipes, Lactobacillus, Roseburia, Akkermansia muciniphila, Dorea formicigenerans, Desulfovibrionaceae, Bacteroides, Prevotella, Escherichia, Bifidobacterium. To make sure that the pie chart with all species is correct, you should leave all species in the abundance table.
 
 > [!WARNING]
-> Note that taxonomic names such as Bacteroidota and Bacillota were updated around 2021. If you're using an older database, these might be named differently.
+> Note that taxonomy of Bacteroidota and Bacillota were updated around 2021. If you're using an older database, these might be named differently.
 
 ## Output
 The tool generates:
-- Individual PDF reports for each sample in the abundance table
+- Individual PDF reports for each sample in the abundance table (example: `reports/english/report_ID_en.pdf`)
 - A general information sheet (physician_info.pdf)
 - All files are saved to the specified output directory
 

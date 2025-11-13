@@ -26,10 +26,10 @@ generate_report <- function(ab_path,
                             template_path = file.path(Sys.getenv("REPORT_GENERATOR_HOME", "."), "templates/report_template.qmd"),
                             infosheet_path = file.path(Sys.getenv("REPORT_GENERATOR_HOME", "."), "templates/physician_info_template.qmd"),
                             output_dir = "reports", 
-                            sample_prefix = "Sample",
+                            sample_prefix = "",
                             language = c("en")) {
 
-  # Normalize ALL input paths to avoid symlink issues
+  # Normalize all input paths to avoid symlink issues
   ab_path <- normalizePath(ab_path, mustWork = TRUE)
   template_path <- normalizePath(template_path, mustWork = TRUE)
   infosheet_path <- normalizePath(infosheet_path, mustWork = TRUE)
@@ -38,9 +38,12 @@ generate_report <- function(ab_path,
   bracken_cols <- grep("report_bracken", colnames(abdata), value = TRUE)
   abdata_filt <- abdata[, bracken_cols, drop = FALSE]
   if (length(bracken_cols) > 0) {
-    new_names <- gsub(paste0(sample_prefix, "(.+)\\.kraken2\\.report_bracken"), "\\1", bracken_cols)
+    new_names <- gsub("\\.kraken2\\.report_bracken$", "", bracken_cols)
+    new_names <- gsub("^X", "", new_names)
+    new_names <- ifelse(grepl("^[0-9]", new_names), paste0("X", new_names), new_names)
     colnames(abdata_filt) <- new_names
   }
+  # cat("Final participant IDs:", paste(new_names[1:5], collapse = ", "), "...\n")
   
   # Normalize environment paths 
   report_home <- normalizePath(Sys.getenv("REPORT_GENERATOR_HOME", getwd()), mustWork = TRUE)
@@ -70,8 +73,8 @@ generate_report <- function(ab_path,
       preamble_path <- file.path(report_home, "templates/preamble_hebrew.tex")
       
       # Try to detect available Hebrew fonts
-      font_check <- system("fc-list | grep -i hebrew")
-      open_sans_check <- system("fc-list | grep -i 'open sans'")
+      font_check <- system("fc-list | grep -i hebrew", intern = TRUE, ignore.stderr = TRUE)
+      open_sans_check <- system("fc-list | grep -i 'open sans'", intern = TRUE, ignore.stderr = TRUE)
       
       # Set default Hebrew font
       hebrew_font <- "DejaVu Sans"  # Default final fallback
@@ -178,11 +181,11 @@ generate_report <- function(ab_path,
       preamble_path <- file.path(report_home, "templates/preamble_russian.tex")
       
       # Try to detect available Russian fonts
-      roboto_check <- system("fc-list | grep -i 'roboto'")
+      roboto_check <- system("fc-list | grep -i 'roboto'", intern = TRUE, ignore.stderr = TRUE)
       if (any(grepl("Roboto", roboto_check))) {
         russian_font <- "Roboto"
       } else{
-        font_check <- system("fc-list | grep -i 'cyrillic\\|russian'")
+        font_check <- system("fc-list | grep -i 'cyrillic\\|russian'", intern = TRUE, ignore.stderr = TRUE)
         fallback_font <- "DejaVu Sans"
         if (any(grepl("PT Sans", font_check))) {
           russian_font <- "PT Sans"
@@ -288,7 +291,7 @@ generate_report <- function(ab_path,
       
       # Use DejaVu Sans as fallback for Arabic
       fallback_font <- "DejaVu Sans"
-      noto_check <- system("fc-list | grep -i 'Noto Sans Arabic'")
+      noto_check <- system("fc-list | grep -i 'Noto Sans Arabic'", intern = TRUE, ignore.stderr = TRUE)
       
       if (any(grepl("Noto", noto_check))) {
         arabic_font <- "Noto Sans Arabic"
@@ -485,7 +488,7 @@ generate_report <- function(ab_path,
     
     # Add debug information
     # cat("Template path:", template_path, "\n")
-    # cat("Number of participants:", length(colnames(abdata_filt)), "\n")
+    cat("Number of participants:", length(colnames(abdata_filt)), "\n")
     
     # Loop through participants and make report
     original_wd <- getwd()
@@ -517,6 +520,4 @@ generate_report <- function(ab_path,
     system(paste("mv", shQuote("physician_info.pdf"), shQuote(file.path(output_dir, "physician_info.pdf"))))
   }
   setwd(original_wd)
-
-  cat("\nReport content generation complete, proceed to rendering.\n")
 }

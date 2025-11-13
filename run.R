@@ -48,7 +48,7 @@ option_list <- list(
               
   make_option(c("-s", "--sample"), 
               type = "character", 
-              default = "Sample", 
+              default = "none", 
               help = "Sample prefix [default: %default]"),
   
   make_option(c("-l", "--language"), 
@@ -139,7 +139,7 @@ if (opt$test == TRUE) {
     }
     template_dir <- ifelse(!is.null(opt$template), opt$template, file.path(report_home, "templates/report_template.qmd"))
     info_dir <- ifelse(!is.null(opt$template), opt$infosheet, file.path(report_home, "templates/physician_info_template.qmd"))
-    sample_prefix <- ifelse(is.null(opt$sample), "Sample", opt$sample)
+    sample_prefix <- ifelse(is.null(opt$sample), "", opt$sample)
     path_to_script <- file.path(report_home, "lib/generate_report.R")
     source(path_to_script)
     
