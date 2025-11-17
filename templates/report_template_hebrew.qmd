@@ -13,11 +13,10 @@ params:
   participant_id: NULL
   sample_prefix: NULL
 title: |
-  ![](elinav_logo.png){width=5cm}
-  
+  ![](elinav_logo.png){width=4cm}
 
   דו"ח ניתוח מיקרוביום
-  
+
   זיהוי משתתף\texten{`r gsub("_", "\\\\_", params[["participant_id"]])` :}
 ---
 
@@ -151,7 +150,7 @@ create_warningbox <- function(content) {
 create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
   # Use a tabular environment for more reliable RTL layout
   cat("\\par\\noindent\n")
-  cat("\\begin{tabular}{@{}p{0.548\\textwidth}@{\\hspace{0.03\\textwidth}}p{0.48\\textwidth}@{}}\n")
+  cat("\\begin{tabular}{@{}p{0.44\\textwidth}@{\\hspace{0.03\\textwidth}}p{0.58\\textwidth}@{}}\n")
   
   # First column (plot) - will appear on LEFT in RTL
   cat("\\begin{minipage}{\\linewidth}\n")  # Removed [t] alignment
@@ -176,14 +175,14 @@ create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
 }
 
 create_side_by_side2 <- function(left_content, plot_filename, caption = NULL) {
-  cat("\\begin{minipage}{0.52\\textwidth}\n")
+  cat("\\begin{minipage}{0.48\\textwidth}\n")
   cat(left_content)
   cat("\\end{minipage}\\hfill\n")
 
   # Add explicit spacing between columns
   cat("\\hspace{0.05\\textwidth}")
   
-  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{minipage}{0.46\\textwidth}\n")
   cat("\\begin{figure}[H]\n")
   cat("\\centering\n")
   cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
@@ -193,7 +192,7 @@ create_side_by_side2 <- function(left_content, plot_filename, caption = NULL) {
   cat("\\end{figure}\n")
   cat("\\end{minipage}\n\n")
   
-  cat("\\vspace{1em}\n\n")
+  # cat("\\vspace{1em}\n\n")
 }
 
 capture_infobox <- function(content, title) {
@@ -246,14 +245,12 @@ microbiome_colors <- list(
 ```{r setup, include=FALSE}
 # Silently load required packages
 suppressPackageStartupMessages({
-  suppressMessages({
-    library(dplyr)      # For data manipulation
-    library(ggplot2)    # For plotting
-    library(stringr)    # For string manipulation
-    library(forcats)    # For factor manipulation
-    library(tidyr)      # For pivot_longer and pivot_wider
-    library(vegan)      # For diversity indices
-  })
+  library(dplyr)      # For data manipulation
+  library(ggplot2)    # For plotting
+  library(stringr)    # For string manipulation
+  library(forcats)    # For factor manipulation
+  library(tidyr)      # For pivot_longer and pivot_wider
+  library(vegan)      # For diversity indices
 })
 
 # Load data
@@ -358,7 +355,7 @@ cat("\\subsection*{\\hebrewfontsf{מבוא}}\n\n")
 cat("\\hebrewfontsf{\n")
 cat(introduction)
 cat("}")
-cat("\\newpage\n\n")
+# cat("\\newpage\n\n")
 ```
 
 ```{r diversity, echo=FALSE, results='asis', warning=FALSE}
@@ -447,11 +444,11 @@ for (metric in c("Shannon index", "Species richness")) {
 
     create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage\n\n")
+cat("\\par\\vspace{2.0em}")
 ```
 
 ```{r phyla, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{\\hebrewfontsf{קבוצות עיקריות של חיידקים}}\n")
+cat("\\subsection*{\\hebrewfontsf{קבוצות עיקריות של חיידקים}}")
 
 # Pie plot phylum level
 phylum_colors <- c("#FF6F00FF", "#C71000FF", "#008EA0FF", "#8A4198FF", "grey")
@@ -542,11 +539,12 @@ for (taxon in c("Bacteroidota", "Bacillota", "Pseudomonadota")) {
     
     create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage\n\n")
+# cat("\\newpage")
+cat("\\par\\vspace{2.0em}")
 ```
 
 ```{r species, echo=FALSE, results='asis', warning=FALSE}
-cat("\\subsection*{\\hebrewfontsf{חיידקים ספציפיים}}\n\n")
+cat("\\subsection*{\\hebrewfontsf{חיידקים ספציפיים}}")
 cat(species_explanation)
 
 species_colors <- c("#FF6F00", "#EA4C00", "#D52900", "#B21D10", "#684B4B", "#1F7A86", "#1D7D9E",
@@ -560,13 +558,15 @@ pie2 <- ggplot(pie_species, aes(x = "", y = Percentage, fill = label)) +
           labs(title = "", fill = "") +
           theme_void() +
           theme(legend.position = "right", legend.text = element_text(size = 11),
-                text = element_text(family = "Montserrat"))
-ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 8, height = 8)
+                text = element_text(family = "Montserrat"),
+                plot.margin = margin(0,0,0,0))
+ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 7, height = 4)
 
 cat("\\begin{figure}[H]\n")
 cat("\\centering\n")
-cat("\\includegraphics[height=15cm]{figures/report_piespecies.png}\n")
+cat("\\includegraphics[height=9cm]{figures/report_piespecies.png}\n")
 cat("\\end{figure}\n\n")
+cat("\\par\\vspace{2.0em}")
 
 participant_data1 <- abdata_spec %>% select(all_of(params$participant_id))
 specificbacteria <- as.data.frame(t(as.matrix(participant_data1)))
@@ -659,9 +659,11 @@ for (taxon in names(specificbacteria)) {
   
   create_side_by_side(infobox, plot_filename)
 }
-
+# cat("\\newpage")
+cat("\\par\\vspace{2.0em}")
 ```
 ```{r conclusions, echo=FALSE, results='asis', warning=FALSE}
+cat("\\newpage")
 cat("\\subsection*{\\hebrewfontsf{חומר קריאה נוסף}}\n\n")
 cat("\\begin{hebrew}\n")
 cat(readmore)

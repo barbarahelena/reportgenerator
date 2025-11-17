@@ -13,10 +13,9 @@ params:
   participant_id: NULL
   sample_prefix: NULL
 title: |
-  ![](elinav_logo.png){width=5cm} \
-  \
+  ![](elinav_logo.png){width=3cm} \
   تقرير تحليل ميكروبيوم
-  
+
   رقم المشارك\texten{`r gsub("_", "\\\\_", params[["participant_id"]])` :}
 ---
 
@@ -25,7 +24,7 @@ introduction <- "\\arabicfont{يتكون ميكروبيوم الأمعاء من 
 يقدم هذا التقرير تحليلًا لـ ميكروبيوم الأمعاء لديك باستخدام تحديد التوالي بالتشظية، وهي طريقة عالية الدقة تحدد الميكروبات المعروفة وغير المصنفة سابقًا. ومن خلال مقارنة التركيب الميكروبي لديك مع تركيب المشاركين الآخرين في الدراسة، فإننا نهدف إلى فهم طريقة ارتباط بكتيريا الأمعاء بالصحة فهمًا أفضل.\n\n
 في الصفحة التالية، سترى أولًا نظرة عامة على التنوع البكتيري في عينتك، متبوعًا بالمجموعات البكتيرية الرئيسية الموجودة عادةً في أمعاء الإنسان. وأخيرًا، سنسلط الضوء على البكتيريا المحددة الموجودة في الميكروبيوم لديك، مع قراءة إضافية في النهاية إذا كنت ترغب في معرفة المزيد.}"
 
-diversity <- "\\arabicfont{يشير التنوع الميكروبي إلى تنوع البكتيريا المختلفة والكائنات الحية الدقيقة الأخرى الموجودة في الأمعاء. وغالبًا ما يرتبط التنوع الأعلى بصحة أفضل، في حين يرتبط التنوع المنخفض بأمراض معينة. يمكن للعديد من العوامل، مثل النظام الغذائي والأدوية ونمط الحياة، أن تؤثر على التنوع الميكروبي.}\\par\\vspace{1.0em}"
+diversity <- "\\arabicfont{يشير التنوع الميكروبي إلى تنوع البكتيريا المختلفة والكائنات الحية الدقيقة الأخرى الموجودة في الأمعاء. وغالبًا ما يرتبط التنوع الأعلى بصحة أفضل، في حين يرتبط التنوع المنخفض بأمراض معينة. يمكن للعديد من العوامل، مثل النظام الغذائي والأدوية ونمط الحياة، أن تؤثر على التنوع الميكروبي.}\\par\\vspace{0.5em}"
 
 div_explanations <- list(
   "Shannon index" = "مُعامل شانون هو مقياس للتنوع الميكروبي الذي يأخذ في الاعتبار عدد الأنواع المختلفة ومدى توزيعها بالتساوي. يشير معامل شانون الأعلى إلى ميكروبيوم أكثر تنوعًا وتوازنًا، وهو ما يرتبط غالبًا بصحة أفضل. ",
@@ -98,6 +97,7 @@ create_infobox <- function(content, title) {
       "title={", "\\begin{Arabic}", title, "\\end{Arabic}},",
       "coltitle=white, ",
       "fonttitle=\\sffamily\\bfseries, ",
+      "fontupper=\\small, ",
       "before upper={\\rightskip=0pt plus 1fil}",
       "]\n", sep="")
   cat("\\begin{Arabic}", content, "\\end{Arabic}")
@@ -131,7 +131,7 @@ create_warningbox <- function(content) {
 create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
   # Use a tabular environment for more reliable RTL layout
   cat("\\par\\noindent\n")
-  cat("\\begin{tabular}{@{}p{0.5\\textwidth}@{\\hspace{0.03\\textwidth}}p{0.5\\textwidth}@{}}\n")
+  cat("\\begin{tabular}{@{}p{0.44\\textwidth}@{\\hspace{0.03\\textwidth}}p{0.58\\textwidth}@{}}\n")
   
   # First column (plot) - will appear on LEFT in RTL
   cat("\\begin{minipage}[t]{\\linewidth}\n")
@@ -156,11 +156,14 @@ create_side_by_side <- function(text_content, plot_filename, caption = NULL) {
 }
 
 create_side_by_side2 <- function(left_content, plot_filename, caption = NULL) {
-  cat("\\begin{minipage}{0.52\\textwidth}\n")
+  cat("\\begin{minipage}{0.48\\textwidth}\n")
   cat(left_content)
   cat("\\end{minipage}\\hfill\n")
+
+  # Add explicit spacing between columns
+  cat("\\hspace{0.05\\textwidth}")
   
-  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{minipage}{0.46\\textwidth}\n")
   cat("\\begin{figure}[H]\n")
   cat("\\centering\n")
   cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
@@ -223,14 +226,12 @@ microbiome_colors <- list(
 ```{r setup, include=FALSE}
 # Silently load required packages
 suppressPackageStartupMessages({
-  suppressMessages({
-    library(dplyr)      # For data manipulation
-    library(ggplot2)    # For plotting
-    library(stringr)    # For string manipulation
-    library(forcats)    # For factor manipulation
-    library(tidyr)      # For pivot_longer and pivot_wider
-    library(vegan)      # For diversity indices
-  })
+  library(dplyr)      # For data manipulation
+  library(ggplot2)    # For plotting
+  library(stringr)    # For string manipulation
+  library(forcats)    # For factor manipulation
+  library(tidyr)      # For pivot_longer and pivot_wider
+  library(vegan)      # For diversity indices
 })
 
 # Load data
@@ -331,9 +332,10 @@ abundance_medians <- abflip %>% summarise(across(c(names(main_groups), names(tax
 ```
 
 ```{r intro, echo=FALSE, results='asis', warning=FALSE}
+cat("\\vspace{-2.0em}")  # Negative space to pull content up
 cat("\\subsection*{\\arabicfont{مقدمة}}\n\n")
 cat(introduction)
-cat("\\newpage\n\n")
+# cat("\\newpage\n\n")
 ```
 
 ```{r diversity, echo=FALSE, results='asis', warning=FALSE}
@@ -421,7 +423,7 @@ for (metric in c("Shannon index", "Species richness")) {
 
     create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage\n\n")
+cat("\\par\\vspace{2.0em}")
 ```
 
 ```{r phyla, echo=FALSE, results='asis', warning=FALSE}
@@ -518,7 +520,8 @@ for (taxon in c("Bacteroidota", "Bacillota", "Pseudomonadota")) {
     
     create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage")
+# cat("\\newpage")
+cat("\\par\\vspace{2.0em}")
 ```
 
 ```{r species, echo=FALSE, results='asis', warning=FALSE}
@@ -641,12 +644,12 @@ for (taxon in names(specificbacteria)) {
   
   create_side_by_side(infobox, plot_filename)
 }
+cat("\\par\\vspace{2.0em}")
 
 ```
 ```{r conclusions, echo=FALSE, results='asis', warning=FALSE}
 cat("\\subsection*{\\arabicfont{قراءة إضافية}}\n\n")
 cat(readmore)
 cat("\\vspace{1em}\n\n")
-
 cat(create_warningbox(disclaimer))
 ```
