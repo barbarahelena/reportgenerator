@@ -107,11 +107,11 @@ create_warningbox <- function(content, title = "Заявление об огра
 
 # To create 2 columns
 create_side_by_side <- function(left_content, plot_filename, caption = NULL) {
-  cat("\\begin{minipage}{0.55\\textwidth}\n")
+  cat("\\begin{minipage}{0.52\\textwidth}\n")
   cat(left_content)  # This will be the output from capture.output()
   cat("\\end{minipage}\\hfill\n")
   
-  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{minipage}{0.52\\textwidth}\n")
   cat("\\begin{figure}[H]\n")
   cat("\\centering\n")
   cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
@@ -129,9 +129,9 @@ create_side_by_side2 <- function(left_content, plot_filename, caption = NULL) {
   cat(left_content)  # This will be the output from capture.output()
   cat("\\end{minipage}\\hfill\n")
 
-  cat("\\hspace{0.03\\textwidth}")
+  # cat("\\hspace{0.03\\textwidth}")
 
-  cat("\\begin{minipage}{0.42\\textwidth}\n")
+  cat("\\begin{minipage}{0.52\\textwidth}\n")
   cat("\\begin{figure}[H]\n")
   cat("\\centering\n")
   cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
@@ -394,7 +394,7 @@ for (metric in c("Shannon index", "Species richness")) {
 
       create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage\n\n")
+#cat("\\newpage\n\n")
 ```
 
 ```{r phyla, echo=FALSE, results='asis', warning=FALSE}
@@ -409,7 +409,7 @@ pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
           theme_void() +
           theme(legend.position = "right", legend.text = element_text(size = 14),
                 text = element_text(family = "Montserrat"))
-ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 7, height = 5)
+ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 7, height = 4)
 
 create_side_by_side2(phylum_explanation, "figures/report_piephylum.png")
 
@@ -510,12 +510,13 @@ pie2 <- ggplot(pie_species, aes(x = "", y = Percentage, fill = label)) +
           theme_void() +
           theme(legend.position = "right", legend.text = element_text(size = 11),
                 text = element_text(family = "Montserrat"))
-ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 8, height = 8)
+ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 7, height = 4)
 
 cat("\\begin{figure}[H]\n")
 cat("\\centering\n")
-cat("\\includegraphics[height=15cm]{figures/report_piespecies.png}\n")
+cat("\\includegraphics[height=9cm]{figures/report_piespecies.png}\n")
 cat("\\end{figure}\n\n")
+cat("\\par\\vspace{2.0em}")
 
 participant_data1 <- abdata_spec %>% select(all_of(params$participant_id))
 specificbacteria <- as.data.frame(t(as.matrix(participant_data1)))
@@ -605,7 +606,7 @@ for (taxon in names(specificbacteria)) {
   
   create_side_by_side(infobox, plot_filename)
 }
-
+cat("\\newpage\n\n")
 ```
 ```{r conclusions, echo=FALSE, results='asis', warning=FALSE}
 cat("\\subsection*{Дополнительные материалы для чтения}\n\n")

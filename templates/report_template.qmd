@@ -14,8 +14,7 @@ params:
   language: NULL
   dir: NULL
 title: |
-  ![](elinav_logo.png){width=5cm} \
-  \
+  ![](elinav_logo.png){width=4cm} \
   **Microbiome Analysis Report** \
   Participant ID: `r params$participant_id`
 ---
@@ -28,7 +27,7 @@ This report presents an analysis of your gut microbiome using shotgun sequencing
 
 On the next page, you'll first see an overview of the bacterial diversity in your sample, followed by key bacterial groups commonly found in the human gut. Lastly, we’ll highlight specific bacteria in your microbiome, with additional reading at the end if you’d like to learn more."
 
-diversity <- "Microbial diversity refers to the variety of different bacteria and other microorganisms in the gut. A higher diversity is often linked to better health, while lower diversity has been associated with certain diseases. Many factors, such as diet, medication, and lifestyle, can influence microbial diversity.\\par\\vspace{1.0em}"
+diversity <- "Microbial diversity refers to the variety of different bacteria and other microorganisms in the gut. A higher diversity is often linked to better health, while lower diversity has been associated with certain diseases. Many factors, such as diet, medication, and lifestyle, can influence microbial diversity.\\par\\vspace{0.5em}"
 
 div_explanations <- list("Shannon index" = "The Shannon index is a measure of microbial diversity that considers both the number of different species and how evenly they are distributed. A higher Shannon index indicates a more diverse and balanced microbiome, which is often linked to better health. ",
                         "Species richness" = "Species richness refers to the number of different microbial species present in the gut. A higher species richness generally indicates a more diverse microbiome, which is often linked to better resilience and health.")
@@ -41,7 +40,7 @@ main_groups <- list(
   "Pseudomonadota" = "\\textit{Proteobacteria} is a diverse bacterial phylum that includes many species linked to inflammation and metabolic disorders. Higher levels have been associated with type 2 diabetes, obesity, and insulin resistance, while lower levels are linked to fiber-rich diets and better blood sugar control."
 )
 
-species_explanation <- "This chart shows the distribution of bacterial species in your gut microbiome. The top 20 most abundant species are shown individually, with the remaining species grouped as 'Other species'.\\par\\vspace{1.0em}"
+species_explanation <- "This chart shows the distribution of bacterial species in your gut microbiome. The top 20 most abundant species are shown individually, with the remaining species grouped as 'Other species'.\\par\\vspace{0.5em}"
 
 taxa_explanations <- list(
   "Bacteroides" = "\\textit{Bacteroides} species are common gut bacteria. Lower levels are linked to obesity and poor blood sugar control, while higher levels are associated with weight loss and dietary changes.",
@@ -106,11 +105,11 @@ create_warningbox <- function(content, title = "Important Note") {
 
 # Add this helper function to your setup
 create_side_by_side <- function(left_content, plot_filename, caption = NULL) {
-  cat("\\begin{minipage}{0.5\\textwidth}\n")
+  cat("\\begin{minipage}{0.58\\textwidth}\n")
   cat(left_content)  # This will be the output from capture.output()
   cat("\\end{minipage}\\hfill\n")
   
-  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat("\\begin{minipage}{0.45\\textwidth}\n")
   cat("\\begin{figure}[H]\n")
   cat("\\centering\n")
   cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
@@ -120,7 +119,26 @@ create_side_by_side <- function(left_content, plot_filename, caption = NULL) {
   cat("\\end{figure}\n")
   cat("\\end{minipage}\n\n")
   
-  cat("\\vspace{1em}\n\n")
+  cat("\\vspace{0.5em}\n\n")
+}
+
+create_side_by_side2 <- function(left_content, plot_filename, caption = NULL) {
+  cat("\\begin{minipage}{0.48\\textwidth}\n")
+  cat(left_content)
+  cat("\\end{minipage}\\hfill\n")
+
+  # Add explicit spacing between columns
+  cat("\\hspace{0.05\\textwidth}")
+  
+  cat("\\begin{minipage}{0.46\\textwidth}\n")
+  cat("\\begin{figure}[H]\n")
+  cat("\\centering\n")
+  cat("\\includegraphics[width=\\linewidth]{", plot_filename, "}\n", sep="")
+  if (!is.null(caption)) {
+    cat("\\caption{\\textit{", caption, "}}\n", sep="")
+  }
+  cat("\\end{figure}\n")
+  cat("\\end{minipage}\n\n")
 }
 
 capture_infobox <- function(content, title) {
@@ -284,7 +302,7 @@ abundance_medians <- abflip %>% summarise(across(c(names(main_groups), names(tax
 ```{r intro, echo=FALSE, results='asis', warning=FALSE}
 cat("\\subsection*{Introduction}\n\n")
 cat(introduction)
-cat("\\newpage\n\n")
+# cat("\\newpage\n\n")
 ```
 
 ```{r diversity, echo=FALSE, results='asis', warning=FALSE}
@@ -365,7 +383,7 @@ for (metric in c("Shannon index", "Species richness")) {
 
       create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage\n\n")
+# cat("\\newpage\n\n")
 ```
 
 ```{r phyla, echo=FALSE, results='asis', warning=FALSE}
@@ -386,9 +404,9 @@ pie1 <- ggplot(pie_phylum, aes(x = "", y = Percentage, fill = label)) +
           theme_void() +
           theme(legend.position = "right", legend.text = element_text(size = 14),
                 text = element_text(family = "Montserrat"))
-ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 8, height = 4)
+ggsave(filename = "figures/report_piephylum.png", plot = pie1, width = 7, height = 5)
 
-create_side_by_side(phylum_explanation, "figures/report_piephylum.png")
+create_side_by_side2(phylum_explanation, "figures/report_piephylum.png")
 
 participant_data2 <- abdata_key %>% select(all_of(params$participant_id))
 keygroups <- as.data.frame(t(as.matrix(participant_data2)))
@@ -462,7 +480,7 @@ for (taxon in c("Bacteroidota", "Bacillota", "Pseudomonadota")) {
 
   create_side_by_side(infobox, plot_filename)
 }
-cat("\\newpage")
+# cat("\\newpage")
 ```
 
 ```{r species, echo=FALSE, results='asis', warning=FALSE}
@@ -481,12 +499,13 @@ pie2 <- ggplot(pie_species, aes(x = "", y = Percentage, fill = label)) +
           theme_void() +
           theme(legend.position = "right", legend.text = element_text(size = 11),
                 text = element_text(family = "Montserrat"))
-ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 8, height = 8)
+ggsave(filename = "figures/report_piespecies.png", plot = pie2, width = 7, height = 4)
 
 cat("\\begin{figure}[H]\n")
 cat("\\centering\n")
-cat("\\includegraphics[height=15cm]{figures/report_piespecies.png}\n")
+cat("\\includegraphics[height=9cm]{figures/report_piespecies.png}\n")
 cat("\\end{figure}\n\n")
+cat("\\par\\vspace{2.0em}")
 
 participant_data1 <- abdata_spec %>% select(all_of(params$participant_id))
 specificbacteria <- as.data.frame(t(as.matrix(participant_data1)))
@@ -577,7 +596,7 @@ for (taxon in names(specificbacteria)) {
   create_side_by_side(infobox, plot_filename)
 }
 
-cat("\\newpage")
+# cat("\\newpage")
 ```
 ```{r conclusions, echo=FALSE, results='asis', warning=FALSE}
 cat("\\subsection*{Further reading}\n\n")
