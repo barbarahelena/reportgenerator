@@ -37,13 +37,13 @@ generate_report <- function(ab_path,
   abdata <- utils::read.delim(ab_path)
   bracken_cols <- grep("report_bracken", colnames(abdata), value = TRUE)
   abdata_filt <- abdata[, bracken_cols, drop = FALSE]
+
   if (length(bracken_cols) > 0) {
-    new_names <- gsub("\\.kraken2\\.report_bracken$", "", bracken_cols)
-    new_names <- gsub("^X", "", new_names)
-    new_names <- ifelse(grepl("^[0-9]", new_names), paste0("X", new_names), new_names)
+    new_names <- gsub(sample_prefix, "", bracken_cols)
+    new_names <- gsub("\\.kraken2\\.report_bracken$", "", new_names)
     colnames(abdata_filt) <- new_names
   }
-  # cat("Final participant IDs:", paste(new_names[1:5], collapse = ", "), "...\n")
+  cat("Final participant IDs:", paste(new_names[1:3], collapse = ", "), "...\n")
   
   # Normalize environment paths 
   report_home <- normalizePath(Sys.getenv("REPORT_GENERATOR_HOME", getwd()), mustWork = TRUE)
@@ -112,7 +112,7 @@ generate_report <- function(ab_path,
             "",
             "% RTL language support - proper RTL text direction and alignment",
             "\\usepackage{polyglossia}",
-            "\\setmainlanguage[numerals=hebrew]{hebrew}",
+            "\\setmainlanguage[numerals=western]{hebrew}",
             "\\setotherlanguage{english}",
             "",
             "% Define colors",
@@ -145,8 +145,7 @@ generate_report <- function(ab_path,
             "\\pagestyle{fancy}",
             "\\fancyhf{}",
             "\\renewcommand{\\headrulewidth}{0.4pt}",
-            "\\renewcommand{\\footrulewidth}{0.4pt}",
-            sprintf("\\fancyhead[R]{\\texten{\\textit{%s}}}", date_string),  
+            "\\renewcommand{\\footrulewidth}{0.4pt}",  
             "\\fancyhead[L]{\\texten{Elinav Lab}}",
             "\\fancyhead[C]{\\sffamily ניתוח מיקרוביום}",
             "\\fancyfoot[C]{\\thepage}",
@@ -177,7 +176,7 @@ generate_report <- function(ab_path,
       writeLines(preamble_content, preamble_path)
 
     } else if (lang == "ru") {
-      template_path <- normalizePath(file.path(report_home, "templates/report_template_russian.qmd"))
+      template_path <- file.path(report_home, "templates/report_template_russian.qmd")
       preamble_path <- file.path(report_home, "templates/preamble_russian.tex")
       
       # Try to detect available Russian fonts
@@ -196,19 +195,6 @@ generate_report <- function(ab_path,
         }
       }
       cat("Using Russian font:", russian_font, "\n")
-
-      # Create Russian month names mapping
-      russian_months <- c(
-        "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", 
-        "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-      )
-
-      # Get current month and year
-      current_month <- as.integer(format(Sys.Date(), "%m"))
-      current_year <- format(Sys.Date(), "%Y")
-
-      # Format date string in Russian
-      russian_date <- paste(russian_months[current_month], current_year)
 
       preamble_content <- c(
       "% Core packages",
@@ -255,7 +241,6 @@ generate_report <- function(ab_path,
       "\\renewcommand{\\footrulewidth}{0.4pt}",
       "\\fancyhead[L]{Elinav Lab}",
       "\\fancyhead[C]{\\sffamily Анализ микробиома}",
-      sprintf("\\fancyhead[R]{%s}", russian_date),
       "\\fancyfoot[C]{\\thepage}",
       "\\fancyfoot[L]{\\textcolor{maincolor}{\\sffamily Конфиденциально}}",
       "",
@@ -286,29 +271,18 @@ generate_report <- function(ab_path,
       writeLines(preamble_content, preamble_path)
 
     } else if (lang == "ar") {
-      template_path <- normalizePath(file.path(report_home, "templates/report_template_arabic.qmd"))
+      template_path <- file.path(report_home, "templates/report_template_arabic.qmd")
       preamble_path <- file.path(report_home, "templates/preamble_arabic.tex")
       
-      # Use DejaVu Sans as fallback for Arabic
+      # Try to detect available Arabic fonts
+      noto_check <- system("fc-list | grep -i 'noto sans arabic'", intern = TRUE, ignore.stderr = TRUE)
       fallback_font <- "DejaVu Sans"
-      noto_check <- system("fc-list | grep -i 'Noto Sans Arabic'", intern = TRUE, ignore.stderr = TRUE)
-      
       if (any(grepl("Noto", noto_check))) {
         arabic_font <- "Noto Sans Arabic"
-      } else {
-        arabic_font <- fallback_font
+      } else{
+        arabic_font <- fallback_font  # Default final fallback
       }
-      
       cat("Using Arabic font:", arabic_font, "\n")
-
-      # Create Arabic month names mapping
-      arabic_months <- c(
-        "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", 
-        "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
-      )
-      current_month <- as.integer(format(Sys.Date(), "%m"))
-      current_year <- format(Sys.Date(), "%Y")
-      arabic_date <- paste(arabic_months[current_month], "\\texten{", current_year, "}")
 
       preamble_content <- c(
         "% Core packages",
@@ -328,9 +302,9 @@ generate_report <- function(ab_path,
         "",
         "% Configure Arabic fonts",
         paste0("\\newfontfamily\\arabicfont{", arabic_font, "}[Script=Arabic]"),
-        paste0("\\setmainfont{", arabic_font, "}"),
+        paste0("\\setmainfont{", arabic_font, "}[Scale=0.9]"),
         paste0("\\setsansfont{", fallback_font, "}"),
-        "\\newfontfamily\\montserratfont{DejaVu Sans}[Scale=MatchLowercase]",
+        "\\newfontfamily\\montserratfont{Montserrat}[Scale=MatchLowercase]",
         "",
         "% Define colors",
         "\\definecolor{maincolor}{RGB}{0, 114, 181}",
@@ -357,8 +331,7 @@ generate_report <- function(ab_path,
         "\\renewcommand{\\headrulewidth}{0.4pt}",
         "\\renewcommand{\\footrulewidth}{0.4pt}",
         "\\fancyhead[L]{\\texten{Elinav Lab}}",
-        sprintf("\\fancyhead[C]{\\arabicfont{تقرير تحليل ميكروبيوم}}"),
-        sprintf("\\fancyhead[R]{\\arabicfont{%s}}", arabic_date),
+        "\\fancyhead[C]{\\arabicfont{تقرير تحليل ميكروبيوم}}",
         "\\fancyfoot[C]{\\thepage}",
         "\\fancyfoot[L]{\\textcolor{maincolor}{\\sffamily ســــــــــــــري}}",
         "",
@@ -436,11 +409,10 @@ generate_report <- function(ab_path,
           "\\fancyhf{}",
           "\\renewcommand{\\headrulewidth}{0.4pt}",
           "\\renewcommand{\\footrulewidth}{0.4pt}",
-          "\\setlength{\\headheight}{15pt}",
+          "\\setlength{\\headheight}{10pt}",
           "",
           "\\fancyhead[L]{Elinav Lab}",
           "\\fancyhead[C]{\\sffamily Microbiome Analysis}",
-          sprintf("\\fancyhead[R]{\\textit{%s}}", date_string),
           "\\fancyfoot[C]{\\thepage}",
           "\\fancyfoot[L]{\\textcolor{maincolor}{\\sffamily Confidential}}",
           "",
